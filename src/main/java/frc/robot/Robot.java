@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -31,7 +32,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-
+  private SmartDashboard smartDashboard;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -98,7 +99,9 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    // smartDashboard.putNumber("Front Left Angle", modules[0].turnAbsolutePosition());
   }
+  ;
 
   /** This function is called once when the robot is disabled. */
   @Override
