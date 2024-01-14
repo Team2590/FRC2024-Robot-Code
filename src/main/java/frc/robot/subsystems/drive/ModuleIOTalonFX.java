@@ -65,13 +65,32 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final boolean isTurnMotorInverted = false;
   private final Rotation2d absoluteEncoderOffset;
 
+
+  /*
+   * Special thank you to BREAD 5940
+   * 
+   * STEPS FOR ADJUSTING OFFSETS
+   * 1. Change offsets to 0 in code
+   * 2. Deploy Robot code
+   * 3. Power cycle
+   * 4. Align wheels so all bevels facing right
+   * 5. Look at Advantage Kit Vals (TurnAbsolutePosition)
+   * 6. Update offsets with new AdvantageKit values in code
+   * 7. Deploy Robot code
+   * 8. Power Cycle
+   * 
+   * If forward is in the wrong direction...
+   * Make robot face where you want forward to be
+   * Reboot RIO
+   * voila!
+   */
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
         driveTalon = new TalonFX(2, "Jazzy");
         turnTalon = new TalonFX(8, "Jazzy");
         cancoder = new CANcoder(9, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(.067); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-3.123); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -79,7 +98,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(4, "Jazzy");
         turnTalon = new TalonFX(3, "Jazzy");
         cancoder = new CANcoder(10, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(2.223); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -87,7 +106,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(6, "Jazzy");
         turnTalon = new TalonFX(7, "Jazzy");
         cancoder = new CANcoder(12, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-1.948); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(1.474); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -95,7 +114,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(5, "Jazzy");
         turnTalon = new TalonFX(0, "Jazzy");
         cancoder = new CANcoder(11, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(.479); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-2.686); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
