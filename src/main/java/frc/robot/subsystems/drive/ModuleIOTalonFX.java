@@ -25,6 +25,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Queue;
 
 /**
@@ -61,7 +62,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
   private final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
-  private final boolean isTurnMotorInverted = true;
+  private final boolean isTurnMotorInverted = false;
   private final Rotation2d absoluteEncoderOffset;
 
   public ModuleIOTalonFX(int index) {
@@ -70,25 +71,33 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(2, "Jazzy");
         turnTalon = new TalonFX(8, "Jazzy");
         cancoder = new CANcoder(9, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-3.075); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(.067); // MUST BE CALIBRATED
+        SmartDashboard.putNumber(
+            "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1:
         driveTalon = new TalonFX(4, "Jazzy");
         turnTalon = new TalonFX(3, "Jazzy");
         cancoder = new CANcoder(10, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-.912); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(2.223); // MUST BE CALIBRATED
+        SmartDashboard.putNumber(
+            "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 2:
         driveTalon = new TalonFX(6, "Jazzy");
         turnTalon = new TalonFX(7, "Jazzy");
         cancoder = new CANcoder(12, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-1.805); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(-1.948); // MUST BE CALIBRATED
+        SmartDashboard.putNumber(
+            "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 3:
         driveTalon = new TalonFX(5, "Jazzy");
         turnTalon = new TalonFX(0, "Jazzy");
         cancoder = new CANcoder(11, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-2.525); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(.479); // MUST BE CALIBRATED
+        SmartDashboard.putNumber(
+            "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       default:
         throw new RuntimeException("Invalid module index");
