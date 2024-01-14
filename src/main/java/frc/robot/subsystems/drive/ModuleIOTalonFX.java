@@ -65,10 +65,11 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final boolean isTurnMotorInverted = false;
   private final Rotation2d absoluteEncoderOffset;
 
-
   /*
    * Special thank you to BREAD 5940
-   * 
+   *
+   * note the inversion of the motors
+   *
    * STEPS FOR ADJUSTING OFFSETS
    * 1. Change offsets to 0 in code
    * 2. Deploy Robot code
@@ -78,7 +79,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * 6. Update offsets with new AdvantageKit values in code
    * 7. Deploy Robot code
    * 8. Power Cycle
-   * 
+   *
    * If forward is in the wrong direction...
    * Make robot face where you want forward to be
    * Reboot RIO
