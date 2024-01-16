@@ -77,7 +77,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
             true,
             ffVolts,
             0,
-            false,
+              false,
             false,
             false));
   }
