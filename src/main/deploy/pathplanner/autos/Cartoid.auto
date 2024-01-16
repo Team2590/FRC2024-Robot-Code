@@ -12,9 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Path1"
+            "pathName": "Path1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
           }
         },
         {

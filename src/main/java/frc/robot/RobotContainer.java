@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -113,14 +112,15 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Drive FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Flywheel FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    // autoChooser.addOption("auto1", new PathPlannerAuto("Cartoid"));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -136,9 +136,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> controller.getLeftY(),
+            () -> controller.getLeftX(),
+            () -> controller.getRightX()));
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()
@@ -162,6 +162,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
     return autoChooser.get();
   }
 }

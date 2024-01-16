@@ -37,9 +37,9 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(23.75);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(23.75);
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(2); // 14.5 originally
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
@@ -77,6 +77,7 @@ public class Drive extends SubsystemBase {
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
+
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -112,7 +113,6 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
-
     // Update odometry
     int deltaCount =
         gyroInputs.connected ? gyroInputs.odometryYawPositions.length : Integer.MAX_VALUE;
