@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -30,14 +31,26 @@ public class Module {
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
 
-  private final SimpleMotorFeedforward driveFeedforward;
-  private final PIDController driveFeedback;
-  private final PIDController turnFeedback;
+  // private final SimpleMotorFeedforward driveFeedforward;
+  // private final PIDController driveFeedback;
+  // private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Rotation2d turnRelativeOffset = null; // Relative + Offset = Absolute
   private double lastPositionMeters = 0.0; // Used for delta calculation
   private SwerveModulePosition[] positionDeltas = new SwerveModulePosition[] {};
+
+  LoggedTunableNumber wheelRadius = new LoggedTunableNumber("Drive/Module/WheelRadius", 2);
+  LoggedTunableNumber driveKp = new LoggedTunableNumber("Drive/Module/DriveKp", 0.05);
+  LoggedTunableNumber driveKd = new LoggedTunableNumber("Drive/Module/DrivfalseKd", 0);
+  LoggedTunableNumber driveKs = new LoggedTunableNumber("Drive/Module/DriveKs", .1);
+  LoggedTunableNumber driveKv = new LoggedTunableNumber("Drive/Module/DriveKv", .13);
+  LoggedTunableNumber turnKp = new LoggedTunableNumber("Drive/Module/TurnKp", 7);
+  LoggedTunableNumber turnKd = new LoggedTunableNumber("Drive/Module/TurnKd", 0);
+
+  SimpleMotorFeedforward driveFeedforward;
+  PIDController driveFeedback;
+  PIDController turnFeedback;
 
   public Module(ModuleIO io, int index) {
     this.io = io;
@@ -47,6 +60,9 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
+        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13, 0.02);
+        driveFeedback = new PIDController(0.05, 0.0, 0.0, 0.02);
+        turnFeedback = new PIDController(7.0, 0.0, 0.0, 0.02);
       case REPLAY:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
         driveFeedback = new PIDController(0.05, 0.0, 0.0);
@@ -79,6 +95,15 @@ public class Module {
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
+    if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
+      driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
+    }
+    if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
+      turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
+    }
+    if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
+      driveFeedforward = new SimpleMotorFeedforward(driveKs.get(), driveKv.get());
+    }
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
     if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
