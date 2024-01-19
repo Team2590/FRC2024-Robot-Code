@@ -88,34 +88,34 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(2, "Jazzy");
-        turnTalon = new TalonFX(8, "Jazzy");
-        cancoder = new CANcoder(9, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-3.123); // MUST BE CALIBRATED
+        driveTalon = new TalonFX(43, "Jazzy");
+        turnTalon = new TalonFX(41, "Jazzy");
+        cancoder = new CANcoder(42, "Jazzy");
+        absoluteEncoderOffset = new Rotation2d(-2.847); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1: // Front Right
-        driveTalon = new TalonFX(4, "Jazzy");
-        turnTalon = new TalonFX(3, "Jazzy");
-        cancoder = new CANcoder(10, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
+        driveTalon = new TalonFX(13, "Jazzy");
+        turnTalon = new TalonFX(11, "Jazzy");
+        cancoder = new CANcoder(12, "Jazzy");
+        absoluteEncoderOffset = new Rotation2d(-2.74); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 2:
-        driveTalon = new TalonFX(6, "Jazzy");
-        turnTalon = new TalonFX(7, "Jazzy");
-        cancoder = new CANcoder(12, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(1.474); // MUST BE CALIBRATED
+      case 2: // Back Right
+        driveTalon = new TalonFX(23, "Jazzy");
+        turnTalon = new TalonFX(21, "Jazzy");
+        cancoder = new CANcoder(22, "Jazzy");
+        absoluteEncoderOffset = new Rotation2d(-1.396); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 3: //
-        driveTalon = new TalonFX(5, "Jazzy");
-        turnTalon = new TalonFX(0, "Jazzy");
-        cancoder = new CANcoder(11, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-2.686); // MUST BE CALIBRATED
+      case 3: // Back Left
+        driveTalon = new TalonFX(33, "Jazzy");
+        turnTalon = new TalonFX(31, "Jazzy");
+        cancoder = new CANcoder(32, "Jazzy");
+        absoluteEncoderOffset = new Rotation2d(-2.614); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
