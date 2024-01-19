@@ -13,11 +13,14 @@
 
 package frc.robot.subsystems.drive;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -31,6 +34,7 @@ public class Module {
   private final int index;
 
   private final SimpleMotorFeedforward driveFeedforward;
+
   private final PIDController driveFeedback;
   private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -57,10 +61,36 @@ public class Module {
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
         break;
+      case AUTO: 
+        
+              final double xkp=1.0;
+              final double xki=0.0;
+              final double xkd=0.0;
+            
+            
+            
+              final double ykp=1.0;
+              final double yki=0.0;
+              final double ykd=0.0;
+            
+            
+               double thetakp=1.0;
+               double thetaki=0.0;
+               double thetakd=0.0;
+            
+
+            PIDController x_controller=new PIDController(xkp, xki, xkd);
+            
+            PIDController y_controller=new PIDController(ykp, yki, ykd);
+
+            
+            ProfiledPIDController theta_controller=new ProfiledPIDController(thetakp, thetaki, thetakd, new TrapezoidProfile.Constraints(Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION ));
+            HolonomicDriveController auto_controller= new HolonomicDriveController(x_controller, y_controller, theta_controller);
       default:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
         driveFeedback = new PIDController(0.0, 0.0, 0.0);
         turnFeedback = new PIDController(0.0, 0.0, 0.0);
+        auto_controller=null;
         break;
     }
 
