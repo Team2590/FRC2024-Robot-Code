@@ -95,7 +95,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 1:
+      case 1: // Front Right
         driveTalon = new TalonFX(4, "Jazzy");
         turnTalon = new TalonFX(3, "Jazzy");
         cancoder = new CANcoder(10, "Jazzy");
@@ -111,7 +111,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 3:
+      case 3: //
         driveTalon = new TalonFX(5, "Jazzy");
         turnTalon = new TalonFX(0, "Jazzy");
         cancoder = new CANcoder(11, "Jazzy");
