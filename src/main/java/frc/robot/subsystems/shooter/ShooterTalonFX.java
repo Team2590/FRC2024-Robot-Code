@@ -10,12 +10,15 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 
-public class ShooterTalonFX implements ShooterIO {
+public class ShooterTalonFX implements ShooterTalonFXIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final TalonFX leader = new TalonFX(0);
   private final TalonFX follower = new TalonFX(1);
+
+  private ShooterTalonFXIO io;
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
@@ -31,42 +34,19 @@ public class ShooterTalonFX implements ShooterIO {
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
     follower.setControl(new Follower(leader.getDeviceID(), false));
-
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
+    BaseStatusSignal.setUpdateFrequencyForAll(50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
     leader.optimizeBusUtilization();
     follower.optimizeBusUtilization();
   }
 
   @Override
-  public void updateInputs(ShooterIOInputs inputs) {
-    BaseStatusSignal.refreshAll(
-        leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / GEAR_RATIO;
-    inputs.velocityRadPerSec =
-        Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / GEAR_RATIO;
-    inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
-    inputs.currentAmps =
-        new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()};
+  public void updateInputs(ShooterTalonFXIOInputs inputs) {
+    setVelocity(inputs.velocity);
   }
 
   @Override
-  public void setVoltage(double volts) {
-    leader.setControl(new VoltageOut(volts));
-  }
-
-  @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    leader.setControl(
-        new VelocityVoltage(
-            Units.radiansToRotations(velocityRadPerSec),
-            0.0,
-            true,
-            ffVolts,
-            0,
-            false,
-            false,
-            false));
+  public void setVelocity(double newVelocity) {
+    leader.setControl(new VelocityVoltage(newVelocity));
   }
 
   @Override
