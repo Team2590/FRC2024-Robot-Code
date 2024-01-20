@@ -24,11 +24,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -51,7 +54,11 @@ public class Drive extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
+  private Pose2d testpose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+  SwerveDriveOdometry m_odometry;
+  private AnalogGyro m_gyro = new AnalogGyro(1);
+  private AnalogGyroSim m_gyroSim = new AnalogGyroSim(m_gyro);
 
   public Drive(
       GyroIO gyroIO,
@@ -65,6 +72,17 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
+    m_odometry =
+        new SwerveDriveOdometry(
+            kinematics,
+            // gyroInputs.yawPosition
+            Rotation2d.fromDegrees(m_gyroSim.getAngle()),
+            new SwerveModulePosition[] {
+              modules[0].getPosition(),
+              modules[1].getPosition(),
+              modules[2].getPosition(),
+              modules[3].getPosition()
+            });
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
         this::getPose,
@@ -92,6 +110,16 @@ public class Drive extends SubsystemBase {
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
+    Logger.recordOutput("Odometry/test_gyro", testpose);
+    testpose =
+        m_odometry.update(
+            Rotation2d.fromDegrees(m_gyroSim.getAngle()),
+            new SwerveModulePosition[] {
+              modules[0].getPosition(),
+              modules[1].getPosition(),
+              modules[2].getPosition(),
+              modules[3].getPosition()
+            });
     for (var module : modules) {
       module.updateInputs();
     }
@@ -139,6 +167,9 @@ public class Drive extends SubsystemBase {
       }
       // Apply the twist (change since last sample) to the current pose
       pose = pose.exp(twist);
+      // testpose = testpose.exp(twist);
+      Logger.recordOutput("Odometry/testpose", testpose);
+      //Not sure this code will work in simulation
     }
   }
 
