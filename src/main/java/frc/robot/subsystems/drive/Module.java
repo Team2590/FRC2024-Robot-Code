@@ -20,7 +20,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
@@ -35,7 +34,7 @@ public class Module {
   private final int index;
 
   // private final SimpleMotorFeedforward driveFeedforward;
-// private final PIDController driveFeedback;
+  // private final PIDController driveFeedback;
   // private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -88,12 +87,22 @@ public class Module {
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
         break;
-      case AUTO: 
-        x_Controller=new PIDController(0, 0.0,0);
-        y_Controller=new PIDController(0, 0.0, 0);
-        theta_Controller=new ProfiledPIDController(0, 0.0, 0, new TrapezoidProfile.Constraints(Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
-        autoController= new HolonomicDriveController(x_Controller, y_Controller, theta_Controller);
-        break;
+        // case AUTO:
+        //   x_Controller = new PIDController(0, 0.0, 0);
+        //   y_Controller = new PIDController(0, 0.0, 0);
+        //   turnFeedback = new PIDController(7.0, 0.0, 0.0, 0.02);
+        //   theta_Controller =
+        //       new ProfiledPIDController(
+        //           0,
+        //           0.0,
+        //           0,
+        //           new TrapezoidProfile.Constraints(
+        //               Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
+        //   autoController = new HolonomicDriveController(x_Controller, y_Controller,
+        // theta_Controller);
+        //   // driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
+        //   // driveFeedback = new PIDController(0.0, 0.0, 0.0);
+        //   break;
       default:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
         driveFeedback = new PIDController(0.0, 0.0, 0.0);
@@ -116,19 +125,19 @@ public class Module {
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-  if (xkp.hasChanged(hashCode()) || xkd.hasChanged(hashCode())) {
-      x_Controller.setPID(xkp.get(), 0.0, xkd.get());
-    }
-  if (ykp.hasChanged(hashCode()) || ykd.hasChanged(hashCode())){
-    y_Controller.setPID(ykp.get(), 0.0, ykd.get());
-  }
-    if (a_turnKp.hasChanged(hashCode()) || a_turnKd.hasChanged(hashCode())) {
-      theta_Controller.setPID(a_turnKp.get(), 0.0, a_turnKd.get());
-    }
+    // if (xkp.hasChanged(hashCode()) || xkd.hasChanged(hashCode())) {
+    //   x_Controller.setPID(xkp.get(), 0.0, xkd.get());
+    // }
+    // if (ykp.hasChanged(hashCode()) || ykd.hasChanged(hashCode())) {
+    //   y_Controller.setPID(ykp.get(), 0.0, ykd.get());
+    // }
+    // if (a_turnKp.hasChanged(hashCode()) || a_turnKd.hasChanged(hashCode())) {
+    //   theta_Controller.setPID(a_turnKp.get(), 0.0, a_turnKd.get());
+    // }
     if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
       driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
     }
-if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
+    if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
       turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
     }
     if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
@@ -143,7 +152,8 @@ if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
     // Run closed loop turn control
     if (angleSetpoint != null) {
       io.setTurnVoltage(
-          turnFeedback.calculate(getAngle().getRadians(), angleSetpoint.getRadians()));
+          turnFeedback.calculate(
+              getAngle().getRadians(), angleSetpoint.getRadians())); // change to theta controller
 
       // Run closed loop drive control
       // Only allowed if closed loop turn control is running
@@ -153,12 +163,14 @@ if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
         // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
-        double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
+        double adjustSpeedSetpoint =
+            speedSetpoint * Math.cos(turnFeedback.getPositionError()); // change to theta controller
 
         // Run drive controller
         double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
+
         io.setDriveVoltage(
-            driveFeedforward.calculate(velocityRadPerSec)
+            driveFeedforward.calculate(velocityRadPerSec) //
                 + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
       }
     }

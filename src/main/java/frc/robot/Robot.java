@@ -114,7 +114,9 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // Constants.currentMode = Constants.Mode.REAL;
     autonomousCommand = robotContainer.getAutonomousCommand();
+    System.out.println(autonomousCommand);
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
@@ -133,6 +135,8 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
+    Constants.currentMode = Constants.Mode.REAL;
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
