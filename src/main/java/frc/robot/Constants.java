@@ -22,8 +22,7 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
-  public static final boolean tuningMode = true;
+  public static Mode currentMode = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -33,6 +32,10 @@ public final class Constants {
     SIM,
 
     /** Replaying from a log file. */
-    REPLAY
+    REPLAY,
+
+    AUTO
   }
+
+  public static boolean tuningMode = false;
 }
