@@ -40,12 +40,12 @@ public class Module {
   private double lastPositionMeters = 0.0; // Used for delta calculation
   private SwerveModulePosition[] positionDeltas = new SwerveModulePosition[] {};
 
-  LoggedTunableNumber wheelRadius = new LoggedTunableNumber("Drive/Module/WheelRadius", 2);
-  LoggedTunableNumber driveKp = new LoggedTunableNumber("Drive/Module/DriveKp", 0.05);
-  LoggedTunableNumber driveKd = new LoggedTunableNumber("Drive/Module/DrivfalseKd", 0);
-  LoggedTunableNumber driveKs = new LoggedTunableNumber("Drive/Module/DriveKs", .1);
-  LoggedTunableNumber driveKv = new LoggedTunableNumber("Drive/Module/DriveKv", .13);
-  LoggedTunableNumber turnKp = new LoggedTunableNumber("Drive/Module/TurnKp", 7);
+  LoggedTunableNumber wheelRadius = new LoggedTunableNumber("Drive/Module/WheelRadius", 0);
+  LoggedTunableNumber driveKp = new LoggedTunableNumber("Drive/Module/DriveKp", 0.0);
+  LoggedTunableNumber driveKd = new LoggedTunableNumber("Drive/Module/DriveKd", 0);
+  LoggedTunableNumber driveKs = new LoggedTunableNumber("Drive/Module/DriveKs", 0.19578);
+  LoggedTunableNumber driveKv = new LoggedTunableNumber("Drive/Module/DriveKv", 0.11483);
+  LoggedTunableNumber turnKp = new LoggedTunableNumber("Drive/Module/TurnKp", 0);
   LoggedTunableNumber turnKd = new LoggedTunableNumber("Drive/Module/TurnKd", 0);
 
   SimpleMotorFeedforward driveFeedforward;
@@ -60,16 +60,16 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13, 0.02);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0, 0.02);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0, 0.02);
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
+        driveFeedback = new PIDController(0.0, 0.0, 0.0, 0.02);
+        turnFeedback = new PIDController(0, 0.0, 0.0, 0.02);
       case REPLAY:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
         driveFeedback = new PIDController(0.05, 0.0, 0.0);
         turnFeedback = new PIDController(7.0, 0.0, 0.0);
         break;
       case SIM:
-        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
         break;
