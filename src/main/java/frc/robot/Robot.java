@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.elevatorarm.Arm;
-import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -62,7 +61,7 @@ public class Robot extends LoggedRobot {
     // }
 
     // Set up data receivers & replay source
-    armIO = new Arm(new ArmIOTalonFX());
+    armIO = new Arm();
     joystick = new Joystick(0);
 
     switch (Constants.currentMode) {
@@ -144,20 +143,20 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    // armIO.resetArm();
+    armIO.resetarm();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // armIO.updateTunableNumbers();
-    // if (joystick.getRawButtonPressed(5)) {
-    //   armIO.setmotionmagic();
-    // } else if (joystick.getRawButtonPressed(6)) {
-    //   armIO.setmotionmagic2();
-    // } else if (joystick.getRawButtonPressed(3)) {
-    //   armIO.stop();
-    // }
+    armIO.periodic();
+    if (joystick.getRawButtonPressed(5)) {
+      armIO.motionmagic1();
+    } else if (joystick.getRawButtonPressed(6)) {
+      armIO.motionmagic2();
+    } else if (joystick.getRawButtonPressed(3)) {
+      armIO.stop();
+    }
   }
 
   /** This function is called once when test mode is enabled. */

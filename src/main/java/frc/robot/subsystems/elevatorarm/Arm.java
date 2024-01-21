@@ -1,48 +1,44 @@
 package frc.robot.subsystems.elevatorarm;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
-  private final ArmIO io;
+  private ArmIOTalonFX arm = new ArmIOTalonFX();
+
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private final SimpleMotorFeedforward ffModel;
 
   /** Creates a new Flywheel. */
-  public Arm(ArmIO io) {
-    this.io = io;
-
-    // Switch constants based on mode (the physics simulator is treated as a
-    // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-        // io.configurePID(1.0, 0.0, 0.0);
-        break;
-      case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        // io.configurePID(0.5, 0.0, 0.0);
-        break;
-      default:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
-        break;
-    }
-  }
+  public Arm() {}
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    arm.updateTunableNumbers();
+    arm.updateInputs(inputs);
+    Logger.processInputs("Arm", inputs);
+  }
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {}
+  public void motionmagic1() {
+    arm.setmotionmagic();
+  }
+
+  public void motionmagic2() {
+    arm.setmotionmagic2();
+  }
+
+  public void resetarm() {
+    arm.resetArm();
+  }
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {}
 
   /** Stops the flywheel. */
-  public void stop() {}
+  public void stop() {
+    arm.stop();
+  }
 
   /** Returns the current velocity in RPM. */
   @AutoLogOutput

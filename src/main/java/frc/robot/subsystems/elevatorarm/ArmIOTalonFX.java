@@ -3,6 +3,7 @@ package frc.robot.subsystems.elevatorarm;
 import static frc.robot.subsystems.elevatorarm.ArmConstants.Arm.ARM_GEAR_RATIO;
 import static frc.robot.subsystems.elevatorarm.ArmConstants.Arm.ARM_ID;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -18,8 +19,6 @@ public class ArmIOTalonFX implements ArmIO {
 
   TalonFX arm = new TalonFX(ARM_ID);
   // CANCoder armAzimuth = new CANCoder(ARM_AZIMUTH_ID);
-
-  double lastVelocityTarget = 0.0;
 
   LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 0.1);
   LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kP", 0);
@@ -38,8 +37,7 @@ public class ArmIOTalonFX implements ArmIO {
   public ArmIOTalonFX() {
     /* configurations for the arm encoder */
 
-    final MotionMagicVoltage mmv = new MotionMagicVoltage(0);
-    int m_printCount = 0;
+    mmv = new MotionMagicVoltage(0);
     final Mechanisms m_mechanisms = new Mechanisms();
 
     /* configurations for the arm motor */
@@ -69,6 +67,11 @@ public class ArmIOTalonFX implements ArmIO {
     if (!status.isOK()) {
       System.out.println("Could not configure device. Error: " + status.toString());
     }
+  }
+
+  public void updateInputs(ArmIOInputs inputs) {
+    BaseStatusSignal.refreshAll(arm.getMotorVoltage(), arm.getSupplyVoltage());
+    updateTunableNumbers();
   }
 
   public void setmotionmagic() {
