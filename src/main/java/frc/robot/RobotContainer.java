@@ -51,7 +51,7 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Shooter shooter = new Shooter();
 
-  private double distance = 10;
+  private double distance = 15;
 
   private final CommandJoystick joystick = new CommandJoystick(0);
 

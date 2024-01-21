@@ -11,31 +11,34 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
+/**
+ * @author Dhruv and Shashank
+ */
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterTalonFX implements ShooterIO {
   private static final double GEAR_RATIO = 1;
 
-  public static final TalonFX leader = new TalonFX(69);
-  public static final TalonFX follower = new TalonFX(42);
+  public static final TalonFX leader = new TalonFX(21, "Jazzy");
+  // public static final TalonFX follower = new TalonFX(42);
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
   private final StatusSignal<Double> leaderAppliedVolts = leader.getMotorVoltage();
   private final StatusSignal<Double> leaderCurrent = leader.getStatorCurrent();
 
-  LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", .4);
-  LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0);
-  LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", .2);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", .01875);
+  LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0.1);
+  LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", .15);
 
   private PIDController PID = new PIDController(kP.get(), 0, kD.get());
   private TalonFXConfiguration config;
@@ -50,12 +53,12 @@ public class ShooterTalonFX implements ShooterIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     leader.getConfigurator().apply(config);
-    follower.getConfigurator().apply(config);
-    follower.setControl(new Follower(leader.getDeviceID(), false));
+    // follower.getConfigurator().apply(config);
+    // follower.setControl(new Follower(leader.getDeviceID(), false));
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
     leader.optimizeBusUtilization();
-    follower.optimizeBusUtilization();
+    // follower.optimizeBusUtilization();
   }
 
   @Override
@@ -64,8 +67,9 @@ public class ShooterTalonFX implements ShooterIO {
     BaseStatusSignal.refreshAll(leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
     // inputs.velocityRadPerSec =
     //     Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / GEAR_RATIO;
-    // inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
-    inputs.appliedVolts = this.voltage;
+    inputs.appliedVolts = leader.getMotorVoltage().getValueAsDouble();
+    inputs.RPM = leader.getVelocity().getValueAsDouble() * 60;
+    inputs.desiredVolts = this.voltage;
   }
 
   @Override
@@ -76,9 +80,9 @@ public class ShooterTalonFX implements ShooterIO {
 
   @Override
   public void setVelocity(double RPM) {
-    double velocityRadPerSec = (2 * Math.PI) / 60;
-    System.out.println(velocityRadPerSec);
-    double voltage = PID.calculate(velocityRadPerSec, leader.get()) + kFF.get();
+    double velocityRadPerSec = (RPM * 2 * Math.PI) / 60;
+    double voltage =
+        MathUtil.clamp(PID.calculate(velocityRadPerSec, leader.get()) + kFF.get(), -6, 6);
     setVoltage(voltage);
   }
 
@@ -86,7 +90,6 @@ public class ShooterTalonFX implements ShooterIO {
   public void stop() {
     leader.stopMotor();
     setVoltage(0);
-    System.out.println(leader.getMotorVoltage());
   }
 
   public void updateTunableNumbers() {
@@ -94,7 +97,7 @@ public class ShooterTalonFX implements ShooterIO {
       config.Slot0.kP = kP.get();
       config.Slot0.kD = kD.get();
       leader.getConfigurator().apply(config);
-      follower.getConfigurator().apply(config);
+      // follower.getConfigurator().apply(config);
       PID.setPID(kP.get(), 0, kD.get());
     }
   }
