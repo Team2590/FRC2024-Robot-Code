@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.shooter.Shooter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -47,6 +49,11 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
+  private final Shooter shooter = new Shooter();
+
+  private double distance = 10;
+
+  private final CommandJoystick joystick = new CommandJoystick(0);
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -103,6 +110,9 @@ public class RobotContainer {
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
+    NamedCommands.registerCommand(
+        "Shoot", Commands.startEnd(() -> shooter.shoot(distance), shooter::stop, shooter));
+
     // Set up feedforward characterization
     autoChooser.addOption(
         "Drive FF Characterization",
@@ -145,6 +155,12 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+    controller
+        .y()
+        .whileTrue(Commands.startEnd(() -> shooter.shoot(distance), shooter::stop, shooter));
+    joystick
+        .button(1)
+        .whileTrue(Commands.startEnd(() -> shooter.shoot(distance), shooter::stop, shooter));
   }
 
   /**
