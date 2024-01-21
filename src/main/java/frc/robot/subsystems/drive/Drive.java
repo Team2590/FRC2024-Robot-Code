@@ -39,7 +39,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  static final double MAX_LINEAR_SPEED = Units.feetToMeters(2); // 14.5 originally
+  static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5); // 14.5 originally
   static final double MAX_ACCELERATION = 2; // # m/s^2
   static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
   static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
@@ -78,8 +78,8 @@ public class Drive extends SubsystemBase {
 
         this); */
         new HolonomicPathFollowerConfig(
-            new PIDConstants(6, 0, 0), // x , y
-            new PIDConstants(3, 0, 0), // theta
+            new PIDConstants(10, 0, 0), // x , y
+            new PIDConstants(0, 0, 0), // theta
             MAX_LINEAR_SPEED,
             DRIVE_BASE_RADIUS,
             new ReplanningConfig()),

@@ -27,8 +27,8 @@ import edu.wpi.first.math.util.Units;
 public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final TalonFX leader = new TalonFX(0);
-  private final TalonFX follower = new TalonFX(1);
+  private final TalonFX leader = new TalonFX(14);
+  private final TalonFX follower = new TalonFX(15);
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();

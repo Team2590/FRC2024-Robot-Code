@@ -136,7 +136,6 @@ public class Robot extends LoggedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
 
-    Constants.currentMode = Constants.Mode.REAL;
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
