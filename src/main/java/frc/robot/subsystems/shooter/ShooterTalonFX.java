@@ -70,7 +70,6 @@ public class ShooterTalonFX implements ShooterIO {
 
   @Override
   public void setVoltage(double voltage) {
-    System.out.println("Voltage in setVoltage:" + voltage);
     this.voltage = voltage;
     leader.setVoltage(voltage);
   }
@@ -78,11 +77,8 @@ public class ShooterTalonFX implements ShooterIO {
   @Override
   public void setVelocity(double RPM) {
     double velocityRadPerSec = (2 * Math.PI) / 60;
-    System.out.println("velocityRadPerSec:" + velocityRadPerSec);
     System.out.println(velocityRadPerSec);
-    double voltage = PID.calculate(velocityRadPerSec, leader.get());
-    System.out.println("Voltage from PID: " + voltage);
-    this.voltage = voltage;
+    double voltage = PID.calculate(velocityRadPerSec, leader.get()) + kFF.get();
     setVoltage(voltage);
   }
 

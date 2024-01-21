@@ -18,6 +18,8 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LinearRegression;
+
 import java.util.HashMap;
 import org.littletonrobotics.junction.Logger;
 
@@ -46,6 +48,8 @@ public class Shooter extends SubsystemBase {
       double rpm = table.get(distance);
       shooterMotors.setVelocity(rpm);
     } else {
+      var distances = table.keySet();
+      // LinearRegression myLinearRegression = new LinearRegression();
       double rpm = 0.0; // need to write logic to get the rpm using the linear regression
       shooterMotors.setVelocity(rpm);
     }
