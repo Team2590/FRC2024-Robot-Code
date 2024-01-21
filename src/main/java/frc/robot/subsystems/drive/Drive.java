@@ -38,14 +38,13 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-   static final double MAX_LINEAR_SPEED = Units.feetToMeters(2); // 14.5 originally
-   static final double MAX_ACCELERATION=2; //# m/s^2
-   static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
-   static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
-   static final double DRIVE_BASE_RADIUS =
-      Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+  static final double MAX_LINEAR_SPEED = Units.feetToMeters(2); // 14.5 originally
+  static final double MAX_ACCELERATION = 2; // # m/s^2
+  static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
+  static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
+  static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
-  static final double MAX_ANGULAR_ACCELERATION=MAX_ACCELERATION/DRIVE_BASE_RADIUS;
+  static final double MAX_ANGULAR_ACCELERATION = MAX_ACCELERATION / DRIVE_BASE_RADIUS;
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -54,8 +53,6 @@ public class Drive extends SubsystemBase {
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
-  
-
 
   public Drive(
       GyroIO gyroIO,
@@ -163,19 +160,13 @@ public class Drive extends SubsystemBase {
       // The module returns the optimized state, useful for logging
       optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
     }
-    
 
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   }
 
-  public void followTrajectory(ChassisSpeeds path_speeds){
-
-
-
-
-  }
+  public void followTrajectory(ChassisSpeeds path_speeds) {}
 
   /** Stops the drive. */
   public void stop() {

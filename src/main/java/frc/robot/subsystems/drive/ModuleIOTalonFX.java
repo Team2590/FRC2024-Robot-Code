@@ -88,33 +88,33 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(2, "Jazzy");
-        turnTalon = new TalonFX(8, "Jazzy");
-        cancoder = new CANcoder(9, "Jazzy");
+        driveTalon = new TalonFX(2);
+        turnTalon = new TalonFX(8);
+        cancoder = new CANcoder(9);
         absoluteEncoderOffset = new Rotation2d(-3.123); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1:
-        driveTalon = new TalonFX(4, "Jazzy");
-        turnTalon = new TalonFX(3, "Jazzy");
-        cancoder = new CANcoder(10, "Jazzy");
+        driveTalon = new TalonFX(4);
+        turnTalon = new TalonFX(3);
+        cancoder = new CANcoder(10);
         absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 2:
-        driveTalon = new TalonFX(6, "Jazzy");
-        turnTalon = new TalonFX(7, "Jazzy");
-        cancoder = new CANcoder(12, "Jazzy");
+        driveTalon = new TalonFX(6);
+        turnTalon = new TalonFX(7);
+        cancoder = new CANcoder(12);
         absoluteEncoderOffset = new Rotation2d(1.474); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 3:
-        driveTalon = new TalonFX(5, "Jazzy");
-        turnTalon = new TalonFX(0, "Jazzy");
-        cancoder = new CANcoder(11, "Jazzy");
+        driveTalon = new TalonFX(5);
+        turnTalon = new TalonFX(0);
+        cancoder = new CANcoder(11);
         absoluteEncoderOffset = new Rotation2d(-2.686); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());

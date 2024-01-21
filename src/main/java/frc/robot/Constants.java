@@ -36,7 +36,6 @@ public final class Constants {
 
     AUTO
   }
-  public static boolean tuningMode = false;
 
-  
+  public static boolean tuningMode = false;
 }

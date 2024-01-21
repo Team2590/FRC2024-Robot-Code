@@ -35,7 +35,7 @@ public class Module {
   private final int index;
 
   // private final SimpleMotorFeedforward driveFeedforward;
-// private final PIDController driveFeedback;
+  // private final PIDController driveFeedback;
   // private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -77,6 +77,16 @@ public class Module {
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13, 0.02);
         driveFeedback = new PIDController(0.05, 0.0, 0.0, 0.02);
         turnFeedback = new PIDController(7.0, 0.0, 0.0, 0.02);
+        x_Controller = new PIDController(0, 0.0, 0);
+        y_Controller = new PIDController(0, 0.0, 0);
+        theta_Controller =
+            new ProfiledPIDController(
+                0,
+                0.0,
+                0,
+                new TrapezoidProfile.Constraints(
+                    Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
+        autoController = new HolonomicDriveController(x_Controller, y_Controller, theta_Controller);
         break;
       case REPLAY:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
@@ -88,11 +98,17 @@ public class Module {
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
         break;
-      case AUTO: 
-        x_Controller=new PIDController(0, 0.0,0);
-        y_Controller=new PIDController(0, 0.0, 0);
-        theta_Controller=new ProfiledPIDController(0, 0.0, 0, new TrapezoidProfile.Constraints(Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
-        autoController= new HolonomicDriveController(x_Controller, y_Controller, theta_Controller);
+      case AUTO:
+        x_Controller = new PIDController(0, 0.0, 0);
+        y_Controller = new PIDController(0, 0.0, 0);
+        theta_Controller =
+            new ProfiledPIDController(
+                0,
+                0.0,
+                0,
+                new TrapezoidProfile.Constraints(
+                    Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
+        autoController = new HolonomicDriveController(x_Controller, y_Controller, theta_Controller);
         break;
       default:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
@@ -116,19 +132,19 @@ public class Module {
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-  if (xkp.hasChanged(hashCode()) || xkd.hasChanged(hashCode())) {
+    if (xkp.hasChanged(hashCode()) || xkd.hasChanged(hashCode())) {
       x_Controller.setPID(xkp.get(), 0.0, xkd.get());
     }
-  if (ykp.hasChanged(hashCode()) || ykd.hasChanged(hashCode())){
-    y_Controller.setPID(ykp.get(), 0.0, ykd.get());
-  }
+    if (ykp.hasChanged(hashCode()) || ykd.hasChanged(hashCode())) {
+      y_Controller.setPID(ykp.get(), 0.0, ykd.get());
+    }
     if (a_turnKp.hasChanged(hashCode()) || a_turnKd.hasChanged(hashCode())) {
       theta_Controller.setPID(a_turnKp.get(), 0.0, a_turnKd.get());
     }
     if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
       driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
     }
-if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
+    if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
       turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
     }
     if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
