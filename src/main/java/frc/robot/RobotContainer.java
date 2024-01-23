@@ -16,7 +16,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -60,8 +59,13 @@ public class RobotContainer {
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
+
+  // TEMPORARY
+  private PhotonCamera camera;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    camera = null;
     switch (Constants.currentMode) {
       case REAL:
         drive =
@@ -72,6 +76,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
+        // Shout out to Aarush Mane for help on the setup
+        camera = new PhotonCamera(NetworkTableInstance.getDefault(), "LargePhotonCam");
+        camera.setPipelineIndex(0);
         break;
 
       case SIM:
@@ -150,24 +157,7 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
 
-    // TODO: put this code wherever it belongs
-
-    // Shout out to Aarush Mane for help on the setup
-    final var instance = NetworkTableInstance.getDefault();
-    final var camera = new PhotonCamera(instance, "LargePhotonCam");
-    camera.setPipelineIndex(0);
-
-    final var turnController = new PIDController(0.1, 0, 0);
-    controller
-        .rightTrigger()
-        .whileTrue(DriveCommands.joystickDrive(
-          drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(),
-          () -> {
-            final var result = camera.getLatestResult();
-            if (!result.hasTargets()) return 0;
-            return -turnController.calculate(result.getBestTarget().getYaw(), 0);
-          }
-        ));
+    controller.rightTrigger().whileTrue(DriveCommands.turnToTarget(drive, camera, controller));
   }
 
   /**

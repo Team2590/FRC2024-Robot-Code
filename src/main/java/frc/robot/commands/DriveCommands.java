@@ -14,6 +14,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -21,8 +22,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -66,5 +70,18 @@ public class DriveCommands {
                   drive.getRotation()));
         },
         drive);
+  }
+
+  static final PIDController turnController = new PIDController(0.1, 0, 0);
+
+  public static Command turnToTarget(Drive drive, PhotonCamera camera, CommandXboxController controller) {
+    return DriveCommands.joystickDrive(
+        drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(),
+        () -> {
+          final var result = camera.getLatestResult();
+          if (!result.hasTargets()) return 0;
+          return -turnController.calculate(result.getBestTarget().getYaw() / 180, 0);
+        }
+    );
   }
 }
