@@ -15,8 +15,11 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +39,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import org.photonvision.PhotonCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -145,6 +149,25 @@ public class RobotContainer {
         .whileTrue(
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+
+    // TODO: put this code wherever it belongs
+
+    // Shout out to Aarush Mane for help on the setup
+    final var instance = NetworkTableInstance.getDefault();
+    final var camera = new PhotonCamera(instance, "LargePhotonCam");
+    camera.setPipelineIndex(0);
+
+    final var turnController = new PIDController(0.1, 0, 0);
+    controller
+        .rightTrigger()
+        .whileTrue(DriveCommands.joystickDrive(
+          drive, () -> -controller.getLeftY(), () -> -controller.getLeftX(),
+          () -> {
+            final var result = camera.getLatestResult();
+            if (!result.hasTargets()) return 0;
+            return -turnController.calculate(result.getBestTarget().getYaw(), 0);
+          }
+        ));
   }
 
   /**
