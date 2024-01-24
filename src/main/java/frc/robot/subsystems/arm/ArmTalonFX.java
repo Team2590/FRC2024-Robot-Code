@@ -19,10 +19,11 @@ package frc.robot.subsystems.arm;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ArmTalonFX implements ArmIO {
@@ -35,11 +36,13 @@ public class ArmTalonFX implements ArmIO {
   private final StatusSignal<Double> leaderAppliedVolts = leader.getMotorVoltage();
   private final StatusSignal<Double> leaderCurrent = leader.getStatorCurrent();
 
-  LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", .01875);
-  LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0.1);
-  LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", .15);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", 0);
+  LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0);
+  LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", 0);
 
   private TalonFXConfiguration config;
+
+  private CANcoder encoder = new CANcoder(0);
 
   private double position = 0.0;
 
@@ -54,6 +57,8 @@ public class ArmTalonFX implements ArmIO {
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
     leader.optimizeBusUtilization();
+    encoder.setControl(new Follower(leader.getDeviceID(), false));
+    encoder.setPosition(0);
   }
 
   @Override
@@ -62,11 +67,14 @@ public class ArmTalonFX implements ArmIO {
     BaseStatusSignal.refreshAll(leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent);
     inputs.appliedPosition = leader.getPosition().getValueAsDouble();
     inputs.desiredPosition = this.position;
+    inputs.absolutePosition = encoder.getAbsolutePosition().getValueAsDouble();
+    inputs.appliedVolts = leader.getMotorVoltage().getValueAsDouble();
   }
 
   @Override
   public void setPosition(double position) {
-    this.position = position;
+    System.out.println("Set position called");
+    leader.setControl(new PositionVoltage(position));
   }
 
   @Override
