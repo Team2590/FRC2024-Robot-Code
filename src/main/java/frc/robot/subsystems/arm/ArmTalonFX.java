@@ -39,13 +39,15 @@ public class ArmTalonFX implements ArmIO {
   LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", 0);
   LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0);
   LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", 0);
-
+  
   private TalonFXConfiguration config;
-
+  
   private CANcoder encoder = new CANcoder(0);
-
+  
   private double position = 0.0;
-
+  
+  var forwardLimit = leader.getForwardLimit();
+  
   public ArmTalonFX() {
     config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 50.0;
@@ -92,5 +94,11 @@ public class ArmTalonFX implements ArmIO {
 
   public double getPosition() {
     return this.position;
+  }
+
+  public void checkLimits() {
+    if (forwardLimit.getValue() == ForwardLimitValue.ClosedToGround) {
+      leader.stop()
+    }
   }
 }

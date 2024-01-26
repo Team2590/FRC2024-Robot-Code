@@ -13,8 +13,9 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     armMotors.updateInputs(inputs);
-    armMotors.updateInputs(inputs);
+    armMotors.updateInp uts(inputs);
     Logger.processInputs("Arm", inputs);
+    armMotors.checkLimits();
   }
 
   public void testPosition() {
