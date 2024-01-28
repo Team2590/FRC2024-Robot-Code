@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -63,7 +64,7 @@ public class RobotContainer {
       case REAL:
         drive =
             new Drive(
-                new GyroIOPigeon2(true),
+                new GyroIO() {},
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
@@ -75,7 +76,7 @@ public class RobotContainer {
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
-                new GyroIOPigeon2(true) {},
+                new GyroIO() {},
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim(),
@@ -87,7 +88,7 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         drive =
             new Drive(
-                new GyroIOPigeon2(true) {},
+                new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
@@ -134,7 +135,6 @@ public class RobotContainer {
     right_Joystick.button(2).onTrue(Commands.runOnce(drive::stopWithX, drive));
     right_Joystick
         .button(3)
-
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -150,12 +150,12 @@ public class RobotContainer {
     right_Joystick.button(4).onTrue(Commands.runOnce(drive::zeroGyro, drive));
   }
 
-  public void initRobot(String name) {
+  // public void initRobot(String name) {
 
-    drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
-    //
+  //   drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
+  //   //
 
-  }
+  // }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

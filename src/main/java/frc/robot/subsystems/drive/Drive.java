@@ -47,7 +47,7 @@ public class Drive extends SubsystemBase {
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   public static final Lock odometryLock = new ReentrantLock();
-  private final GyroIOPigeon2 gyroIO;
+  private final GyroIO gyroIO;
 
   // private final GyroIOPigeon2 gp2;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
   private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
 
   public Drive(
-      GyroIOPigeon2 gyroIO,
+      GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
@@ -79,7 +79,7 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            new PIDConstants(autoDriveKp.get(), 0.0, autoDriveKd.get()),
+            new PIDConstants(5, 0.0, 0),
             new PIDConstants(5.0, 0.0, 0.0),
             MAX_LINEAR_SPEED,
             DRIVE_BASE_RADIUS,
@@ -246,10 +246,11 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
-  public void setGyro(double degrees) {
+  // COMMENTED OUT IN MERGE, THIS METHOD SHOULD NOT BE DONE HERE
+  // public void setGyro(double degrees) {
 
-    gyroIO.setGyro(degrees);
-  }
+  //   gyroIO.(degrees);
+  // }
 
   public void resetEncoders() {
 

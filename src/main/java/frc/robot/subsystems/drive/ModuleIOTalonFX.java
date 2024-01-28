@@ -74,7 +74,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * 1. Change offsets to 0 in code
    * 2. Deploy Robot code
    * 3. Power cycle
-   * 4. Align wheels so all bevels facing right
+   * 4. Align wheels so all bevels facing the direction such that the modules move forward when we move forward
    * 5. Look at Advantage Kit Vals (TurnAbsolutePosition)
    * 6. Update offsets with new AdvantageKit values in code
    * 7. Deploy Robot code
