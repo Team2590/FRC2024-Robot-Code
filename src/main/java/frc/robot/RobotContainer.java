@@ -34,8 +34,6 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -49,8 +47,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
-  private final Intake intake;
-  private final CommandJoystick joystick = new CommandJoystick(0);
+
   // Controller
   private final CommandJoystick left_Joystick = new CommandJoystick(0);
   private final CommandJoystick right_Joystick = new CommandJoystick(1);
@@ -72,7 +69,6 @@ public class RobotContainer {
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
-        intake = new Intake(new IntakeIOTalonFX());
         break;
 
       case SIM:
@@ -85,8 +81,6 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
-        intake = new Intake(new IntakeIOTalonFX());
-
         break;
 
       default:
@@ -99,7 +93,6 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
-        intake = new Intake(new IntakeIOTalonFX());
         break;
     }
 
@@ -135,7 +128,7 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -left_Joystick.getY(),
+            () -> left_Joystick.getY(),
             () -> left_Joystick.getX(),
             () -> right_Joystick.getX()));
     right_Joystick.button(2).onTrue(Commands.runOnce(drive::stopWithX, drive));
