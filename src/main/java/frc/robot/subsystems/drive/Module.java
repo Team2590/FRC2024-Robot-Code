@@ -160,6 +160,8 @@ public class Module {
     return optimizedState;
   }
 
+  public void zero_encoder() {}
+
   /** Runs the module with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {
     // Closed loop turn control
