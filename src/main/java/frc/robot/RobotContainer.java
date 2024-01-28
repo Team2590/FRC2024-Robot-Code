@@ -15,6 +15,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -23,9 +24,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -63,7 +64,7 @@ public class RobotContainer {
       case REAL:
         drive =
             new Drive(
-                new GyroIOPigeon2(true),
+                new GyroIO() {},
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
@@ -128,8 +129,8 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> left_Joystick.getY(),
-            () -> left_Joystick.getX(),
+            () -> -left_Joystick.getY(),
+            () -> -left_Joystick.getX(),
             () -> right_Joystick.getX()));
     right_Joystick.button(2).onTrue(Commands.runOnce(drive::stopWithX, drive));
     right_Joystick
@@ -149,6 +150,12 @@ public class RobotContainer {
     right_Joystick.button(4).onTrue(Commands.runOnce(drive::zeroGyro, drive));
   }
 
+  // public void initRobot(String name) {
+
+  //   drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
+  //   //
+
+  // }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
