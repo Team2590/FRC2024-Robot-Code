@@ -24,6 +24,7 @@ package frc.robot;
 public final class Constants {
   public static final Mode currentMode = Mode.REAL;
   public static final boolean tuningMode = true;
+  public static final double CLIMBER_GEAR_RATIO = 1;
 
   public static enum Mode {
     /** Running on a real robot. */
