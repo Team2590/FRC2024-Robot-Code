@@ -117,7 +117,6 @@ public class RobotContainer {
             flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
 
     // Configure the button bindings
-    // climb.resetRotationCount();
     configureButtonBindings();
   }
 
@@ -150,7 +149,8 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
     right_Joystick.button(4).onTrue(Commands.runOnce(drive::zeroGyro, drive));
-    right_Joystick.button(2).whileTrue(Commands.startEnd(climb::test, climb::stop, climb));
+    right_Joystick.button(5).whileTrue(Commands.runEnd(climb::up, climb::stop, climb));
+    right_Joystick.button(6).whileTrue(Commands.runEnd(climb::down, climb::stop, climb));
   }
 
   /**

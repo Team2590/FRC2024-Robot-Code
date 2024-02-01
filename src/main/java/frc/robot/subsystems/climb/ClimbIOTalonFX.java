@@ -4,20 +4,20 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Constants;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX left_motor = new TalonFX(21, "Jazzy");
+  private final TalonFX left_motor = new TalonFX(20);
   // private final TalonFX right_motor = new TalonFX(200);
 
-  private final double maxPosition =
+  public final double maxPosition =
       ((Constants.CLIMBER_MAX_HEIGHT) / (Math.PI * Constants.CLIMBER_WHEEL_RADIUS))
           * Constants.CLIMBER_GEAR_RATIO;
 
   private final double speed = 0.2;
 
-  public enum Limits {
-    TOO_HIGH,
-    TOO_LOW,
-    NONE
-  }
+  // public enum Limits {
+  //   TOO_HIGH,
+  //   TOO_LOW,
+  //   NONE
+  // }
 
   // LoggedTunableNumber kP = new LoggedTunableNumber("kP", 0.0);
   // LoggedTunableNumber kD = new LoggedTunableNumber("kD", 0.0);
@@ -35,7 +35,6 @@ public class ClimbIOTalonFX implements ClimbIO {
     // right_motor.setControl(new Follower(left_motor.getDeviceID(), false));
     // left_motor.optimizeBusUtilization();
     // right_motor.optimizeBusUtilization();
-    System.out.println("Max Position: " + maxPosition);
   }
 
   @Override
@@ -44,7 +43,7 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   public void up() {
-    if (checkLimits() == Limits.TOO_HIGH) {
+    if (left_motor.getPosition().getValueAsDouble() > maxPosition) {
       left_motor.stopMotor();
     } else {
       left_motor.set(speed);
@@ -52,7 +51,7 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   public void down() {
-    if (checkLimits() == Limits.TOO_LOW) {
+    if (left_motor.getPosition().getValueAsDouble() < 0) {
       left_motor.stopMotor();
     } else {
       left_motor.set(-speed);
@@ -61,15 +60,6 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   public void stop() {
     left_motor.stopMotor();
-  }
-
-  private Limits checkLimits() {
-    if (left_motor.getPosition().getValueAsDouble() > maxPosition) {
-      return Limits.TOO_HIGH;
-    } else if (left_motor.getPosition().getValueAsDouble() < 0) {
-      return Limits.TOO_LOW;
-    }
-    return Limits.NONE;
   }
 
   public void reset() {
@@ -82,10 +72,6 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   public void resetRotationCount() {
     left_motor.setPosition(0);
-  }
-
-  public void test() {
-    left_motor.set(speed);
   }
 
   // public void updateTunableNumbers() {

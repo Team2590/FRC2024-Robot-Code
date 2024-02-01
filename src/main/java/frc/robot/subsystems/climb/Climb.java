@@ -9,6 +9,7 @@ public class Climb extends SubsystemBase {
   @Override
   public void periodic() {
     System.out.println(climbMotors.getPosition());
+    System.out.println(climbMotors.maxPosition);
     climbMotors.updateInputs(inputs);
   }
 
@@ -30,9 +31,5 @@ public class Climb extends SubsystemBase {
 
   public void resetRotationCount() {
     climbMotors.resetRotationCount();
-  }
-
-  public void test() {
-    climbMotors.test();
   }
 }
