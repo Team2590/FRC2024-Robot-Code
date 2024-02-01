@@ -22,6 +22,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.path.PathPlannerPath;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -55,7 +57,8 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("GitDirty", "Unknown");
         break;
     }
-
+    PathPlannerPath first_path = PathPlannerPath.fromPathFile("New Path.path");
+    
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
