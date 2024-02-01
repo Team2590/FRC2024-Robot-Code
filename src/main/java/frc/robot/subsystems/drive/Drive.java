@@ -31,8 +31,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.LoggedTunableNumber;
+import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -42,6 +43,8 @@ public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+  // static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
+  // static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
@@ -53,12 +56,10 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
-  private Pose2d pose = new Pose2d();
-  private Rotation2d lastGyroRotation = new Rotation2d();
-
-  private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
-  private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
+  public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
+  public Pose2d pose = new Pose2d();
+  public Rotation2d lastGyroRotation = new Rotation2d();
+  public PoseEstimatorSubsystem swervePose = RobotContainer.fusedPoseEstimator;
 
   public Drive(
       GyroIO gyroIO,
@@ -74,8 +75,11 @@ public class Drive extends SubsystemBase {
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::setPose,
+        // Commenting this out because I am not sure which is better
+        // this::getPose,
+        // this::setPose,
+        swervePose::getCurrentPose,
+        swervePose::setCurrentPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
@@ -271,7 +275,17 @@ public class Drive extends SubsystemBase {
     };
   }
 
+  public SwerveModulePosition[] getModulePositions() {
+    return Arrays.stream(modules)
+        .map(module -> module.getPosition())
+        .toArray(SwerveModulePosition[]::new);
+  }
+
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  public Rotation2d getGyroRotation() {
+    return this.gyroInputs.yawPosition;
   }
 }

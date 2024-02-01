@@ -15,7 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -24,17 +23,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.PoseEstimatorSubsystem;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -46,8 +46,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  public final Drive drive;
   private final Flywheel flywheel;
+  public static PoseEstimatorSubsystem fusedPoseEstimator;
 
   // Controller
   private final CommandJoystick left_Joystick = new CommandJoystick(0);
@@ -70,6 +71,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
+        fusedPoseEstimator =
+            new PoseEstimatorSubsystem(
+                drive::getGyroRotation, drive::getModulePositions, drive);
         break;
 
       case SIM:
@@ -82,6 +86,9 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
+        fusedPoseEstimator =
+            new PoseEstimatorSubsystem(
+                drive::getGyroRotation, drive::getModulePositions, drive);
         break;
 
       default:
@@ -94,6 +101,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        fusedPoseEstimator =
+            new PoseEstimatorSubsystem(
+                drive::getGyroRotation, drive::getModulePositions, drive);
         break;
     }
 
@@ -150,12 +160,8 @@ public class RobotContainer {
     right_Joystick.button(4).onTrue(Commands.runOnce(drive::zeroGyro, drive));
   }
 
-  // public void initRobot(String name) {
+  public void initRobot(String name) {}
 
-  //   drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
-  //   //
-
-  // }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
