@@ -102,6 +102,7 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    aprilTagVision.updateResults();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -141,7 +142,25 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    // Larger/left Camera
+    System.out.println("Left - Does it have targets: " + aprilTagVision.hasTargets("left"));
+    System.out.println("Left - Detected ID: " + aprilTagVision.getID("left"));
+    System.out.println("Left - Range of detected tag: " + aprilTagVision.getRangeTag("left"));
+    System.out.println("Left - Forward speed: " + aprilTagVision.getForwardSpeed("left"));
+    System.out.println("Left - Rotation speed: " + aprilTagVision.getRotationSpeed("left"));
+    System.out.println(
+        "Left - Tranform3d displacement camera->target: " + aprilTagVision.camToTarget("left"));
+
+    // Smaller/right Camera
+    System.out.println("Right - Does it have targets: " + aprilTagVision.hasTargets("right"));
+    System.out.println("Right - Detected ID: " + aprilTagVision.getID("right"));
+    System.out.println("Right - Range of detected tag: " + aprilTagVision.getRangeTag("right"));
+    System.out.println("Right - Forward speed: " + aprilTagVision.getForwardSpeed("right"));
+    System.out.println("Right - Rotation speed: " + aprilTagVision.getRotationSpeed("right"));
+    System.out.println(
+        "Right - Tranform3d displacement camera->target: " + aprilTagVision.camToTarget("right"));
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override

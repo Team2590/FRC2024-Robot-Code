@@ -1,174 +1,192 @@
 package frc.robot.subsystems.vision;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import java.io.IOException;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class photonvisionAprilTag {
+public class PhotonvisionAprilTag {
 
-  // Constants such as camera and target height stored. Change per robot and goal!'
-  final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(0);
-  final double TARGET_HEIGHT_METERS = Units.feetToMeters(0);
-  final double HEIGHT_DIFF = Math.abs(TARGET_HEIGHT_METERS - CAMERA_HEIGHT_METERS);
-  // Angle between horizontal and the camera.
-  final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
-  final double DISTANCE_BETWEEN_CAMS = Units.feetToMeters(2);
+  // CONSTANTS FOR CAMERA HEIGHTS AND APRIL TAG HEIGHTS
+  private static final double camHeight = Units.inchesToMeters(2.25);
 
-  // How far from the target we want to be
-  final double GOAL_RANGE_METERS = Units.feetToMeters(3);
+  // Respective offsets for each camera relative to the middle front of the robot
+  private static final double camFrontOffset = Units.inchesToMeters(0);
+  private static final double camRightOffset = Units.inchesToMeters(0);
 
   // CHANGE THIS TO NAME OF CAMERAS - NUM 1 PRIORITY
   private NetworkTableInstance instance = NetworkTableInstance.getDefault();
-  PhotonCamera camera0;
-  PhotonCamera camera1;
+  PhotonCamera cam;
 
-  // PID constants should be tuned per robot
-  final double LINEAR_P = 0.1;
-  final double LINEAR_D = 0.0;
-  PIDController forwardController = new PIDController(LINEAR_P, 0, LINEAR_D);
+  private PhotonPipelineResult result;
 
-  final double ANGULAR_P = 0.1;
-  final double ANGULAR_D = 0.0;
-  PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
+  // Again, just in case lol
+  // private double rangeLeft;
+  // private double rangeRight;
 
-  private double forwardSpeedLeft;
-  private double rotationSpeedLeft;
-  private double forwardSpeedRight;
-  private double rotationSpeedRight;
+  private PhotonTrackedTarget target;
 
-  private PhotonPipelineResult resultLeft;
-  private PhotonPipelineResult resultRight;
+  private Transform3d transformCam;
 
-  private double rangeLeft;
-  private double rangeRight;
+  private static final double roll = Math.toRadians(0.0);
+  private static final double pitch = Math.toRadians(45);
+  private static final double yaw = Math.toRadians(0.0);
+  private static final Transform3d RobotToCam =
+      new Transform3d(
+          -1 * camFrontOffset,
+          -1 * camRightOffset,
+          -1 * camHeight,
+          new Rotation3d(roll, pitch, yaw));
 
-  private PhotonTrackedTarget targetLeft;
-  private PhotonTrackedTarget targetRight;
+  private static AprilTagFieldLayout aprilTagFieldLayout;
+  private PhotonPoseEstimator poseEstimatorAmpSpeaker;
+  private PhotonPoseEstimator poseEstimatorSourceStage;
 
-  public photonvisionAprilTag() {
-    camera0 = new PhotonCamera(instance, "LargePhotonCam");
-    camera0.setPipelineIndex(0);
-    camera1 = new PhotonCamera(instance, "SmallPhotonCam");
-    camera1.setPipelineIndex(0);
+  private Pose3d prevPoseSingleLeft;
+  private Pose3d prevPoseMulti;
+
+  public PhotonvisionAprilTag() {
+    cam = new PhotonCamera(instance, "LargePhotonCam");
+    cam.setPipelineIndex(0);
+
+    try {
+      aprilTagFieldLayout =
+          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    poseEstimatorAmpSpeaker =
+        new PhotonPoseEstimator(
+            aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, RobotToCam);
+    poseEstimatorSourceStage =
+        new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, RobotToCam);
   }
 
+  // UPDATING CAMERA RESULTS
   public void updateResults() {
-    resultLeft = camera0.getLatestResult();
-    resultRight = camera1.getLatestResult();
-    targetLeft = resultLeft.getBestTarget();
-    targetRight = resultRight.getBestTarget();
-  }
-
-  public boolean hasTargets(String leftOrRight) {
-    updateResults();
-    if (leftOrRight.equals("left")) {
-      return (resultLeft).hasTargets();
-    } else if (leftOrRight.equals("right")) {
-      return (resultRight).hasTargets();
-    } else {
-      return false;
+    result = cam.getLatestResult();
+    target = result.getBestTarget();
+    if (hasTargets()) {
+      if (result.getTargets().size() > 1) {
+        for (PhotonTrackedTarget i : result.getTargets()) {
+          if ((i.getFiducialId() == 7) || (i.getFiducialId() == 4)) {
+            target = i;
+            break;
+          }
+        }
+      }
     }
   }
 
-  public int getID(String leftOrRight) {
-    updateResults();
-    if (!hasTargets(leftOrRight)) {
+  // TRUE IF ANY TARGET IS DETECTED
+  public boolean hasTargets() {
+    return result.hasTargets();
+  }
+
+  // RETURNS FIDUCIALID OF THE DETECTED TAG
+  public int getID() {
+    if (!hasTargets()) {
       return -1;
     }
-    if (leftOrRight.equals("left")) {
-      return (resultLeft).getBestTarget().getFiducialId();
-    } else if (leftOrRight.equals("right")) {
-      return (resultRight).getBestTarget().getFiducialId();
-    } else {
-      return -1;
-    }
+    return target.getFiducialId();
   }
 
-  public double getRangeTag(String leftOrRight) {
-    updateResults();
-    if (!hasTargets(leftOrRight)) {
-      return 0.0;
-    }
-    if (leftOrRight.equals("left")) {
-      rangeLeft =
-          PhotonUtils.calculateDistanceToTargetMeters(
-              CAMERA_HEIGHT_METERS,
-              TARGET_HEIGHT_METERS,
-              CAMERA_PITCH_RADIANS,
-              (resultLeft).getBestTarget().getPitch());
-      return rangeLeft;
-    } else if (leftOrRight.equals("right")) {
-      rangeRight =
-          PhotonUtils.calculateDistanceToTargetMeters(
-              CAMERA_HEIGHT_METERS,
-              TARGET_HEIGHT_METERS,
-              CAMERA_PITCH_RADIANS,
-              (resultRight).getBestTarget().getPitch());
-      return rangeRight;
-    } else {
-      return 0.0;
-    }
-  }
-
-  public double getForwardSpeed(String leftOrRight) {
-    updateResults();
-    if (!hasTargets(leftOrRight)) {
-      return 0.0;
-    }
-    if (leftOrRight.equals("left")) {
-      forwardSpeedLeft =
-          forwardController.calculate(
-              rangeLeft,
-              GOAL_RANGE_METERS); // change result fom calculate into a Chassis Speeds Object
-      return forwardSpeedLeft;
-    } else if (leftOrRight.equals("right")) {
-      forwardSpeedRight = forwardController.calculate(rangeRight, GOAL_RANGE_METERS);
-      return forwardSpeedRight;
-    } else {
-      return 0.0;
-    }
-  }
-
-  public double getRotationSpeed(String leftOrRight) {
-    updateResults();
-    if (!hasTargets(leftOrRight)) {
-      return 0.0;
-    }
-    if (leftOrRight.equals("left")) {
-      rotationSpeedLeft = -turnController.calculate((resultLeft).getBestTarget().getYaw(), 0);
-      return rotationSpeedLeft;
-    } else if (leftOrRight.equals("right")) {
-      rotationSpeedRight = -turnController.calculate((resultRight).getBestTarget().getYaw(), 0);
-      return rotationSpeedRight;
-    } else {
-      return 0.0;
-    }
-  }
-
-  public Transform3d camToTarget(String leftOrRight) {
-    updateResults();
-    if (!hasTargets(leftOrRight)) {
+  // AFTER CALIBRATING CAMERA W/ 3D VIEWING CAPABILITY
+  public Transform3d getCamToTargetTransform() {
+    if (!hasTargets()) {
       return null;
     }
-    if (leftOrRight.equals("left")) {
-      return targetLeft.getBestCameraToTarget();
-    } else if (leftOrRight.equals("right")) {
-      return targetRight.getBestCameraToTarget();
-    } else {
+    transformCam = target.getBestCameraToTarget();
+    double xi = transformCam.getX();
+    double zi = transformCam.getZ();
+    double deltaPitch = Math.atan(zi / xi) + pitch;
+    double di = Math.sqrt(xi * xi + zi * zi);
+    return new Transform3d(
+        di * Math.cos(deltaPitch) - camFrontOffset,
+        transformCam.getY() - camRightOffset,
+        di * Math.sin(deltaPitch) + camHeight,
+        transformCam.getRotation());
+  }
+
+  // RETURNS DISTANCE FROM CAMERA TO TARGET IN METERS
+  public double getDistance() {
+    if (!hasTargets()) {
+      return -1.0;
+    }
+    double X = getCamToTargetTransform().getX();
+    double Y = getCamToTargetTransform().getY();
+    return Math.sqrt(X * X + Y * Y);
+  }
+
+  // RETURNS DELTA Y DISPLACEMENT TO THE DETECTED TAG
+  public double getOffset() {
+    if (hasTargets()) {
+      return getCamToTargetTransform().getY();
+    }
+    return 0;
+  }
+
+  // RETURNS THE ANGULAR DISPLACEMENT FROM ROBOT TO DETECTED APRILTAG
+  public double getAngle() {
+    return Math.atan(getCamToTargetTransform().getY() / getCamToTargetTransform().getX());
+  }
+
+  // RETURNS 2D TRANSLATION OF CAM TO TARGET
+  public Translation2d getCamToTargetTranslation2d() {
+    if (!hasTargets()) {
       return null;
+    }
+    return PhotonUtils.estimateCameraToTargetTranslation(
+        getDistance(), Rotation2d.fromDegrees(-target.getYaw()));
+  }
+
+  // USES MULTI TAG POSE ESTIMATION @ AMP & SPEAKER
+  public Pose3d multiTagPose3d() {
+    if (!hasTargets()) {
+      return null;
+    }
+    try {
+      prevPoseMulti = poseEstimatorAmpSpeaker.update(result).get().estimatedPose;
+      return prevPoseMulti;
+    } catch (Exception e) {
+      return prevPoseMulti;
     }
   }
 
-  /*public double get_target_rotation(){
-
+  // USES SINGLE TAG POSE ESTIMATION @ SOURCE & STAGE
+  public Pose3d singleTagPose3d() {
+    if (!hasTargets()) {
+      return null;
+    }
+    try {
+      prevPoseSingleLeft = poseEstimatorSourceStage.update(result).get().estimatedPose;
+      return prevPoseSingleLeft;
+    } catch (Exception e) {
+      return prevPoseSingleLeft;
+    }
   }
 
-  */
-  // # given your transformation that tells you how to get from point a to point, b send back a
-  // target rotation (double) to be used for a PID controller
+  // DECIDES WHICH POSE ESTIMATION TO USE AND ESTIMATES POSE OF ROBOT
+  public Pose3d getRobotPose() {
+    if (!hasTargets()) {
+      return null;
+    }
+    if (result.getTargets().size() > 1) {
+      return multiTagPose3d();
+    } else {
+      return singleTagPose3d();
+    }
+  }
 }
