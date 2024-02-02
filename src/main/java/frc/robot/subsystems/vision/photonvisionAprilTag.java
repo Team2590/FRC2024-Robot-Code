@@ -18,7 +18,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import java.io.IOException;
 
-public class PhotonvisionAprilTag {
+public class photonvisionAprilTag {
 
   // CONSTANTS FOR CAMERA HEIGHTS AND APRIL TAG HEIGHTS
   private static final double camHeight = Units.inchesToMeters(2.25);
