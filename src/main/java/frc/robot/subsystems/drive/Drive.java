@@ -19,8 +19,12 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,21 +38,27 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
+
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+  private PhotonCamera cam = new PhotonCamera("Test String");
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
+  private ArrayList<TimestampedVisionUpdate> updates = new ArrayList<TimestampedVisionUpdate>();
 
   // private final GyroIOPigeon2 gp2;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -149,7 +159,16 @@ public class Drive extends SubsystemBase {
       // Apply the twist (change since last sample) to the current pose
       pose = pose.exp(twist);
 
+      var res = cam.getLatestResult();
+      if (res.hasTargets()) {
+        var imageCaptureTime = res.getTimestampSeconds();
+        var camToTargetTrans = res.getBestTarget().getBestCameraToTarget();
+        var camPose = new Pose3d().transformBy(camToTargetTrans.inverse());
+        updates.add(new TimestampedVisionUpdate(imageCaptureTime, camPose.transformBy(new Transform3d()).toPose2d(), VecBuilder.fill(0.00005, 0.00005, 1.0E6)));
+        RobotContainer.poseEstimator.addVisionData(updates);
+    }
       RobotContainer.poseEstimator.addDriveData(Timer.getFPGATimestamp(), twist);
+      
       Logger.recordOutput("Odometry/NewOdometry", RobotContainer.poseEstimator.getLatestPose());
     }
   }

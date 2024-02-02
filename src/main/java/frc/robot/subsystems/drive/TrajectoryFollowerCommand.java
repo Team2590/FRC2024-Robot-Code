@@ -33,8 +33,7 @@ public class TrajectoryFollowerCommand extends Command {
       new LoggedTunableNumber("Autos/thetaControllerP", 7.0);
   private final LoggedTunableNumber thetaControllerD =
       new LoggedTunableNumber("Autos/thetaControllerD", 0.0);
-  private final LoggedTunableNumber maxVelocity =
-      new LoggedTunableNumber("Autos/maxVel", 3.0);
+  private final LoggedTunableNumber maxVelocity = new LoggedTunableNumber("Autos/maxVel", 3.0);
   private final LoggedTunableNumber maxAcceleration =
       new LoggedTunableNumber("Autos/maxAccel", 2.0);
 
