@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
@@ -32,6 +33,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
+  private final Conveyor conveyor;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -57,6 +59,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         // instantiate other subsystems
+        conveyor = new Conveyor(new ConveyorIOTalonFX());
         break;
 
       case SIM:
@@ -70,6 +73,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         // instantiate SIM VERSIONS F other subsystems
+        conveyor = new Conveyor(new ConveyorIOSim());
         break;
 
       default:
@@ -82,10 +86,11 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        conveyor = new Conveyor(new ConveyorIO() {});
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure();
+    superstructure = new Superstructure(conveyor);
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     registerAutoCommands();
@@ -113,11 +118,13 @@ public class RobotContainer {
 
   public void updateSubsystems() {
     // call update functions of all subsystems
+    superstructure.periodic();
+    conveyor.periodic();
     input.update();
   }
 
-  public void updateUserInput() {
-    // joystick inputs galore!
+  public void updateUserInput(){
+    //joystick inputs galore!
     if (input.leftJoystickTriggerPressed()) {
       snapDrive =
           DriveCommands.SnapToTarget(
@@ -125,6 +132,15 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(snapDrive);
     } else if (input.leftJoystickButtonReleased(1)) {
       CommandScheduler.getInstance().cancel(snapDrive);
+    }
+    // joystick inputs galore!
+    if (input.leftJoystickTrigger()) {
+            superstructure.intake();
+      superstructure.intake();
+    } else if (input.leftJoystickButton(2)) {
+      superstructure.amp();
+    } else {
+      superstructure.stop();
     }
   }
 
