@@ -1,6 +1,8 @@
 package frc.robot.subsystems.climb;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants;
 
 public class ClimbIOTalonFX implements ClimbIO {
@@ -35,6 +37,8 @@ public class ClimbIOTalonFX implements ClimbIO {
     // right_motor.setControl(new Follower(left_motor.getDeviceID(), false));
     // left_motor.optimizeBusUtilization();
     // right_motor.optimizeBusUtilization();
+    // right_motor.setNeutralMode(NeutralMode.Brake);
+    left_motor.setNeutralMode(NeutralModeValue.Brake);
   }
 
   @Override
