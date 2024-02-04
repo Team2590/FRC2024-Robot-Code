@@ -105,9 +105,20 @@ public class RobotContainer {
         Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // SendableChooser<Command> sendable = new SendableChooser<>();
+    // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
+    autoChooser = new LoggedDashboardChooser<Command>("Auto Choice");
 
     // Set up feedforward characterization
+    autoChooser.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
+    autoChooser.addOption("Under the Stage 3 piece", AutoBuilder.buildAuto("under_stage_3piece"));
+    autoChooser.addOption("inception_test", AutoBuilder.buildAuto("testing"));
+    autoChooser.addOption(
+        "3 piece root amp sweep", AutoBuilder.buildAuto("3 piece root amp sweep"));
+    autoChooser.addOption(
+        "3 piece root far sweep", AutoBuilder.buildAuto("3 piece root far sweep"));
+
     autoChooser.addOption(
         "Drive FF Characterization",
         new FeedForwardCharacterization(

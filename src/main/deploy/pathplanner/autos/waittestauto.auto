@@ -1,0 +1,47 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 10.21,
+      "y": 6.43
+    },
+<<<<<<<< HEAD:src/main/deploy/pathplanner/autos/waittestauto.auto
+    "rotation": 0.0
+========
+    "rotation": 0
+>>>>>>>> c44e2291f61ca237f99f9a5b7a8e7390cb138c00:src/main/deploy/pathplanner/autos/tune_auto.auto
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/autos/waittestauto.auto
+          "type": "path",
+          "data": {
+            "pathName": "test1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "test2"
+========
+          "type": "path",
+          "data": {
+            "pathName": "Xtune"
+>>>>>>>> c44e2291f61ca237f99f9a5b7a8e7390cb138c00:src/main/deploy/pathplanner/autos/tune_auto.auto
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

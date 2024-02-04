@@ -1,0 +1,78 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/getmidnote.path
+        "x": 13.97,
+        "y": 4.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.97,
+        "y": 3.5
+========
+        "x": 10.21,
+        "y": 6.427207160464143
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 11.210000000000008,
+        "y": 6.427207160464143
+>>>>>>>> c44e2291f61ca237f99f9a5b7a8e7390cb138c00:src/main/deploy/pathplanner/paths/Xtune.path
+      },
+      "isLocked": false,
+      "linkedName": "endgetnote2"
+    },
+    {
+      "anchor": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/getmidnote.path
+        "x": 8.941926247488858,
+        "y": 0.6716697069757778
+      },
+      "prevControl": {
+        "x": 10.780281025949193,
+        "y": 0.6716697069757775
+========
+        "x": 14.13,
+        "y": 6.427207160464143
+      },
+      "prevControl": {
+        "x": 14.108224739217768,
+        "y": 6.427207160464143
+>>>>>>>> c44e2291f61ca237f99f9a5b7a8e7390cb138c00:src/main/deploy/pathplanner/paths/Xtune.path
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/getmidnote.path
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -60.43199692861085,
+      "rotateFast": false
+    }
+  ],
+========
+  "rotationTargets": [],
+>>>>>>>> c44e2291f61ca237f99f9a5b7a8e7390cb138c00:src/main/deploy/pathplanner/paths/Xtune.path
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

@@ -202,6 +202,34 @@ public class Drive extends SubsystemBase {
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
   }
 
+  public void runVelocityAuto(ChassisSpeeds speeds) {
+    // Calculate module setpoints
+    speeds =
+        new ChassisSpeeds(
+            speeds.vxMetersPerSecond, -speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+    // ChassisSpeeds adjustedSpeeds =
+    // discreteSpeeds.minus(new ChassisSpeeds(0, 2 * discreteSpeeds.vyMetersPerSecond, 0));
+    // ChassisSpeeds adjustedSpeeds =
+    //     new ChassisSpeeds(
+    //         discreteSpeeds.vxMetersPerSecond,
+    //         -1 * discreteSpeeds.vyMetersPerSecond,
+    //         discreteSpeeds.omegaRadiansPerSecond);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
+
+    // Send setpoints to modules
+    SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
+    for (int i = 0; i < 4; i++) {
+      // The module returns the optimized state, useful for logging
+      optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
+    }
+
+    // Log setpoint states
+    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
+  }
+
   /** Stops the drive. */
   public void stop() {
     runVelocity(new ChassisSpeeds());

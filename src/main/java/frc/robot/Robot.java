@@ -13,6 +13,10 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.util.GeometryUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -102,7 +106,14 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    System.out.println(
+        "orig pose: " + (new Pose2d(new Translation2d(15.2, 5.51), new Rotation2d(3.14))));
+    System.out.println(
+        "flipped pose: "
+            + GeometryUtil.flipFieldPose(
+                new Pose2d(new Translation2d(15.2, 5.51), new Rotation2d(3.14))));
+  }
 
   /** This function is called periodically when disabled. */
   @Override

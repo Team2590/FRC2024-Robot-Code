@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 10.21,
-      "y": 6.43
+      "x": 1.33,
+      "y": 5.51
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Xtune"
+            "pathName": "note3rootinception"
           }
         }
       ]
