@@ -66,10 +66,6 @@ public class ClimbIOTalonFX implements ClimbIO {
     left_motor.stopMotor();
   }
 
-  public void reset() {
-    down();
-  }
-
   public double getPosition() {
     return left_motor.getPosition().getValueAsDouble();
   }
