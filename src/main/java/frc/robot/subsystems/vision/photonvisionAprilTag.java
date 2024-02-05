@@ -2,33 +2,37 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import java.io.IOException;
 
-public class photonvisionAprilTag {
+public class photonvisionAprilTag extends SubsystemBase {
 
   // CONSTANTS FOR CAMERA HEIGHTS AND APRIL TAG HEIGHTS
-  private static final double camHeight = Units.inchesToMeters(2.25);
 
   // Respective offsets for each camera relative to the middle front of the robot
-  private static final double camFrontOffset = Units.inchesToMeters(0);
-  private static final double camRightOffset = Units.inchesToMeters(0);
+  private TimestampedVisionUpdate pose2d =
+      new TimestampedVisionUpdate(0.0, new Pose2d(), VecBuilder.fill(0.00005, 0.00005, 1.0E6));
 
   // CHANGE THIS TO NAME OF CAMERAS - NUM 1 PRIORITY
-  private NetworkTableInstance instance = NetworkTableInstance.getDefault();
+  // private NetworkTableInstance instance = NetworkTableInstance.getDefault();
   PhotonCamera cam;
 
   private PhotonPipelineResult result;
@@ -41,49 +45,81 @@ public class photonvisionAprilTag {
 
   private Transform3d transformCam;
 
-  private static final double roll = Math.toRadians(0.0);
-  private static final double pitch = Math.toRadians(45);
-  private static final double yaw = Math.toRadians(0.0);
-  private static final Transform3d RobotToCam = new Transform3d(-1 * camFrontOffset, -1 * camRightOffset, -1 * camHeight, new Rotation3d(roll, pitch, yaw));
-
   private static AprilTagFieldLayout aprilTagFieldLayout;
   private PhotonPoseEstimator poseEstimatorAmpSpeaker;
   private PhotonPoseEstimator poseEstimatorSourceStage;
+  private final PhotonPoseEstimator odometry;
 
   private Pose3d prevPoseSingleLeft;
-  private Pose3d prevPoseMulti;
+  private Pose3d prevPoseMulti = new Pose3d();
 
   public photonvisionAprilTag() {
-    cam = new PhotonCamera(instance, "LargePhotonCam");
+    cam = new PhotonCamera("LargePhotonCam");
     cam.setPipelineIndex(0);
 
     try {
-      aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+      aprilTagFieldLayout =
+          AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    poseEstimatorAmpSpeaker = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, RobotToCam);
-    poseEstimatorSourceStage = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, RobotToCam);
+    poseEstimatorAmpSpeaker =
+        new PhotonPoseEstimator(
+            aprilTagFieldLayout,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            cam,
+            Constants.RobotToCam);
+
+    odometry =
+        new PhotonPoseEstimator(
+            aprilTagFieldLayout,
+            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            cam,
+            Constants.RobotToCam);
+
+    odometry.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+
+    poseEstimatorSourceStage =
+        new PhotonPoseEstimator(
+            aprilTagFieldLayout, PoseStrategy.LOWEST_AMBIGUITY, cam, Constants.RobotToCam);
   }
 
-  // UPDATING CAMERA RESULTS
-  public void updateResults() {
-    result = cam.getLatestResult();
-    target = result.getBestTarget();
-    if(hasTargets()){
-      if(result.getTargets().size() > 1){
-        for(PhotonTrackedTarget i : result.getTargets()){
-          if((i.getFiducialId() == 7) || (i.getFiducialId() == 4)){
-            target = i;
-            break;
-          }
-        }
-      }
+  @Override
+  public void periodic() {
+    PhotonPipelineResult result = cam.getLatestResult();
+
+    if (result == null || !result.hasTargets()) {
+      System.err.println(" No targets or null");
+      return;
     }
+
+    Optional<EstimatedRobotPose> currentPose =
+        checkValidResult(result.targets) ? odometry.update(result) : Optional.empty();
+    if (currentPose.isPresent()) {
+      Logger.recordOutput("Odometry/AprilTagPose", currentPose.get().estimatedPose.toPose2d());
+    }
+
+    // var timestamp = result.getTimestampSeconds();
+    // Pose3d pose = new Pose3d();
+    // if (result.getTargets().size() > 1) {
+    //   pose = poseEstimatorAmpSpeaker.update(result).get().estimatedPose;
+    // } else {
+    //   pose = poseEstimatorSourceStage.update(result).get().estimatedPose;
+    // }
+    // pose2d =
+    //     new TimestampedVisionUpdate(
+    //         timestamp,
+    //         pose.transformBy(Constants.RobotToCam).toPose2d(),
+    //         VecBuilder.fill(0.00005, 0.00005, 1.0E6));
+
+    // Logger.recordOutput("Odometry/AprilTagPose", pose2d.pose());
   }
 
   // TRUE IF ANY TARGET IS DETECTED
   public boolean hasTargets() {
+    if (result == null) {
+      return false;
+    }
     return result.hasTargets();
   }
 
@@ -96,74 +132,125 @@ public class photonvisionAprilTag {
   }
 
   // AFTER CALIBRATING CAMERA W/ 3D VIEWING CAPABILITY
-  public Transform3d getCamToTargetTransform(){
-    if(!hasTargets()){return null;}
+  public Transform3d getCamToTargetTransform() {
+    if (!hasTargets()) {
+      return null;
+    }
     transformCam = target.getBestCameraToTarget();
     double xi = transformCam.getX();
     double zi = transformCam.getZ();
-    double deltaPitch = Math.atan(zi/xi) + pitch;
-    double di = Math.sqrt(xi*xi + zi*zi);
-    return new Transform3d(di * Math.cos(deltaPitch) - camFrontOffset, transformCam.getY() - camRightOffset, di * Math.sin(deltaPitch) + camHeight, transformCam.getRotation());
-    
+    double deltaPitch = Math.atan(zi / xi) + Constants.CAMERA_PITCH;
+    double di = Math.sqrt(xi * xi + zi * zi);
+    return new Transform3d(
+        di * Math.cos(deltaPitch) - Constants.CAMERA_X_DISTANCE_FROM_CENTER_METERS,
+        transformCam.getY() - Constants.CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
+        di * Math.sin(deltaPitch) + Constants.CAMERA_HEIGHT_METERS,
+        transformCam.getRotation());
   }
 
   // RETURNS DISTANCE FROM CAMERA TO TARGET IN METERS
-  public double getDistance(){
-    if(!hasTargets()){return -1.0;}
+  public double getDistance() {
+    if (!hasTargets()) {
+      return -1.0;
+    }
     double X = getCamToTargetTransform().getX();
     double Y = getCamToTargetTransform().getY();
-    return Math.sqrt(X*X + Y*Y);
+    return Math.sqrt(X * X + Y * Y);
   }
 
-  //RETURNS DELTA Y DISPLACEMENT TO THE DETECTED TAG
-  public double getOffset(){
-    if(hasTargets()){
+  // RETURNS DELTA Y DISPLACEMENT TO THE DETECTED TAG
+  public double getOffset() {
+    if (hasTargets()) {
       return getCamToTargetTransform().getY();
     }
     return 0;
   }
 
   // RETURNS THE ANGULAR DISPLACEMENT FROM ROBOT TO DETECTED APRILTAG
-  public double getAngle(){
-    return Math.atan(getCamToTargetTransform().getY()/getCamToTargetTransform().getX());
+  public double getAngle() {
+    return Math.atan(getCamToTargetTransform().getY() / getCamToTargetTransform().getX());
   }
 
   // RETURNS 2D TRANSLATION OF CAM TO TARGET
-  public Translation2d getCamToTargetTranslation2d(){
-    if(!hasTargets()){return null;}
-    return PhotonUtils.estimateCameraToTargetTranslation(getDistance(), Rotation2d.fromDegrees(-target.getYaw()));
+  public Translation2d getCamToTargetTranslation2d() {
+    if (!hasTargets()) {
+      return null;
+    }
+    return PhotonUtils.estimateCameraToTargetTranslation(
+        getDistance(), Rotation2d.fromDegrees(-target.getYaw()));
   }
 
   // USES MULTI TAG POSE ESTIMATION @ AMP & SPEAKER
-  public Pose3d multiTagPose3d(){
-    if(!hasTargets()){return null;}
-    try{
+  public TimestampedVisionUpdate multiTagPose3d() {
+    try {
       prevPoseMulti = poseEstimatorAmpSpeaker.update(result).get().estimatedPose;
-      return prevPoseMulti;
-    } catch(Exception e) {
-      return prevPoseMulti;
+      System.out.println(prevPoseMulti);
+      return new TimestampedVisionUpdate(
+          result.getTimestampSeconds(),
+          new Pose2d(
+              prevPoseMulti.getX(),
+              prevPoseMulti.getY(),
+              prevPoseMulti.getRotation().toRotation2d()),
+          VecBuilder.fill(0.00005, 0.00005, 1.0E6));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new TimestampedVisionUpdate(
+          result.getTimestampSeconds(),
+          new Pose2d(
+              prevPoseMulti.getX(),
+              prevPoseMulti.getY(),
+              prevPoseMulti.getRotation().toRotation2d()),
+          VecBuilder.fill(0.00005, 0.00005, 1.0E6));
     }
   }
 
   // USES SINGLE TAG POSE ESTIMATION @ SOURCE & STAGE
-  public Pose3d singleTagPose3d(){
-    if(!hasTargets()){return null;}
-    try{
+  public TimestampedVisionUpdate singleTagPose3d() {
+    if (!hasTargets()) {
+      return null;
+    }
+    try {
       prevPoseSingleLeft = poseEstimatorSourceStage.update(result).get().estimatedPose;
-      return prevPoseSingleLeft;
-    } catch(Exception e) {
-      return prevPoseSingleLeft;
+      return new TimestampedVisionUpdate(
+          result.getTimestampSeconds(),
+          new Pose2d(
+              prevPoseSingleLeft.getX(),
+              prevPoseSingleLeft.getY(),
+              prevPoseSingleLeft.getRotation().toRotation2d()),
+          VecBuilder.fill(0.00005, 0.00005, 1.0E6));
+    } catch (Exception e) {
+      return new TimestampedVisionUpdate(
+          result.getTimestampSeconds(),
+          new Pose2d(
+              prevPoseSingleLeft.getX(),
+              prevPoseSingleLeft.getY(),
+              prevPoseSingleLeft.getRotation().toRotation2d()),
+          VecBuilder.fill(0.00005, 0.00005, 1.0E6));
     }
   }
 
   // DECIDES WHICH POSE ESTIMATION TO USE AND ESTIMATES POSE OF ROBOT
-  public Pose3d getRobotPose(){
-    if(!hasTargets()){return null;}
-    if(result.getTargets().size() > 1){
+  public TimestampedVisionUpdate getRobotPose() {
+    if (!hasTargets()) {
+      return null;
+    }
+    if (result.getTargets().size() > 1) {
       return multiTagPose3d();
     } else {
       return singleTagPose3d();
     }
   }
 
+  public TimestampedVisionUpdate getPose() {
+    return pose2d;
+  }
+
+  private boolean checkValidResult(List<PhotonTrackedTarget> result) {
+    for (PhotonTrackedTarget target : result) {
+      if (target.getFiducialId() > 16) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

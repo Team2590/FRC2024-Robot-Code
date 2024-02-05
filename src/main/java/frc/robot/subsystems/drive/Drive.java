@@ -16,8 +16,11 @@ package frc.robot.subsystems.drive;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,7 +32,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,14 +44,18 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(23.75);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(23.75);
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
+
+  private SwerveDrivePoseEstimator pose_estimator;
+
+  // private final GyroIOPigeon2 gp2;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
@@ -60,6 +70,9 @@ public class Drive extends SubsystemBase {
       ModuleIO blModuleIO,
       ModuleIO brModuleIO) {
     this.gyroIO = gyroIO;
+    
+    pose_estimator=new SwerveDrivePoseEstimator(kinematics, lastGyroRotation, null, pose)
+
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -72,7 +85,11 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            new PIDConstants(5, 0.0, 0),
+            new PIDConstants(5.0, 0.0, 0.0),
+            MAX_LINEAR_SPEED,
+            DRIVE_BASE_RADIUS,
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -139,6 +156,11 @@ public class Drive extends SubsystemBase {
       }
       // Apply the twist (change since last sample) to the current pose
       pose = pose.exp(twist);
+
+      RobotContainer.poseEstimator.addDriveData(Timer.getFPGATimestamp(), twist);
+      arraylist<timestampVisionMeasurements>.add()
+      RobotContainer.poseEstimator.add
+      Logger.recordOutput("Odometry/NewOdometry", RobotContainer.poseEstimator.getLatestPose());
     }
   }
 
@@ -235,6 +257,21 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
+  // COMMENTED OUT IN MERGE, THIS METHOD SHOULD NOT BE DONE HERE
+  // public void setGyro(double degrees) {
+
+  //   gyroIO.(degrees);
+  // }
+
+  public void resetEncoders() {
+
+    // for(int i=0; i<4; i++){
+    //   modules[i].set
+
+    // }
+
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
@@ -243,5 +280,9 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public void zeroGyro() {
+    this.gyroIO.reset();
   }
 }
