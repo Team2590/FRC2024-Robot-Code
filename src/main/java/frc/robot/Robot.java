@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -32,7 +31,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   public static Arm armIO;
-  public static Joystick joystick;
+  // public static Joystick joystick;
   private Command autonomousCommand;
   private RobotContainer robotContainer;
 
@@ -43,26 +42,26 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata, used for replaying log files
-    // Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
-    // Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-    // Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    // Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    // Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-    // switch (BuildConstants.DIRTY) {
-    //   case 0:
-    //     Logger.recordMetadata("GitDirty", "All changes committed");
-    //     break;
-    //   case 1:
-    //     Logger.recordMetadata("GitDirty", "Uncomitted changes");
-    //     break;
-    //   default:
-    //     Logger.recordMetadata("GitDirty", "Unknown");
-    //     break;
-    // }
+    Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.recordMetadata("GitDirty", "Unknown");
+        break;
+    }
 
     // Set up data receivers & replay source
     armIO = new Arm();
-    joystick = new Joystick(0);
+    // joystick = new Joystick(0);
 
     switch (Constants.currentMode) {
       case REAL:
@@ -150,13 +149,16 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     armIO.periodic();
-    if (joystick.getRawButtonPressed(5)) {
-      armIO.motionmagic1();
-    } else if (joystick.getRawButtonPressed(6)) {
-      armIO.motionmagic2();
-    } else if (joystick.getRawButtonPressed(3)) {
-      armIO.stop();
-    }
+    armIO.motionmagic1();
+    System.out.println(armIO.print());
+    // if (joystick.getRawButtonPressed(5)) {
+    //   armIO.motionmagic1();
+    // } else if (joystick.getRawButtonPressed(6)) {
+    //   armIO.motionmagic2();
+    // } else if (joystick.getRawButtonPressed(3)) {
+    //   armIO.stop();
+    // }
+
   }
 
   /** This function is called once when test mode is enabled. */

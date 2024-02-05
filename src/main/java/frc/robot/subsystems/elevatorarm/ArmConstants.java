@@ -5,7 +5,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 // All Constants
 public final class ArmConstants {
 
-  public static boolean tuningMode = false;
+  public static boolean tuningMode = true;
 
   // Constants pertaining to the arm subsystem go here
   public static class Arm {

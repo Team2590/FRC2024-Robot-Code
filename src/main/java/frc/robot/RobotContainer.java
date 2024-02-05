@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -52,6 +53,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(1);
+  private final CommandJoystick joystick = new CommandJoystick(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;

@@ -28,6 +28,10 @@ public class Arm extends SubsystemBase {
     arm.setmotionmagic2();
   }
 
+  public String print() {
+    return arm.print();
+  }
+
   public void resetarm() {
     arm.resetArm();
   }

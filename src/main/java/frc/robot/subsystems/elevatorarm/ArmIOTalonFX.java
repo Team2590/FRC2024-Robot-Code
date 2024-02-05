@@ -4,15 +4,13 @@ import static frc.robot.subsystems.elevatorarm.ArmConstants.Arm.ARM_GEAR_RATIO;
 import static frc.robot.subsystems.elevatorarm.ArmConstants.Arm.ARM_ID;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.commons.LoggedTunableNumber;
 
 public class ArmIOTalonFX implements ArmIO {
@@ -21,7 +19,7 @@ public class ArmIOTalonFX implements ArmIO {
   // CANCoder armAzimuth = new CANCoder(ARM_AZIMUTH_ID);
 
   LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 0.1);
-  LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kP", 0);
+  LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", 0);
   LoggedTunableNumber kD = new LoggedTunableNumber("Arm/kD", 0);
   LoggedTunableNumber kS = new LoggedTunableNumber("Arm/kS", 0);
   LoggedTunableNumber MotionMagicCruiseVelocity1 =
@@ -31,13 +29,13 @@ public class ArmIOTalonFX implements ArmIO {
   Slot0Configs slot0;
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
-  MotionMagicVoltage mmv;
+  MotionMagicDutyCycle mmv;
   final DutyCycleOut m_request = new DutyCycleOut(0);
 
   public ArmIOTalonFX() {
     /* configurations for the arm encoder */
 
-    mmv = new MotionMagicVoltage(0);
+    mmv = new MotionMagicDutyCycle(-0.1);
     final Mechanisms m_mechanisms = new Mechanisms();
 
     /* configurations for the arm motor */
@@ -54,19 +52,12 @@ public class ArmIOTalonFX implements ArmIO {
     slot0.kI = kI.get();
     slot0.kD = kD.get();
     slot0.kS = kS.get();
-    arm.setNeutralMode(NeutralModeValue.Brake);
 
     FeedbackConfigs fdb = cfg.Feedback;
     fdb.SensorToMechanismRatio = ARM_GEAR_RATIO;
 
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = arm.getConfigurator().apply(cfg);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not configure device. Error: " + status.toString());
-    }
+    arm.getConfigurator().apply(cfg);
+    mmv = new MotionMagicDutyCycle(0, true, 0, 0, false, false, false);
   }
 
   public void updateInputs(ArmIOInputs inputs) {
@@ -74,13 +65,18 @@ public class ArmIOTalonFX implements ArmIO {
     updateTunableNumbers();
   }
 
+  public String print() {
+    return arm.getMotionMagicIsRunning().getValue().toString();
+  }
+
   public void setmotionmagic() {
-    mmv.Slot = 0;
-    arm.setControl(mmv.withPosition(30));
+    // mmv.Slot = 0;
+    // arm.setControl(mmv.withPosition(-0.165));
+    arm.setControl(mmv.withPosition(-0.165));
   }
 
   public void setmotionmagic2() {
-    mmv.Slot = 0;
+
     arm.setControl(mmv.withPosition(0));
   }
 
