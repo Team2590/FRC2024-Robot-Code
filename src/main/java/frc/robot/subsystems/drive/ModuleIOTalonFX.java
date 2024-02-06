@@ -62,7 +62,7 @@ public class ModuleIOTalonFX implements ModuleIO {
   private final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
   private final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
-  private final boolean isTurnMotorInverted = false;
+  private final boolean isTurnMotorInverted = true;
   private final Rotation2d absoluteEncoderOffset;
 
   /*
@@ -74,7 +74,7 @@ public class ModuleIOTalonFX implements ModuleIO {
    * 1. Change offsets to 0 in code
    * 2. Deploy Robot code
    * 3. Power cycle
-   * 4. Align wheels so all bevels facing right
+   * 4. Align wheels so all bevels facing the direction such that the modules move forward when we move forward
    * 5. Look at Advantage Kit Vals (TurnAbsolutePosition)
    * 6. Update offsets with new AdvantageKit values in code
    * 7. Deploy Robot code
@@ -88,34 +88,34 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(2, "Jazzy");
-        turnTalon = new TalonFX(8, "Jazzy");
-        cancoder = new CANcoder(9, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-3.123); // MUST BE CALIBRATED
+        driveTalon = new TalonFX(13, "Takeover");
+        turnTalon = new TalonFX(11, "Takeover");
+        cancoder = new CANcoder(12, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(Math.PI + 1.976); // -2.65
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 1:
-        driveTalon = new TalonFX(4, "Jazzy");
-        turnTalon = new TalonFX(3, "Jazzy");
-        cancoder = new CANcoder(10, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
+      case 1: // Front Right
+        driveTalon = new TalonFX(23, "Takeover");
+        turnTalon = new TalonFX(21, "Takeover");
+        cancoder = new CANcoder(22, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(Math.PI + 2.223); // 2.778
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 2:
-        driveTalon = new TalonFX(6, "Jazzy");
-        turnTalon = new TalonFX(7, "Jazzy");
-        cancoder = new CANcoder(12, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(1.474); // MUST BE CALIBRATED
+      case 2: // Back Left
+        driveTalon = new TalonFX(33, "Takeover");
+        turnTalon = new TalonFX(31, "Takeover");
+        cancoder = new CANcoder(32, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(Math.PI + 1.414); // -2.551
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 3:
-        driveTalon = new TalonFX(5, "Jazzy");
-        turnTalon = new TalonFX(0, "Jazzy");
-        cancoder = new CANcoder(11, "Jazzy");
-        absoluteEncoderOffset = new Rotation2d(-2.686); // MUST BE CALIBRATED
+      case 3: // Back Right
+        driveTalon = new TalonFX(43, "Takeover");
+        turnTalon = new TalonFX(41, "Takeover");
+        cancoder = new CANcoder(42, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(Math.PI + -2.818); // -1/717
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;

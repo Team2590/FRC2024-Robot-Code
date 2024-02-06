@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,32 +31,34 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.Constants;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-   static final double MAX_LINEAR_SPEED = Units.feetToMeters(2); // 14.5 originally
-   static final double MAX_ACCELERATION=2; //# m/s^2
-   static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
-   static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
-   static final double DRIVE_BASE_RADIUS =
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+  private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
+  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+  private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
-  static final double MAX_ANGULAR_ACCELERATION=MAX_ACCELERATION/DRIVE_BASE_RADIUS;
+  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+
   public static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
+
+  // private final GyroIOPigeon2 gp2;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
-  
 
+  private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
+  private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
 
   public Drive(
       GyroIO gyroIO,
@@ -76,12 +79,15 @@ public class Drive extends SubsystemBase {
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            new PIDConstants(5, 0.0, 0),
+            new PIDConstants(5.0, 0.0, 0.0),
+            MAX_LINEAR_SPEED,
+            DRIVE_BASE_RADIUS,
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
-
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -117,6 +123,7 @@ public class Drive extends SubsystemBase {
       Logger.recordOutput("SwerveStates/Setpoints", new SwerveModuleState[] {});
       Logger.recordOutput("SwerveStates/SetpointsOptimized", new SwerveModuleState[] {});
     }
+
     // Update odometry
     int deltaCount =
         gyroInputs.connected ? gyroInputs.odometryYawPositions.length : Integer.MAX_VALUE;
@@ -163,18 +170,10 @@ public class Drive extends SubsystemBase {
       // The module returns the optimized state, useful for logging
       optimizedSetpointStates[i] = modules[i].runSetpoint(setpointStates[i]);
     }
-    
 
     // Log setpoint states
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveStates/SetpointsOptimized", optimizedSetpointStates);
-  }
-
-  public void followTrajectory(ChassisSpeeds path_speeds){
-
-
-
-
   }
 
   /** Stops the drive. */
@@ -247,6 +246,21 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
+  // COMMENTED OUT IN MERGE, THIS METHOD SHOULD NOT BE DONE HERE
+  // public void setGyro(double degrees) {
+
+  //   gyroIO.(degrees);
+  // }
+
+  public void resetEncoders() {
+
+    // for(int i=0; i<4; i++){
+    //   modules[i].set
+
+    // }
+
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
@@ -255,5 +269,9 @@ public class Drive extends SubsystemBase {
       new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
       new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
     };
+  }
+
+  public void zeroGyro() {
+    this.gyroIO.reset();
   }
 }

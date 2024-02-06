@@ -13,14 +13,11 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
@@ -35,7 +32,7 @@ public class Module {
   private final int index;
 
   // private final SimpleMotorFeedforward driveFeedforward;
-// private final PIDController driveFeedback;
+  // private final PIDController driveFeedback;
   // private final PIDController turnFeedback;
   private Rotation2d angleSetpoint = null; // Setpoint for closed loop control, null for open loop
   private Double speedSetpoint = null; // Setpoint for closed loop control, null for open loop
@@ -44,27 +41,16 @@ public class Module {
   private SwerveModulePosition[] positionDeltas = new SwerveModulePosition[] {};
 
   LoggedTunableNumber wheelRadius = new LoggedTunableNumber("Drive/Module/WheelRadius", 2);
-  LoggedTunableNumber xkp = new LoggedTunableNumber("Drive/Module/xkp", 0.0);
-  LoggedTunableNumber xkd = new LoggedTunableNumber("Drive/Module/xkd", 0);
-  LoggedTunableNumber ykp = new LoggedTunableNumber("Drive/Module/ykp", 0);
-  LoggedTunableNumber ykd = new LoggedTunableNumber("Drive/Module/ykd", 0);
-  LoggedTunableNumber driveKp = new LoggedTunableNumber("Drive/Module/DriveKp", 0.05);
-  LoggedTunableNumber driveKd = new LoggedTunableNumber("Drive/Module/DrivfalseKd", 0);
-  LoggedTunableNumber driveKs = new LoggedTunableNumber("Drive/Module/DriveKs", .1);
-  LoggedTunableNumber driveKv = new LoggedTunableNumber("Drive/Module/DriveKv", .13);
-
-  LoggedTunableNumber a_turnKp = new LoggedTunableNumber("Drive/Module/A_TurnKp", 0);
-  LoggedTunableNumber a_turnKd = new LoggedTunableNumber("Drive/Module/A_TurnKd", 0);
+  LoggedTunableNumber driveKp = new LoggedTunableNumber("Drive/Module/DriveKp", 0.1);
+  LoggedTunableNumber driveKd = new LoggedTunableNumber("Drive/Module/DriveKd", 0);
+  LoggedTunableNumber driveKs = new LoggedTunableNumber("Drive/Module/DriveKs", 0.19578);
+  LoggedTunableNumber driveKv = new LoggedTunableNumber("Drive/Module/DriveKv", 0.11483);
   LoggedTunableNumber turnKp = new LoggedTunableNumber("Drive/Module/TurnKp", 7);
   LoggedTunableNumber turnKd = new LoggedTunableNumber("Drive/Module/TurnKd", 0);
 
   SimpleMotorFeedforward driveFeedforward;
   PIDController driveFeedback;
   PIDController turnFeedback;
-  PIDController x_Controller;
-  PIDController y_Controller;
-  ProfiledPIDController theta_Controller;
-  HolonomicDriveController autoController;
 
   public Module(ModuleIO io, int index) {
     this.io = io;
@@ -74,25 +60,18 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13, 0.02);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0, 0.02);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0, 0.02);
-        break;
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
+        driveFeedback = new PIDController(0.1, 0.0, 0.0, 0.02);
+        turnFeedback = new PIDController(7, 0.0, 0.0, 0.02);
       case REPLAY:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
         driveFeedback = new PIDController(0.05, 0.0, 0.0);
         turnFeedback = new PIDController(7.0, 0.0, 0.0);
         break;
       case SIM:
-        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
+        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
-        break;
-      case AUTO: 
-        x_Controller=new PIDController(0, 0.0,0);
-        y_Controller=new PIDController(0, 0.0, 0);
-        theta_Controller=new ProfiledPIDController(0, 0.0, 0, new TrapezoidProfile.Constraints(Drive.MAX_ANGULAR_SPEED, Drive.MAX_ANGULAR_ACCELERATION));
-        autoController= new HolonomicDriveController(x_Controller, y_Controller, theta_Controller);
         break;
       default:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
@@ -116,19 +95,10 @@ public class Module {
   public void periodic() {
     Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-  if (xkp.hasChanged(hashCode()) || xkd.hasChanged(hashCode())) {
-      x_Controller.setPID(xkp.get(), 0.0, xkd.get());
-    }
-  if (ykp.hasChanged(hashCode()) || ykd.hasChanged(hashCode())){
-    y_Controller.setPID(ykp.get(), 0.0, ykd.get());
-  }
-    if (a_turnKp.hasChanged(hashCode()) || a_turnKd.hasChanged(hashCode())) {
-      theta_Controller.setPID(a_turnKp.get(), 0.0, a_turnKd.get());
-    }
     if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
       driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
     }
-if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
+    if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
       turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
     }
     if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
@@ -189,6 +159,8 @@ if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
 
     return optimizedState;
   }
+
+  public void zero_encoder() {}
 
   /** Runs the module with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {
