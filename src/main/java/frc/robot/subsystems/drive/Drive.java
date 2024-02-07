@@ -19,6 +19,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -37,6 +38,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.geometry.Transform3d;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
@@ -57,6 +59,12 @@ public class Drive extends SubsystemBase {
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
 
+  // ALL MUST BE TUNED
+  private final PIDController translationPid = new PIDController(5.0, 0.0, 0.0);
+  private final PIDController rotationPid = new PIDController(5.0, 0.0, 0.0);
+  private final double translationTolerance = 0.0;
+  private final double rotationTolerance = 0.0;
+
   private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
   private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
 
@@ -71,6 +79,10 @@ public class Drive extends SubsystemBase {
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
+
+    // configure pids for translation/rotation
+    translationPid.setTolerance(translationTolerance);
+    rotationPid.setTolerance(rotationTolerance);
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -273,5 +285,40 @@ public class Drive extends SubsystemBase {
 
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  /**
+   * Controller to turn to the target heading
+   * @param theta - turn error to april tag; from vision
+   */
+  public void turnToTarget(double theta) {
+    runVelocity(new ChassisSpeeds(0,0,rotationPid.calculate(theta,0)));
+  }
+
+  /**
+   * Controller to move to the target pos
+   * @param distance - distance error to april tag; from vision
+   */
+  public void translateToTarget(Transform3d distance) {
+    double xOffset = distance.getX();
+    double yOffset = distance.getY();
+    runVelocity(new ChassisSpeeds(
+      translationPid.calculate(xOffset,0),
+      translationPid.calculate(yOffset,0),
+      0));
+  }
+
+  /**
+   * Controller to move and turn to the target pos/heading
+   * @param distance - distance error to april tag; from vision
+   * @param theta - turn error to april tag; from vision
+   */
+  public void turnTranslateToTarget(Transform3d distance,double theta) {
+    double xOffset = distance.getX();
+    double yOffset = distance.getY();
+    runVelocity(new ChassisSpeeds(
+      translationPid.calculate(xOffset,0),
+      translationPid.calculate(yOffset,0),
+      rotationPid.calculate(theta,0)));
   }
 }
