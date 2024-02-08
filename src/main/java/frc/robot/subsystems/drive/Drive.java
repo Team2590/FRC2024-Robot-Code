@@ -317,12 +317,13 @@ public class Drive extends SubsystemBase {
    * @param targets - list of targets seen; can be taken straight from vision
    */
   public void alignToTarget(List<PhotonTrackedTarget> targets) {
-    for (PhotonTrackedTarget t : targets) {
+    for (PhotonTrackedTarget t: targets) {
+      // turn to speaker (center tag only, red and blue)
       if (t.getFiducialId() == 4 || t.getFiducialId() == 7) {
         turnToTarget(t.getYaw());
+      // translate to amp/stage (centered, all 3 stage sides, red and blue)
       } else if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
-        translateToTarget(
-            t.getBestCameraToTarget()); // im assuming it's best camera, maybe alternate?
+        translateToTarget(t.getBestCameraToTarget()); // im assuming it's best camera, maybe alternate?
       }
     }
   }
