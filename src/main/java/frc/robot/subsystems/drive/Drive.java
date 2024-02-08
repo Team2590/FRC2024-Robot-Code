@@ -22,6 +22,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,11 +35,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.LoggedTunableNumber;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.math.geometry.Transform3d;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
@@ -62,8 +64,8 @@ public class Drive extends SubsystemBase {
   // ALL MUST BE TUNED
   private final PIDController translationPid = new PIDController(5.0, 0.0, 0.0);
   private final PIDController rotationPid = new PIDController(5.0, 0.0, 0.0);
-  private final double translationTolerance = 0.0;
-  private final double rotationTolerance = 0.0;
+  private final double translationTolerance = 0.1;
+  private final double rotationTolerance = 0.1;
 
   private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
   private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
@@ -289,36 +291,39 @@ public class Drive extends SubsystemBase {
 
   /**
    * Controller to turn to the target heading
+   *
    * @param theta - turn error to april tag; from vision
    */
-  public void turnToTarget(double theta) {
-    runVelocity(new ChassisSpeeds(0,0,rotationPid.calculate(theta,0)));
+  private void turnToTarget(double theta) {
+    runVelocity(new ChassisSpeeds(0, 0, rotationPid.calculate(theta, 0)));
   }
 
   /**
    * Controller to move to the target pos
+   *
    * @param distance - distance error to april tag; from vision
    */
-  public void translateToTarget(Transform3d distance) {
+  private void translateToTarget(Transform3d distance) {
     double xOffset = distance.getX();
     double yOffset = distance.getY();
-    runVelocity(new ChassisSpeeds(
-      translationPid.calculate(xOffset,0),
-      translationPid.calculate(yOffset,0),
-      0));
+    runVelocity(
+        new ChassisSpeeds(
+            translationPid.calculate(xOffset, 0), translationPid.calculate(yOffset, 0), 0));
   }
 
   /**
-   * Controller to move and turn to the target pos/heading
-   * @param distance - distance error to april tag; from vision
-   * @param theta - turn error to april tag; from vision
+   * Align to the target, based on april tags seen
+   * 
+   * @param targets - list of targets seen; can be taken straight from vision
    */
-  public void turnTranslateToTarget(Transform3d distance,double theta) {
-    double xOffset = distance.getX();
-    double yOffset = distance.getY();
-    runVelocity(new ChassisSpeeds(
-      translationPid.calculate(xOffset,0),
-      translationPid.calculate(yOffset,0),
-      rotationPid.calculate(theta,0)));
+  public void alignToTarget(List<PhotonTrackedTarget> targets) {
+    for (PhotonTrackedTarget t : targets) {
+      if (t.getFiducialId() == 4 || t.getFiducialId() == 7) {
+        turnToTarget(t.getYaw());
+      } else if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
+        translateToTarget(
+            t.getBestCameraToTarget()); // im assuming it's best camera, maybe alternate?
+      }
+    }
   }
 }
