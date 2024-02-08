@@ -64,11 +64,15 @@ public class Drive extends SubsystemBase {
   // ALL MUST BE TUNED
   private final PIDController translationPid = new PIDController(5.0, 0.0, 0.0);
   private final PIDController rotationPid = new PIDController(5.0, 0.0, 0.0);
-  private final double translationTolerance = 0.1;
-  private final double rotationTolerance = 0.1;
+  private LoggedTunableNumber translationKp = new LoggedTunableNumber("Drive/PID/translationKp",5.0);
+  private LoggedTunableNumber translationKd = new LoggedTunableNumber("Drive/PID/translationKd",0.0);
+  private LoggedTunableNumber translationTolerance = new LoggedTunableNumber("Drive/PID/translationTolerance",0.1);
+  private LoggedTunableNumber rotationKp = new LoggedTunableNumber("Drive/PID/rotationKp",5.0);
+  private LoggedTunableNumber rotationKd = new LoggedTunableNumber("Drive/PID/rotationKd",0.0);
+  private LoggedTunableNumber rotationTolerance = new LoggedTunableNumber("Drive/PID/rotationTolerance",0.1);
 
-  private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
-  private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
+  // private LoggedTunableNumber autoDriveKp = new LoggedTunableNumber("Drive/Auto/Kp", 5.0);
+  // private LoggedTunableNumber autoDriveKd = new LoggedTunableNumber("Drive/Auto/Kd", 0);
 
   public Drive(
       GyroIO gyroIO,
@@ -83,8 +87,8 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
 
     // configure pids for translation/rotation
-    translationPid.setTolerance(translationTolerance);
-    rotationPid.setTolerance(rotationTolerance);
+    translationPid.setTolerance(0.1);
+    rotationPid.setTolerance(0.1);
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -115,6 +119,20 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
+    // tunable number updates
+    if (translationKp.hasChanged(hashCode()) || translationKd.hasChanged(hashCode())) {
+      translationPid.setPID(translationKp.get(), 0.0, translationKd.get());
+    }
+    if (rotationKp.hasChanged(hashCode()) || rotationKd.hasChanged(hashCode())) {
+      rotationPid.setPID(rotationKp.get(), 0.0, rotationKd.get());
+    }
+    if (translationTolerance.hasChanged(hashCode())) {
+      translationPid.setTolerance(translationTolerance.get());
+    }
+    if (rotationTolerance.hasChanged(hashCode())) {
+      rotationPid.setTolerance(rotationTolerance.get());
+    }
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
