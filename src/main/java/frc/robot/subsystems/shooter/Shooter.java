@@ -27,6 +27,8 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   HashMap<Double, Double> table = new HashMap<Double, Double>(100);
 
+  private ShooterStates state;
+
   public Shooter() {
     table.put(10.0, 1000.0);
     table.put(20.0, 2000.0);
@@ -47,16 +49,21 @@ public class Shooter extends SubsystemBase {
   public void shoot(double distance) {
     if (table.containsKey(distance)) {
       double rpm = table.get(distance);
-      System.out.println("RPM: " + rpm);
+      System.out.println("Computed Shooter RPM: " + rpm);
       shooterMotors.setVelocity(rpm);
     } else {
-      double[] distances = getNearestDistances(distance);
-      double[] rpms = {table.get(distances[0]), table.get(distances[1])};
-      LinearRegression regression = new LinearRegression(distances, rpms);
-      double rpm = regression.slope() * distance + regression.intercept();
-      System.out.println("RPM: " + rpm);
+      double rpm = getComptuedRPM(distance);
+      System.out.println("Computed Shooter RPM: " + rpm);
       shooterMotors.setVelocity(rpm);
     }
+  }
+
+  private double getComptuedRPM(double distance) {
+    double[] distances = getNearestDistances(distance);
+    double[] rpms = { table.get(distances[0]), table.get(distances[1]) };
+    LinearRegression regression = new LinearRegression(distances, rpms);
+    double rpm = regression.slope() * distance + regression.intercept();
+    return rpm;
   }
 
   private double[] getNearestDistances(double actualDistance) {
@@ -69,15 +76,42 @@ public class Shooter extends SubsystemBase {
         result.add(distance);
       }
     }
-    double[] distances = {result.get(result.size() - 2), result.get(result.size() - 1)};
+    double[] distances = { result.get(result.size() - 2), result.get(result.size() - 1) };
     return distances;
   }
 
-  public void setRPM(double RPM) {
-    shooterMotors.setVelocity(RPM);
+  public void setRPM(double rpm) {
+    shooterMotors.setVelocity(rpm);
   }
 
   public void stop() {
     shooterMotors.stop();
+  }
+
+  public void setManualControl() {
+    state = ShooterStates.MANUAL;
+  }
+
+  public void removeManualControl() {
+    state = shooterMotors.getState();
+  }
+
+  public ShooterStates getState() {
+    if (state == ShooterStates.MANUAL) {
+      return state;
+    } else if (state == ShooterStates.APPROACHING_SET_POINT) {
+      if (shooterMotors.isNearDesiredSpeed()) {
+        return ShooterStates.AT_SET_POINT;
+      } else {
+        return ShooterStates.APPROACHING_SET_POINT;
+      }
+    } else if (state == ShooterStates.STOPPED) {
+      return ShooterStates.STOPPED;
+    }
+    return null;
+  }
+
+  public void setState(ShooterStates newState) {
+    state = newState;
   }
 }

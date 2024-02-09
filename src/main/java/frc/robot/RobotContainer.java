@@ -36,6 +36,7 @@ import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.test_feeder.TestFeeder;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -50,8 +51,9 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Shooter shooter = new Shooter();
+  private final TestFeeder testFeeder = new TestFeeder();
 
-  private double distance = 25;
+  private double distance = 15;
 
   private final CommandJoystick joystick = new CommandJoystick(0);
 
@@ -110,8 +112,9 @@ public class RobotContainer {
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    NamedCommands.registerCommand(
-        "Shoot", Commands.startEnd(() -> shooter.shoot(distance), shooter::stop, shooter));
+    // NamedCommands.registerCommand(
+    // "Shoot", Commands.startEnd(() -> shooter.setRPM(50), shooter::stop,
+    // shooter));
 
     // Set up feedforward characterization
     autoChooser.addOption(

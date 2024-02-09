@@ -11,6 +11,7 @@ public interface ShooterIO {
     public double appliedVolts = 0.0;
     public double RPM = 0.0;
     public double desiredVolts = 0.0;
+    public ShooterStates state = ShooterStates.STOPPED;
   }
 
   public void updateInputs(ShooterIOInputs inputs);
