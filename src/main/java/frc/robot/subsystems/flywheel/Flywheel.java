@@ -15,6 +15,8 @@ package frc.robot.subsystems.flywheel;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -24,15 +26,21 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
+  private boolean printCommand;
 
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
+    printCommand = false;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
+        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
+        io.configurePID(4.0, 0.0, 0.0);
+        break;
+
       case REPLAY:
         ffModel = new SimpleMotorFeedforward(0.1, 0.05);
         io.configurePID(1.0, 0.0, 0.0);
@@ -51,6 +59,7 @@ public class Flywheel extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
+    SmartDashboard.putBoolean("print Command", printCommand);
   }
 
   /** Run open loop at the specified voltage. */
@@ -81,5 +90,14 @@ public class Flywheel extends SubsystemBase {
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
+  }
+
+  public void printCommand() {
+    printCommand = true;
+  }
+
+  public Command printCom() {
+
+    return this.runOnce(() -> printCommand());
   }
 }

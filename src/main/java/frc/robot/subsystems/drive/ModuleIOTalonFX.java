@@ -90,12 +90,16 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         driveTalon = new TalonFX(13, "Takeover");
         turnTalon = new TalonFX(11, "Takeover");
         cancoder = new CANcoder(12, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(Math.PI + 1.976);
-        // Uncomment for jynx
-        // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
+        absoluteEncoderOffset = new Rotation2d(-2.979); // )Math.PI + 1.976); // -2.65
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -103,9 +107,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(23, "Takeover");
         turnTalon = new TalonFX(21, "Takeover");
         cancoder = new CANcoder(22, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(Math.PI + 2.223);
-        // Uncomment for jynx
-        // absoluteEncoderOffset = new Rotation2d(-.928 + Math.PI); // 2.778
+        absoluteEncoderOffset = new Rotation2d(-.927); // Math.PI + 2.223); // 2.778
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -113,9 +115,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(33, "Takeover");
         turnTalon = new TalonFX(31, "Takeover");
         cancoder = new CANcoder(32, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(Math.PI + 1.414);
-        // Uncomment for jynx
-        // absoluteEncoderOffset = new Rotation2d(1.474 + Math.PI); // -2.551
+        absoluteEncoderOffset = new Rotation2d(-1.68); // Math.PI + 1.414); // -2.551
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
@@ -123,9 +123,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(43, "Takeover");
         turnTalon = new TalonFX(41, "Takeover");
         cancoder = new CANcoder(42, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(Math.PI + -2.818);
-        // Uncomment for jynx
-        // absoluteEncoderOffset = new Rotation2d(-2.686 + Math.PI); // -1/717
+        absoluteEncoderOffset = new Rotation2d(0.313); // Math.PI + -2.818); // -1/717
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
