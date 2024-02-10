@@ -16,6 +16,18 @@
           "data": {
             "pathName": "note3rootinception"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Closed Loop Shoot"
+          }
         }
       ]
     }
