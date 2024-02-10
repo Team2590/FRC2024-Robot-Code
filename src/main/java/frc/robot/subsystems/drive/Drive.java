@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -41,11 +42,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
-  // Uncomment for Jynx
-  // static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
-  // static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
+  private static final double TRACK_WIDTH_X = get_TRACK_WIDTH_X();
+  private static final double TRACK_WIDTH_Y = get_TRACK_WIDTH_Y();
+
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
@@ -286,5 +285,37 @@ public class Drive extends SubsystemBase {
 
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  /** @return Robot width X-axis */
+  private static double get_TRACK_WIDTH_X() {
+    switch (Constants.currentMode) {
+      case REAL: {
+        return 0; // need to add value for real
+      }
+      case JYNX: {
+        return Units.inchesToMeters(18.75);
+      }
+      case KANG: {
+        return Units.inchesToMeters(36);
+      }
+      default: return 0;
+    }
+  }
+
+  /** @return Robot width Y-axis  */
+  private static double get_TRACK_WIDTH_Y() {
+    switch (Constants.currentMode) {
+      case REAL: {
+        return 0;  // need to value for real
+      }
+      case JYNX: {
+        return Units.inchesToMeters(18.75);
+      }
+      case KANG: {
+        return Units.inchesToMeters(36);
+      }
+      default: return 0;
+    }
   }
 }
