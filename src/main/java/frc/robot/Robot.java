@@ -15,6 +15,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.user_input.UserInput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -30,8 +36,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
+  private Superstructure superstructure;
   private RobotContainer robotContainer;
-
+  private UserInput input = UserInput.getInstance();
+  private Drive drive;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -60,7 +68,7 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        // Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -86,7 +94,10 @@ public class Robot extends LoggedRobot {
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
+    
+
     robotContainer = new RobotContainer();
+    // end robotInit()
   }
 
   /** This function is called periodically during all modes. */
@@ -98,11 +109,15 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    robotContainer.updateSubsystems();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    drive.stop();
+    superstructure.stop();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -143,7 +158,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    robotContainer.updateUserInput();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
