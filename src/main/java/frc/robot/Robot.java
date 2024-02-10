@@ -64,6 +64,10 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
+      case KANG:
+        Logger.addDataReceiver(new NT4Publisher());
+        break;
+
       case SIM:
         // Running a physics simulator, log to NT
         Logger.addDataReceiver(new NT4Publisher());
@@ -76,6 +80,8 @@ public class Robot extends LoggedRobot {
         Logger.setReplaySource(new WPILOGReader(logPath));
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
+
+      default: break;
     }
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
