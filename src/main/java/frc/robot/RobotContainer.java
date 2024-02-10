@@ -85,7 +85,15 @@ public class RobotContainer {
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
         break;
-
+      case KANG: 
+        drive = new Drive(
+          new GyroIO() {}, 
+          new ModuleIOTalonFX(0),
+          new ModuleIOTalonFX(1),
+          new ModuleIOTalonFX(2),
+          new ModuleIOTalonFX(3));
+          flywheel = null;
+        break;
       default:
         // Replayed robot, disable IO implementations
         drive =

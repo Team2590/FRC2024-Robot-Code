@@ -85,6 +85,12 @@ public final class Constants {
     SIM,
 
     /** Replaying from a log file. */
-    REPLAY
+    REPLAY, 
+
+    /** Running Kang */
+    KANG,
+
+    /** Running Jynx */
+    JYNX
   }
 }
