@@ -66,8 +66,8 @@ public class PoseEstimator {
   }
 
   /** Records a new set of vision updates. */
-  public void addVisionData(List<TimestampedVisionUpdate> visionData) {
-    for (var timestampedVisionUpdate : visionData) {
+  public void addVisionData(ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> updates2) {
+    for (var timestampedVisionUpdate : updates2) {
       var timestamp = timestampedVisionUpdate.timestamp();
       var visionUpdate =
           new VisionUpdate(timestampedVisionUpdate.pose(), timestampedVisionUpdate.stdDevs());
