@@ -33,7 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.util.LocalADStarAK;
+import frc.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -61,6 +61,12 @@ public class Drive extends SubsystemBase {
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+
+
+
+  // public static Drive getInstance(){
+  //   return instance == null ? instance = new Drive() : instance;
+  // }
 
   public Drive(
       GyroIO gyroIO,
@@ -272,6 +278,21 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return MAX_ANGULAR_SPEED;
+  }
+
+  // COMMENTED OUT IN MERGE, THIS METHOD SHOULD NOT BE DONE HERE
+  // public void setGyro(double degrees) {
+
+  //   gyroIO.(degrees);
+  // }
+
+  public void resetEncoders() {
+
+    for(int i=0; i<4; i++){
+      //currently doesn't do anything :)
+      modules[i].zero_encoder();
+    }
+
   }
 
   /** Returns an array of module translations. */
