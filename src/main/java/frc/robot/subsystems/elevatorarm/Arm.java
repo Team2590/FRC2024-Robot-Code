@@ -37,9 +37,25 @@ public class Arm extends SubsystemBase {
                 break;
             case APPROACHINGSETPOINT:
                 arm.setmotionmagic();
+                if(arm.atsetpoint()){
+                  state = States.HOLDSETPOINT;
+
+                }
+                else{
+                  state = States.APPROACHINGSETPOINT;
+
+                }
                 break;
             case HOLDSETPOINT:
                 arm.setmotionmagic();
+                if(arm.atsetpoint()){
+                  state = States.HOLDSETPOINT;
+
+                }
+                else{
+                  state = States.APPROACHINGSETPOINT;
+
+                }
                 break;
             // case STOWED:
             //     arm.setmotionmagicstow();
@@ -67,10 +83,28 @@ public class Arm extends SubsystemBase {
   public void motionmagicamp() {
     state = States.AMPTRAP;
   }
+  public void armmanualup() {
+    state = States.MANUAL;
+    arm.armmanualup();
+  }
+  public void armmanualdown() {
+    state = States.MANUAL;
+    arm.armmanualdown();
+  }
 
   public void resetarm() {
     arm.resetArm();
   }
+  /**put this in periodic */
+  public void atsetpoint() {
+    if(arm.atsetpoint()){
+      state = States.HOLDSETPOINT;
+    }
+    else{
+      state = States.APPROACHINGSETPOINT;
+    }
+
+  } 
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {}

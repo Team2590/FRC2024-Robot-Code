@@ -39,6 +39,7 @@ public class ArmIOTalonFX implements ArmIO {
   private double setpoint = -0.165;
   private double ampsetpoint = -0.2;
   private double intakesetpoint = -0.35;
+  private boolean atsetpoint;
 
   public ArmIOTalonFX() {
     /* configurations for the arm encoder */
@@ -114,6 +115,11 @@ public class ArmIOTalonFX implements ArmIO {
 
   public void stop() {
     arm.setControl(m_request);
+  }
+
+  public boolean atsetpoint() {
+    return Math.abs(setpoint - arm.getPosition().getValueAsDouble()) <= 0.001;  
+
   }
 
   public void updateTunableNumbers() {
