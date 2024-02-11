@@ -1,4 +1,3 @@
-
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // version 3 as published by the Free Software Foundation or
@@ -11,7 +10,7 @@
 
 package frc.robot;
 
-//import subsystems
+// import subsystems
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -19,7 +18,7 @@ package frc.robot;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure{
+public class Superstructure {
   // TBD: declare variables to add subsystems into
   private static enum States {
     DISABLED,
@@ -61,26 +60,32 @@ public class Superstructure{
         // return all subsystems to its home state
         break;
       case AMP:
-        //amp
+        // amp
         break;
     }
   }
-  public void intake(){
+
+  public void intake() {
     state = States.INTAKE;
   }
-  public void reset(){
+
+  public void reset() {
     state = States.RESET;
   }
-  public void shoot(){
+
+  public void shoot() {
     state = States.SHOOT;
   }
-  public void climb(){
+
+  public void climb() {
     state = States.CLIMB;
   }
+
   public void stop() {
     state = States.DISABLED;
   }
-  public void amp(){
-    state = States.AMP; 
+
+  public void amp() {
+    state = States.AMP;
   }
 }

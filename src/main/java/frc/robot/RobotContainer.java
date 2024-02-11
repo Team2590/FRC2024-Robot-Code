@@ -1,22 +1,13 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
-import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIOPigeon2;    
+import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -26,7 +17,6 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.util.PoseEstimator;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -42,7 +32,8 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Superstructure superstructure;
   private final UserInput input;
-  public static final PoseEstimator poseEstimator = new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
+  public static final PoseEstimator poseEstimator =
+      new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
@@ -89,7 +80,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {});
         break;
     }
-    //pass in all subsystems into superstructure
+    // pass in all subsystems into superstructure
     superstructure = new Superstructure();
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -104,6 +95,11 @@ public class RobotContainer {
             () -> input.rightJoystickX()));
   }
 
+  public void stop() {
+    drive.stop();
+    superstructure.stop();
+  }
+
   // public void initRobot(String name) {
 
   //   drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
@@ -111,15 +107,16 @@ public class RobotContainer {
 
   // }
 
-  public void updateSubsystems(){
-    //call update functions of all subsystems
-}
-
-  public void updateUserInput(){
-    //joystick inputs galore!
+  public void updateSubsystems() {
+    // call update functions of all subsystems
+    input.update();
   }
 
-  //--------AUTO CHOOSER FUNCTIONS------------
+  public void updateUserInput() {
+    // joystick inputs galore!
+  }
+
+  // --------AUTO CHOOSER FUNCTIONS------------
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -127,7 +124,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
-  }    
+  }
   /**
    * Use this branch to build the commands from the autos that you want to run, and add the commands
    * to the AutoChooser.
@@ -143,9 +140,8 @@ public class RobotContainer {
         "Flywheel FF Characterization",
         new FeedForwardCharacterization(
             flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+  }
 
-  } 
-  
   /**
    * Use this to register all of the commands with the AutoBuilder This should include all commands
    * used in the autos (except drive commands)
@@ -157,5 +153,4 @@ public class RobotContainer {
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
             .withTimeout(5.0));
   }
-
 }

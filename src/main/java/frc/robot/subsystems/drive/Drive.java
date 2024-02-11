@@ -62,8 +62,6 @@ public class Drive extends SubsystemBase {
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
 
-
-
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;
   // }
@@ -278,21 +276,6 @@ public class Drive extends SubsystemBase {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return MAX_ANGULAR_SPEED;
-  }
-
-  // COMMENTED OUT IN MERGE, THIS METHOD SHOULD NOT BE DONE HERE
-  // public void setGyro(double degrees) {
-
-  //   gyroIO.(degrees);
-  // }
-
-  public void resetEncoders() {
-
-    for(int i=0; i<4; i++){
-      //currently doesn't do anything :)
-      modules[i].zero_encoder();
-    }
-
   }
 
   /** Returns an array of module translations. */

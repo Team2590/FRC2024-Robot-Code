@@ -17,10 +17,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.vision.PhotonRunnable;
-
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import org.littletonrobotics.junction.Logger;
@@ -66,7 +64,8 @@ public class PoseEstimator {
   }
 
   /** Records a new set of vision updates. */
-  public void addVisionData(ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> updates2) {
+  public void addVisionData(
+      ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> updates2) {
     for (var timestampedVisionUpdate : updates2) {
       var timestamp = timestampedVisionUpdate.timestamp();
       var visionUpdate =

@@ -68,6 +68,7 @@ public class PhotonRunnable implements Runnable {
                     atomicEstimatedRobotPose.set(estimatedRobotPose);
                     updates.add(getPoseAtTimestamp(timestamp));
                     RobotContainer.poseEstimator.addVisionData(updates);
+
                     updates.clear();
                   }
                 });
