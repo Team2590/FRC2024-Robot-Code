@@ -96,7 +96,7 @@ public class ModuleIOTalonFX implements ModuleIO {
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1:
-        driveTalon = new TalonFX(4);
+        driveTalon = new TalonFX(55);
         turnTalon = new TalonFX(3);
         cancoder = new CANcoder(10);
         absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
