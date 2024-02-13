@@ -16,6 +16,10 @@
  */
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LinearRegression;
 import java.util.ArrayList;
@@ -81,7 +85,17 @@ public class Shooter extends SubsystemBase {
   }
 
   public void setRPM(double rpm) {
+    System.out.println(rpm);
     shooterMotors.setVelocity(rpm);
+  }
+
+  public void setVoltage(double voltage) {
+    shooterMotors.setVoltage(voltage);
+  }
+
+  public void setVoltage(Measure<Voltage> voltage) {
+    // shooterMotors.setVoltage(voltage.in(Units.Volts));
+    shooterMotors.setVoltage(voltage.baseUnitMagnitude());
   }
 
   public void stop() {
@@ -96,6 +110,17 @@ public class Shooter extends SubsystemBase {
     state = shooterMotors.getState();
   }
 
+  // public void sysIdLog(SysIdRoutineLog logger) {
+  // logger.motor("Leader").voltage(Units.Volts.of(shooterMotors.getVoltage()));
+  // logger
+  // .motor("Leader")
+  // .angularVelocity(Units.RadiansPerSecond.of(shooterMotors.getAngularVelocity()));
+  // logger.motor("Leader").angularPosition(Units.Radians.of(shooterMotors.getAngularPosition()));
+  // }
+
+  /**
+   * @return Returns the current state of the shooter subsystem
+   */
   public ShooterStates getState() {
     if (state == ShooterStates.MANUAL) {
       return state;

@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class FeedForwardCharacterization extends Command {
   private static final double START_DELAY_SECS = 2.0;
@@ -104,6 +105,9 @@ public class FeedForwardCharacterization extends Command {
       System.out.println(String.format("\tR2=%.5f", regression.R2()));
       System.out.println(String.format("\tkS=%.5f", regression.beta(0)));
       System.out.println(String.format("\tkV=%.5f", regression.beta(1)));
+      Logger.recordOutput("R2", regression.R2());
+      Logger.recordOutput("kS", regression.beta(0));
+      Logger.recordOutput("kV", regression.beta(1));
     }
   }
 }

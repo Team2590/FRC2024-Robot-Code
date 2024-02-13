@@ -24,6 +24,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.units.Units;
 import frc.robot.util.LoggedTunableNumber;
 
 public class ShooterTalonFX implements ShooterIO {
@@ -39,22 +40,23 @@ public class ShooterTalonFX implements ShooterIO {
 
   LoggedTunableNumber kP = new LoggedTunableNumber("Shooter/kP", 0.0);
   LoggedTunableNumber kD = new LoggedTunableNumber("Shooter/kD", 0.0);
-  LoggedTunableNumber kFF = new LoggedTunableNumber("Shooter/kFF", 0.0);
+  LoggedTunableNumber kV = new LoggedTunableNumber("Shooter/kV", 0.0);
+  LoggedTunableNumber kS = new LoggedTunableNumber("Shooter/kS", 0.0);
 
   private TalonFXConfiguration config;
 
-  private double voltage = 0.0;
   private ShooterStates state;
-  private double desiredRPM;
 
   public ShooterTalonFX() {
     config = new TalonFXConfiguration();
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 50.0;
-    config.Slot0.kP = kP.get();
-    config.Slot0.kD = kD.get();
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.Slot0.kP = kP.get();
+    config.Slot0.kD = kD.get();
+    config.Slot0.kV = kV.get();
+    config.Slot0.kS = kS.get();
     leader.getConfigurator().apply(config);
     follower.setControl(new Follower(leader.getDeviceID(), true));
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -72,11 +74,12 @@ public class ShooterTalonFX implements ShooterIO {
     inputs.desiredVolts = leader.getClosedLoopOutput().getValueAsDouble();
   }
 
+  /**
+   * @param velocity in RPM
+   */
   @Override
   public void setVelocity(double RPM) {
-    desiredRPM = RPM;
-    double velocityRadPerSec = (RPM * 2 * Math.PI) / 60;
-    leader.setControl(new VelocityVoltage(velocityRadPerSec));
+    leader.setControl(new VelocityVoltage(RPM / 60).withSlot(0));
     state = ShooterStates.APPROACHING_SET_POINT;
   }
 
@@ -87,16 +90,38 @@ public class ShooterTalonFX implements ShooterIO {
   }
 
   public void updateTunableNumbers() {
-    if (kP.hasChanged(0) || kD.hasChanged(0) || kFF.hasChanged(0)) {
+    if (kP.hasChanged(0) || kD.hasChanged(0) || kV.hasChanged(0) || kS.hasChanged(0)) {
       config.Slot0.kP = kP.get();
       config.Slot0.kD = kD.get();
-      config.Slot0.kV = kFF.get();
+      config.Slot0.kV = kV.get();
+      config.Slot0.kS = kS.get();
       leader.getConfigurator().apply(config);
     }
   }
 
+  public void setVoltage(double voltage) {
+    leader.setVoltage(voltage);
+  }
+
   public double getVoltage() {
-    return voltage;
+    return leader.getMotorVoltage().getValueAsDouble();
+  }
+
+  public double getRPM() {
+    return leader.getVelocity().getValueAsDouble() * 60;
+  }
+
+  public double getAngularVelocity() {
+    return Units.RadiansPerSecond.convertFrom(
+        leader.getVelocity().getValue(), Units.RotationsPerSecond);
+  }
+
+  public double getAngularPosition() {
+    return Units.Radians.convertFrom(leader.getPosition().getValue(), Units.Rotations);
+  }
+
+  public double getPosition() {
+    return leader.getPosition().getValueAsDouble();
   }
 
   public ShooterStates getState() {
