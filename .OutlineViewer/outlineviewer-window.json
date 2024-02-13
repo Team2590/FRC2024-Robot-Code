@@ -1,0 +1,34 @@
+{
+  "MainWindow": {
+    "GLOBAL": {
+      "fps": "120",
+      "height": "500",
+      "maximized": "0",
+      "style": "0",
+      "userScale": "2",
+      "width": "750",
+      "xpos": "-1",
+      "ypos": "-1"
+    }
+  },
+  "Table": {
+    "0x18D2E228,4": {
+      "Column 0  Weight": "1.0000",
+      "Column 1  Weight": "1.0000",
+      "Column 2  Weight": "1.0000",
+      "Column 3  Weight": "1.0000"
+    }
+  },
+  "Window": {
+    "Debug##Default": {
+      "Collapsed": "0",
+      "Pos": "60,60",
+      "Size": "400,400"
+    },
+    "Entries": {
+      "Collapsed": "0",
+      "Pos": "0,0",
+      "Size": "750,500"
+    }
+  }
+}
