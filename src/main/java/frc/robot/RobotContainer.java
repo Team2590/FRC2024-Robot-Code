@@ -2,7 +2,9 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -38,6 +40,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+
+  private Command snapDrive;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -114,6 +118,14 @@ public class RobotContainer {
 
   public void updateUserInput() {
     // joystick inputs galore!
+    if (input.leftJoystickTriggerPressed()) {
+      snapDrive =
+          DriveCommands.SnapToTarget(
+              drive, () -> input.leftJoystickX(), () -> input.leftJoystickY(), new Pose2d());
+      CommandScheduler.getInstance().schedule(snapDrive);
+    } else if (input.leftJoystickButtonReleased(1)) {
+      CommandScheduler.getInstance().cancel(snapDrive);
+    }
   }
 
   // --------AUTO CHOOSER FUNCTIONS------------

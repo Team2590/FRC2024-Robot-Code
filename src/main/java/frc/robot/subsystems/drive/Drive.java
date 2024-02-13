@@ -19,6 +19,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -34,6 +36,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.util.LocalADStarAK;
+import frc.util.LoggedTunableNumber;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -54,13 +58,20 @@ public class Drive extends SubsystemBase {
   private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
   private final GyroIO gyroIO;
 
-  // private final GyroIOPigeon2 gp2;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+
+  public final PIDController snapController = new PIDController(2, 0.0, 0.0);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+
+  public static LoggedTunableNumber snapControllermultiplier = new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", 2);
+  LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", 0);
+  LoggedTunableNumber snapControllerTolerance = new LoggedTunableNumber("SnapController/tolerance", .1);
+  
 
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;
@@ -77,6 +88,8 @@ public class Drive extends SubsystemBase {
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
+
+    snapController.setTolerance(.1);
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -182,6 +195,7 @@ public class Drive extends SubsystemBase {
 
     // Delete the above and use original odometry code above and use twist1 -> twist
     RobotContainer.poseEstimator.addDriveData(Timer.getFPGATimestamp(), twist);
+    updateTunableNumbers();
   }
   /**
    * Runs the drive at the desired velocity.
@@ -290,5 +304,12 @@ public class Drive extends SubsystemBase {
 
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  private void updateTunableNumbers(){
+    if (snapControllerP.hasChanged(hashCode()) || snapControllerD.hasChanged(hashCode()) || snapControllerTolerance.hasChanged(hashCode())) {
+      snapController.setPID(snapControllerP.get(), 0.0, snapControllerD.get());
+      snapController.setTolerance(snapControllerTolerance.get());
+    }
   }
 }
