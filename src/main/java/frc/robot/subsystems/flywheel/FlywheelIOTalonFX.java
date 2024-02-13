@@ -15,13 +15,12 @@ package frc.robot.subsystems.flywheel;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.util.Units;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
@@ -29,6 +28,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   private final TalonFX leader = new TalonFX(0);
   private final TalonFX follower = new TalonFX(1);
+  private final double controllerTolerance = 0.2;
+  private double controllerSetpoint = 100 / 60;
+  private StatusSignal<Double> velocity;
+  private final BangBangController controller;
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
@@ -45,22 +48,37 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     follower.getConfigurator().apply(config);
     follower.setControl(new Follower(leader.getDeviceID(), false));
 
+    velocity = leader.getVelocity();
+
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0, leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
+        50.0,
+        leaderPosition,
+        leaderVelocity,
+        leaderAppliedVolts,
+        leaderCurrent,
+        followerCurrent,
+        velocity);
     leader.optimizeBusUtilization();
     follower.optimizeBusUtilization();
+    controller = new BangBangController(controllerTolerance);
   }
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
+        leaderPosition,
+        leaderVelocity,
+        leaderAppliedVolts,
+        leaderCurrent,
+        followerCurrent,
+        velocity);
     inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / GEAR_RATIO;
     inputs.velocityRadPerSec =
         Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / GEAR_RATIO;
     inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
         new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()};
+    inputs.velocity = (leader.getVelocity().getValueAsDouble()) / 60;
   }
 
   @Override
@@ -69,17 +87,41 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    leader.setControl(
-        new VelocityVoltage(
-            Units.radiansToRotations(velocityRadPerSec),
-            0.0,
-            true,
-            ffVolts,
-            0,
-            false,
-            false,
-            false));
+  public double returnVelocity() {
+    return leader.getVelocity().getValueAsDouble();
+  }
+
+  public boolean atSetpoint() {
+    if ((returnVelocity() >= controllerSetpoint - controllerTolerance)
+        && (returnVelocity() <= controllerSetpoint + controllerTolerance)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public void setSetpoint(double setpointFR) {
+    controllerSetpoint = setpointFR;
+  }
+
+  @Override
+  /** Run the flywheel at the predetemined setpoint */
+  public void runVelocity() {
+    leader.set(controller.calculate(returnVelocity(), controllerSetpoint));
+    follower.set(-1 * (controller.calculate(returnVelocity(), controllerSetpoint)));
+
+    // leader.setControl(
+    //     new VelocityVoltage(
+    //         Units.radiansToRotations(velocityRadPerSec),
+    //         0.0,
+    //         true,
+    //         ffVolts,
+    //         0,
+    //         false,
+    //         false,
+    //         false));
+    // leader.set(.4);
+
   }
 
   @Override
@@ -87,12 +129,12 @@ public class FlywheelIOTalonFX implements FlywheelIO {
     leader.stopMotor();
   }
 
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
-    var config = new Slot0Configs();
-    config.kP = kP;
-    config.kI = kI;
-    config.kD = kD;
-    leader.getConfigurator().apply(config);
-  }
+  // @Override
+  // public void configurePID(double kP, double kI, double kD) {
+  //   var config = new Slot0Configs();
+  //   config.kP = kP;
+  //   config.kI = kI;
+  //   config.kD = kD;
+  //   leader.getConfigurator().apply(config);
+  // }
 }

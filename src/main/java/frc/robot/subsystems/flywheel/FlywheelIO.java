@@ -21,6 +21,7 @@ public interface FlywheelIO {
     public double positionRad = 0.0;
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
+    public double velocity = 0.0;
     public double[] currentAmps = new double[] {};
   }
 
@@ -31,11 +32,22 @@ public interface FlywheelIO {
   public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
+  public default void setSetpoint(double setpoint) {}
+
+  public default void runVelocity() {}
+
+  public default double returnVelocity() {
+    return 0.0;
+  }
+
+  public default boolean atSetpoint() {
+    return false;
+  }
 
   /** Stop in open loop. */
   public default void stop() {}
 
-  /** Set velocity PID constants. */
-  public default void configurePID(double kP, double kI, double kD) {}
+  public default void coolAid() {}
+  // /** Set velocity PID constants. */
+  // public default void configurePID(double kP, double kI, double kD) {}
 }

@@ -13,44 +13,90 @@
 
 package frc.robot.subsystems.flywheel;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import org.littletonrobotics.junction.AutoLogOutput;
+// import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
-  private final SimpleMotorFeedforward ffModel;
+  private States states;
+  public double velocity;
+  private boolean shooting;
+
+  public static enum States {
+    STOP,
+    MANUAL,
+    APPROACHINGSETPOINT,
+    ATSETPOINT
+  }
 
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
-
-    // Switch constants based on mode (the physics simulator is treated as a
-    // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-        io.configurePID(1.0, 0.0, 0.0);
-        break;
-      case SIM:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
-        break;
-      default:
-        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
-        break;
-    }
+    states = States.STOP;
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
+    // io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
+
+    switch (states) {
+      case MANUAL:
+        io.setSetpoint(inputs.velocity); // will change to manual output
+        System.out.println("In Manual");
+        break;
+      case STOP:
+        io.stop();
+        // System.out.println("Stopped");
+        break;
+      case APPROACHINGSETPOINT:
+        io.runVelocity();
+        System.out.println("Approaching Setpoint");
+        break;
+      case ATSETPOINT:
+        io.runVelocity();
+        // System.out.println("At Setpoint");
+        break;
+    }
+  }
+
+  public void atSetpointRun() {
+    states = States.ATSETPOINT;
+    System.out.println("Running");
+  }
+
+  public void approachSetpoint() {
+    states = States.APPROACHINGSETPOINT;
+  }
+
+  public void shoot() {
+    // boolean x = false;
+    // while(!io.atSetpoint()){
+    //   if(x == false){
+    //   states = States.APPROACHINGSETPOINT;
+    //   }
+    //   else{
+    //     break;
+    //   }
+    // }
+    // if(io.atSetpoint()){
+    //   states = States.ATSETPOINT;
+    //   x = true;
+    // }
+
+    if (!io.atSetpoint() && !shooting) {
+      states = States.APPROACHINGSETPOINT;
+    } else {
+      shooting = true;
+      states = States.STOP;
+    }
+  }
+
+  public void stop() {
+    shooting = false;
+    states = States.STOP;
   }
 
   /** Run open loop at the specified voltage. */
@@ -58,28 +104,9 @@ public class Flywheel extends SubsystemBase {
     io.setVoltage(volts);
   }
 
-  /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
-
-    // Log flywheel setpoint
-    Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
-  }
-
-  /** Stops the flywheel. */
-  public void stop() {
-    io.stop();
-  }
-
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
-  }
-
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
-  }
+  /**
+   * Run closed loop at the specified velocity. *
+   *
+   * <p>/** Returns the current velocity in RPM.
+   */
 }

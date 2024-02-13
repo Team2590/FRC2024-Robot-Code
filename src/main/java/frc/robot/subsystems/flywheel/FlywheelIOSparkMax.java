@@ -13,12 +13,9 @@
 
 package frc.robot.subsystems.flywheel;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -31,7 +28,6 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   private final CANSparkMax leader = new CANSparkMax(0, MotorType.kBrushless);
   private final CANSparkMax follower = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
 
   public FlywheelIOSparkMax() {
     leader.restoreFactoryDefaults();
@@ -65,25 +61,17 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   }
 
   @Override
-  public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
-        ControlType.kVelocity,
-        0,
-        ffVolts,
-        ArbFFUnits.kVoltage);
+  public void setSetpoint(double setpoint) {
+    // pid.setReference(
+    //     Units.radiansPerSecondToRotationsPerMinute() * GEAR_RATIO,
+    //     ControlType.kVelocity,
+    //     0,
+    //     ffVolts,
+    //     ArbFFUnits.kVoltage);
   }
 
   @Override
   public void stop() {
     leader.stopMotor();
-  }
-
-  @Override
-  public void configurePID(double kP, double kI, double kD) {
-    pid.setP(kP, 0);
-    pid.setI(kI, 0);
-    pid.setD(kD, 0);
-    pid.setFF(0, 0);
   }
 }
