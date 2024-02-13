@@ -2,19 +2,25 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 10.21,
-      "y": 6.43
+      "x": 2.0,
+      "y": 7.0
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Run Flywheel"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Xtune"
+            "pathName": "Example Path"
           }
         }
       ]

@@ -13,14 +13,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import frc.robot.subsystems.user_input.UserInput;
+import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.flywheel.Flywheel.States;
+import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -36,16 +34,18 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-  private Superstructure superstructure;
   private RobotContainer robotContainer;
-  private UserInput input = UserInput.getInstance();
-  private Drive drive;
+  private Flywheel flywheel;
+  private final Joystick joystick2 = new Joystick(0);
+  // private final TalonFX motor = new TalonFX(21, "Jazzy");
+  private States states;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    // states = Flywheel.States.STOP;
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -94,10 +94,8 @@ public class Robot extends LoggedRobot {
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
-    
-
     robotContainer = new RobotContainer();
-    // end robotInit()
+    flywheel = new Flywheel(new FlywheelIOTalonFX());
   }
 
   /** This function is called periodically during all modes. */
@@ -109,15 +107,11 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    robotContainer.updateSubsystems();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {
-    drive.stop();
-    superstructure.stop();
-  }
+  public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
@@ -126,14 +120,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    // autonomousCommand = robotContainer.getAutonomousCommand();
 
-    if (autonomousCommand == null) {
-      System.err.println("No autonomous command set");
-      return;
-    }
-
-    // robotContainer.initRobot(autonomousCommand.getName());
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
       autonomousCommand.schedule();
@@ -158,9 +146,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    robotContainer.updateUserInput();
-  }
+  public void teleopPeriodic() {}
+
+  // if (joystick2.getRawButtonPressed(1)) {
+  //   flywheel.runVelocity();
+  // } else {
+  //   flywheel.stop();
+  // }
 
   /** This function is called once when test mode is enabled. */
   @Override
