@@ -139,10 +139,10 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Flywheel FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
 
   } 
   
@@ -151,11 +151,11 @@ public class RobotContainer {
    * used in the autos (except drive commands)
    */
   private void registerAutoCommands() {
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
+    // NamedCommands.registerCommand(
+    //     "Run Flywheel",
+    //     Commands.startEnd(
+    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+    //         .withTimeout(5.0));
   }
 
 }
