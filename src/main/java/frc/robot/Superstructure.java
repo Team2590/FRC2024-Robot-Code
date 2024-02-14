@@ -10,7 +10,8 @@
 
 package frc.robot;
 
-// import subsystems
+//import subsystems
+import frc.robot.subsystems.conveyor.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -30,12 +31,14 @@ public class Superstructure {
   }
 
   private States state = States.DISABLED;
+  private Conveyor conveyor;
   // private final LoggedDashboardNumber flywheelSpeedInput =
   //     new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure() {
+  public Superstructure(Conveyor conveyor) {
     // assign args to local variables
+    this.conveyor = conveyor;
   }
 
   /** Call all of the periodic methods of the subsystems */
@@ -46,21 +49,27 @@ public class Superstructure {
     switch (state) {
       case DISABLED:
         // stop
+        conveyor.setStopped();
         break;
       case INTAKE:
         // intaking
+        conveyor.setIntaking();
         break;
       case SHOOT:
         // shooting
+        conveyor.setShooting();
         break;
       case CLIMB:
         // climbing
+        conveyor.setStopped();
         break;
       case RESET:
         // return all subsystems to its home state
+        conveyor.setStopped();
         break;
       case AMP:
-        // amp
+        //amp
+        conveyor.setDiverting();
         break;
     }
   }

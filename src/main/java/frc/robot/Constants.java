@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -32,6 +33,7 @@ public final class Constants {
 
   public static final Mode currentMode = Mode.REAL;
   public static final boolean tuningMode = true;
+  public static final String canbus = "Takeover";
 
   public final class FieldConstants {
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -70,7 +72,17 @@ public final class Constants {
   }
 
   public final class ConveyorConstants {
-    // Fill in
+    public static final int FEEDER_ID = 0;
+    public static final int DIVRETER_ID = 0;
+    public static final int INTAKE_PROX_ID = 0;
+    public static final int SHOOTER_PROX_ID = 0;
+    public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for
+    public static final double INTAKE_PROX_THRESHOLD = 0.55; // value was tested for
+
+    public static final double DIVERTER_GEAR_RATIO = 1;
+    public static final double FEEDER_GEAR_RATIO = 1;
+    public static final InvertedValue diverterDirection = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue feederDirection = InvertedValue.Clockwise_Positive;
   }
 
   public final class IntakeConstants {
