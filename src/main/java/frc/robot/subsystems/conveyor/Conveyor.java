@@ -76,44 +76,35 @@ public class Conveyor extends SubsystemBase {
     }
   }
 
-  /**
-     * Stop the conveyor
-     */
+  /** Stop the conveyor */
   public void setStopped() {
     state = ConveyorStates.STOPPED;
   }
 
-  /**
-     * Intake piece into stow position
-     */
+  /** Intake piece into stow position */
   public void setIntaking() {
     state = ConveyorStates.INTAKE;
   }
 
-  /**
-     * Outtake piece from front
-     */
+  /** Outtake piece from front */
   public void setOuttaking() {
     state = ConveyorStates.OUTTAKE;
   }
 
-  /**
-     * Moves piece into diverter (for amp/trap)
-     */
+  /** Moves piece into diverter (for amp/trap) */
   public void setDiverting() {
     state = ConveyorStates.DIVERT;
   }
 
-  /**
-     * Move piece into shooter
-     */
+  /** Move piece into shooter */
   public void setShooting() {
     state = ConveyorStates.SHOOT;
   }
 
   /**
    * Manual control of conveyor
-      * @param power - motor power, from -1.0 to 1.0
+   *
+   * @param power - motor power, from -1.0 to 1.0
    */
   public void setManual(double power) {
     manualPower = power;
@@ -122,7 +113,8 @@ public class Conveyor extends SubsystemBase {
 
   /**
    * Returns the current state of the conveyor
-      * @return current state
+   *
+   * @return current state
    */
   public ConveyorStates getState() {
     return state;
@@ -130,7 +122,8 @@ public class Conveyor extends SubsystemBase {
 
   /**
    * Checks if there is something detected by the intake side prox sensor
-      * @return if something is detected
+   *
+   * @return if something is detected
    */
   public boolean detectedIntakeSide() {
     return inputs.detectedShooterSide;
@@ -138,7 +131,8 @@ public class Conveyor extends SubsystemBase {
 
   /**
    * Checks if there is something detected by the shooter side prox sensor
-      * @return if something is detected
+   *
+   * @return if something is detected
    */
   public boolean detectedShooterSide() {
     return inputs.detectedShooterSide;
@@ -146,7 +140,8 @@ public class Conveyor extends SubsystemBase {
 
   /**
    * Uses the two prox sensors to determine if there is a note being stowed
-      * @return if there is a note in resting pos
+   *
+   * @return if there is a note in resting pos
    */
   public boolean hasNote() {
     return inputs.hasNote;
@@ -154,27 +149,8 @@ public class Conveyor extends SubsystemBase {
 }
 
 /**
- *                            _____  _____
- *                           <     `/     |
- *                            >          (
- *                           |   _     _  |
- *                           |  |_) | |_) |
- *                           |  | \ | |   |
- *                           |            |
- *            ______.______%_|            |__________  _____
- *          _/                                       \|     |
- *         |               A B H I K   R A Y                <
- *         |_____.-._________              ____/|___________|
- *                           |  2019-2023 |
- *                           | your code  |
- *                           | was useful |
- *                           |      once  |
- *                           |   _        <
- *                           |__/         |
- *                            / `--.      |
- *                          %|            |%
- *                      |/.%%|          -< @%%%
- *                      `\%`@|     v      |@@%@%%
- *                    .%%%@@@|%    |    % @@@%%@%%%%
- *               _.%%%%%%@@@@@@%%_/%\_%@@%%@@@@@@@%%%%%%
+ * _____ _____ < `/ | > ( | _ _ | | |_) | |_) | | | \ | | | | | ______.______%_| |__________ _____
+ * _/ \| | | A B H I K R A Y < |_____.-._________ ____/|___________| | 2019-2023 | | your code | |
+ * was useful | | once | | _ < |__/ | / `--. | %| |% |/.%%| -< @%%% `\%`@| v |@@%@%% .%%%@@@|% |
+ * % @@@%%@%%%% _.%%%%%%@@@@@@%%_/%\_%@@%%@@@@@@@%%%%%%
  */

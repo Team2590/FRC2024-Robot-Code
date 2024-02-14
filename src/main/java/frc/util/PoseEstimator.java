@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.NavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.littletonrobotics.junction.Logger;
 
 public class PoseEstimator {
@@ -32,7 +31,7 @@ public class PoseEstimator {
   private Pose2d basePose = new Pose2d();
   private Pose2d latestPose = new Pose2d();
   private final NavigableMap<Double, PoseUpdate> updates = new ConcurrentSkipListMap<>();
-  // Use this lock whenever we need to read or modify (add, update, remove) the updates map.  
+  // Use this lock whenever we need to read or modify (add, update, remove) the updates map.
   private final ReentrantLock updateLock = new ReentrantLock();
   private Matrix<N3, N1> q = new Matrix<>(Nat.N3(), Nat.N1());
 
@@ -58,7 +57,7 @@ public class PoseEstimator {
     } finally {
       updateLock.unlock();
     }
-    // update();  // don't need to call update since there is nothing in there.  
+    // update();  // don't need to call update since there is nothing in there.
   }
 
   /** Sets the standard deviations of the model */
@@ -78,7 +77,8 @@ public class PoseEstimator {
     }
   }
   /** Records a new set of vision updates. */
-  public void addVisionData(ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> visionUpdates) {
+  public void addVisionData(
+      ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> visionUpdates) {
     updateLock.lock();
     try {
       processVisionUpdates(visionUpdates);
@@ -87,7 +87,7 @@ public class PoseEstimator {
     }
   }
 
-  /** Processes vision update. This should be called under an updateLock.  */
+  /** Processes vision update. This should be called under an updateLock. */
   private void processVisionUpdates(
       ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> visionUpdates) {
     for (var timestampedVisionUpdate : visionUpdates) {
@@ -150,10 +150,10 @@ public class PoseEstimator {
       latestPose = basePose;
       for (var updateEntry : updates.entrySet()) {
         latestPose = updateEntry.getValue().apply(latestPose, q);
-      } 
+      }
     } finally {
       // It's a good practice to surround the locking code with try/finally block
-      // so the lock gets released even if there is an exception. 
+      // so the lock gets released even if there is an exception.
       updateLock.unlock();
     }
     Logger.recordOutput("Odometry/RobotPosition", latestPose);
