@@ -83,6 +83,7 @@ public class DriveCommands {
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
     return Commands.run(
         (() -> {
+          // TODO: look for bug altering controls during snap drive
           Transform2d difference = drive.getPose().minus(target);
           double theta = Math.atan2(difference.getY(), difference.getX());
           double currentAngle = drive.getRotation().getRadians();

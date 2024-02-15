@@ -2,7 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.autos.AutoRoutines;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -129,6 +130,23 @@ public class RobotContainer {
 
   public void updateUserInput() {
     // joystick inputs galore!
+    if (input.leftJoystickTriggerPressed()) {
+      snapDrive =
+          DriveCommands.SnapToTarget(
+              drive,
+              () -> input.leftJoystickX(),
+              () -> input.leftJoystickY(),
+              FieldConstants.SPEAKER_BLUE);
+      CommandScheduler.getInstance().schedule(snapDrive);
+    } else if (input.leftJoystickButtonReleased(1)) {
+      CommandScheduler.getInstance().cancel(snapDrive);
+    }
+    if (input.rightJoystickTriggerPressed()) {
+      flywheel.shoot(flywheelspeed.get());
+    } else if (input.rightJoystickButtonReleased(1)) {
+      flywheel.stop();
+    }
+
     // if (input.leftJoystickTriggerPressed()) {
     //   snapDrive =
     //       DriveCommands.SnapToTarget(
