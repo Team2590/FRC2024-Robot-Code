@@ -95,7 +95,7 @@ public class Arm extends SubsystemBase {
   public void resetarm() {
     arm.resetArm();
   }
-  /**put this in periodic */
+
   public void atsetpoint() {
     if(arm.atsetpoint()){
       state = States.HOLDSETPOINT;

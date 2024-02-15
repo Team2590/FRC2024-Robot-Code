@@ -1,18 +1,20 @@
 package frc.robot.subsystems.elevatorarm;
 
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.commons.LoggedTunableNumber;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 
+import frc.robot.util.LookupTable;
+
+import frc.robot.commons.LoggedTunableNumber;
+/**
+ * @author Vidur Janapureddy
+ */
 
 public class ArmIOTalonFX implements ArmIO {
   private double manualPower;
@@ -36,10 +38,28 @@ public class ArmIOTalonFX implements ArmIO {
   final DutyCycleOut m_request1 = new DutyCycleOut(0.1);
   final DutyCycleOut m_request2 = new DutyCycleOut(-0.1);
   DutyCycleOut mrequest3 = new DutyCycleOut(0);
-  private double setpoint = -0.165;
+  double[] distances = new double[] {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0 };
+  double[] setpoints = new double[] {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0 };
+  private LookupTable setpointcalculator = new LookupTable(distances, setpoints);
   private double ampsetpoint = -0.2;
   private double intakesetpoint = -0.35;
-  private boolean atsetpoint;
+  private double speakerdistance = 0;
 
   public ArmIOTalonFX() {
     /* configurations for the arm encoder */
@@ -60,6 +80,8 @@ public class ArmIOTalonFX implements ArmIO {
     slot0.kI = kI.get();
     slot0.kD = kD.get();
     slot0.kS = kS.get();
+    slot0.kG = 0;
+    slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     FeedbackConfigs fdb = cfg.Feedback;
     fdb.SensorToMechanismRatio = 200;
@@ -80,7 +102,7 @@ public class ArmIOTalonFX implements ArmIO {
   public void setmotionmagic() {
     // mmv.Slot = 0;
     // arm.setControl(mmv.withPosition(-0.165));
-    arm.setControl(mmv.withPosition(setpoint));
+    arm.setControl(mmv.withPosition(setpointcalculator.getValue(speakerdistance)));
   }
 
   // public void setmotionmagicstow() {
@@ -118,7 +140,7 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   public boolean atsetpoint() {
-    return Math.abs(setpoint - arm.getPosition().getValueAsDouble()) <= 0.001;  
+    return Math.abs(setpointcalculator.getValue(speakerdistance) - arm.getPosition().getValueAsDouble()) <= 0.001;  
 
   }
 
