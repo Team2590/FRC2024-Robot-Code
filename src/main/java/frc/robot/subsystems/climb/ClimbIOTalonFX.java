@@ -1,19 +1,19 @@
 package frc.robot.subsystems.climb;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import frc.robot.Constants;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX left_motor = new TalonFX(20);
-  // private final TalonFX right_motor = new TalonFX(200);
+  private final TalonFX left_motor = new TalonFX(1); // closer one
+  private final TalonFX right_motor = new TalonFX(0);
 
-  public final double maxPosition =
-      ((Constants.CLIMBER_MAX_HEIGHT) / (Math.PI * Constants.CLIMBER_WHEEL_RADIUS))
-          * Constants.CLIMBER_GEAR_RATIO;
+  // public final double maxPosition =
+  //     ((Constants.CLIMBER_MAX_HEIGHT) / (Math.PI * Constants.CLIMBER_WHEEL_RADIUS))
+  //         * Constants.CLIMBER_GEAR_RATIO;
 
-  private final double speed = 0.2;
+  public final double maxPosition = 5;
+
+  private final double speed = 0.15;
 
   // public enum Limits {
   //   TOO_HIGH,
@@ -39,6 +39,9 @@ public class ClimbIOTalonFX implements ClimbIO {
     // right_motor.optimizeBusUtilization();
     // right_motor.setNeutralMode(NeutralMode.Brake);
     left_motor.setNeutralMode(NeutralModeValue.Brake);
+    right_motor.setNeutralMode(NeutralModeValue.Brake);
+    left_motor.setInverted(true);
+    // right_motor.setControl(new Follower(left_motor.getDeviceID(), false));
   }
 
   @Override
@@ -49,21 +52,26 @@ public class ClimbIOTalonFX implements ClimbIO {
   public void up() {
     if (left_motor.getPosition().getValueAsDouble() > maxPosition) {
       left_motor.stopMotor();
+      right_motor.stopMotor();
     } else {
-      left_motor.set(speed);
+      left_motor.set(-speed);
+      right_motor.set(speed);
     }
   }
 
   public void down() {
     if (left_motor.getPosition().getValueAsDouble() < 0) {
       left_motor.stopMotor();
+      right_motor.stopMotor();
     } else {
-      left_motor.set(-speed);
+      left_motor.set(speed);
+      right_motor.set(-speed);
     }
   }
 
   public void stop() {
     left_motor.stopMotor();
+    right_motor.stopMotor();
   }
 
   public double getPosition() {
@@ -72,6 +80,7 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   public void resetRotationCount() {
     left_motor.setPosition(0);
+    right_motor.setPosition(0);
   }
 
   // public void updateTunableNumbers() {

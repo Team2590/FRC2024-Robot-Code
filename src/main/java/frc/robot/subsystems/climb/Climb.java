@@ -7,7 +7,6 @@ public class Climb extends SubsystemBase {
   private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
   private ClimbStates state;
 
-
   @Override
   public void periodic() {
     System.out.println(climbMotors.getPosition());
@@ -37,5 +36,9 @@ public class Climb extends SubsystemBase {
 
   public ClimbStates getState() {
     return state;
+  }
+
+  public void setState(ClimbStates newState) {
+    state = newState;
   }
 }
