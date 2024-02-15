@@ -118,4 +118,8 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
   public boolean leftJoystickButtonReleased(int button) {
     return leftJoystick.getRawButtonReleased(button);
   }
+
+  public boolean rightJoystickButtonReleased(int button) {
+    return rightJoystick.getRawButtonReleased(button);
+  }
 }

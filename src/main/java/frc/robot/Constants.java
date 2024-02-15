@@ -75,7 +75,7 @@ public final class Constants {
     public static final int FEEDER_ID = 0;
     public static final int DIVRETER_ID = 0;
     public static final int INTAKE_PROX_ID = 0;
-    public static final int SHOOTER_PROX_ID = 0;
+    public static final int SHOOTER_PROX_ID = 1;
     public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for
     public static final double INTAKE_PROX_THRESHOLD = 0.55; // value was tested for
 

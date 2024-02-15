@@ -95,8 +95,12 @@ public class DriveCommands {
           Logger.recordOutput("SnapController/TargetPose", target);
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  -xSupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * Drive.snapControllermultiplier.get(),
-                  -ySupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * Drive.snapControllermultiplier.get(),
+                  -xSupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  -ySupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
                   drive.snapController.calculate(currentAngle, theta)
                       * drive.getMaxAngularSpeedRadPerSec(),
                   drive.getRotation()));

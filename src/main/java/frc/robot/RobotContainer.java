@@ -19,6 +19,7 @@ import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
+import frc.robot.util.LoggedTunableNumber;
 import frc.util.PoseEstimator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -42,6 +43,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedTunableNumber flywheelspeed =
+      new LoggedTunableNumber("Flywheel Setpoint", 1500.0);
 
   private Command snapDrive;
 
@@ -109,13 +112,6 @@ public class RobotContainer {
     superstructure.stop();
   }
 
-  // public void initRobot(String name) {
-
-  //   drive.setGyro(PathPlannerAuto.getStaringPoseFromAutoFile(name).getRotation().getDegrees());
-  //   //
-
-  // }
-
   public void updateSubsystems() {
     // call update functions of all subsystems
     superstructure.periodic();
@@ -123,8 +119,8 @@ public class RobotContainer {
     input.update();
   }
 
-  public void updateUserInput(){
-    //joystick inputs galore!
+  public void updateUserInput() {
+    // joystick inputs galore!
     if (input.leftJoystickTriggerPressed()) {
       snapDrive =
           DriveCommands.SnapToTarget(
@@ -133,15 +129,17 @@ public class RobotContainer {
     } else if (input.leftJoystickButtonReleased(1)) {
       CommandScheduler.getInstance().cancel(snapDrive);
     }
-    // joystick inputs galore!
-    if (input.leftJoystickTrigger()) {
-            superstructure.intake();
-      superstructure.intake();
-    } else if (input.leftJoystickButton(2)) {
-      superstructure.amp();
-    } else {
-      superstructure.stop();
+    if (input.rightJoystickTriggerPressed()) {
+      flywheel.shoot(flywheelspeed.get());
+    } else if (input.rightJoystickButtonReleased(1)) {
+      flywheel.stop();
     }
+
+    // if (input.leftJoystickTriggerPressed()) {
+    //   superstructure.intake();
+    // } else if (input.rightJoystickButtonReleased(1)) {
+    //   superstructure.stop();
+    // }
   }
 
   // --------AUTO CHOOSER FUNCTIONS------------

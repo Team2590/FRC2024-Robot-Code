@@ -10,7 +10,7 @@
 
 package frc.robot;
 
-//import subsystems
+// import subsystems
 import frc.robot.subsystems.conveyor.*;
 
 /**
@@ -68,7 +68,7 @@ public class Superstructure {
         conveyor.setStopped();
         break;
       case AMP:
-        //amp
+        // amp
         conveyor.setDiverting();
         break;
     }
