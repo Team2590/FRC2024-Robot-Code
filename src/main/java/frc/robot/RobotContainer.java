@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.*;
+import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -19,7 +21,6 @@ import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
-import frc.robot.util.LoggedTunableNumber;
 import frc.util.PoseEstimator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -43,8 +44,6 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
-  private final LoggedTunableNumber flywheelspeed =
-      new LoggedTunableNumber("Flywheel Setpoint", 1500.0);
 
   private Command snapDrive;
 
@@ -55,7 +54,7 @@ public class RobotContainer {
       case REAL:
         drive =
             new Drive(
-                new GyroIO() {},
+                new GyroIOPigeon2(true) {},
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
@@ -116,6 +115,8 @@ public class RobotContainer {
     // call update functions of all subsystems
     superstructure.periodic();
     conveyor.periodic();
+    superstructure.periodic();
+    conveyor.periodic();
     input.update();
   }
 
@@ -124,21 +125,19 @@ public class RobotContainer {
     if (input.leftJoystickTriggerPressed()) {
       snapDrive =
           DriveCommands.SnapToTarget(
-              drive, () -> input.leftJoystickX(), () -> input.leftJoystickY(), new Pose2d());
+              drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
       CommandScheduler.getInstance().schedule(snapDrive);
     } else if (input.leftJoystickButtonReleased(1)) {
       CommandScheduler.getInstance().cancel(snapDrive);
     }
-    if (input.rightJoystickTriggerPressed()) {
-      flywheel.shoot(flywheelspeed.get());
-    } else if (input.rightJoystickButtonReleased(1)) {
-      flywheel.stop();
-    }
-
-    // if (input.leftJoystickTriggerPressed()) {
-    //   superstructure.intake();
-    // } else if (input.rightJoystickButtonReleased(1)) {
-    //   superstructure.stop();
+    // joystick inputs galore!
+    // if (input.leftJoystickTrigger()) {
+    // superstructure.intake();
+    // superstructure.intake();
+    // } else if (input.leftJoystickButton(2)) {
+    // superstructure.amp();
+    // } else {
+    // superstructure.stop();
     // }
   }
 
