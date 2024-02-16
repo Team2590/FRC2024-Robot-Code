@@ -9,4 +9,12 @@ public interface ClimbIO {
   }
 
   public void updateInputs(ClimbIOInputs inputs);
+
+  public void up();
+
+  public void down();
+
+  public void stop(); 
+
+  public void resetRotationCount();
 }

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -48,7 +49,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
-  private final Climb climb = new Climb();
+  private final Climb climb = new Climb(new ClimbIOTalonFX());
 
   // Controller
   private final CommandJoystick left_Joystick = new CommandJoystick(0);
