@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.*;
-import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -20,6 +19,8 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.util.PoseEstimator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -36,6 +37,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Conveyor conveyor;
+  private final Intake intake;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -62,6 +64,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         // instantiate other subsystems
         conveyor = new Conveyor(new ConveyorIOTalonFX());
+        intake = new Intake(new IntakeIOTalonFX());
         break;
 
       case SIM:
@@ -76,6 +79,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOSim());
         // instantiate SIM VERSIONS F other subsystems
         conveyor = new Conveyor(new ConveyorIOSim());
+        intake = new Intake(new IntakeIOTalonFX());
         break;
 
       default:
@@ -89,10 +93,11 @@ public class RobotContainer {
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         conveyor = new Conveyor(new ConveyorIO() {});
+        intake = new Intake(new IntakeIOTalonFX());
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor);
+    superstructure = new Superstructure(conveyor, intake);
     // Set up auto routines
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     registerAutoCommands();
@@ -115,8 +120,6 @@ public class RobotContainer {
     // call update functions of all subsystems
     superstructure.periodic();
     conveyor.periodic();
-    superstructure.periodic();
-    conveyor.periodic();
     input.update();
   }
 
@@ -129,6 +132,9 @@ public class RobotContainer {
       CommandScheduler.getInstance().schedule(snapDrive);
     } else if (input.leftJoystickButtonReleased(1)) {
       CommandScheduler.getInstance().cancel(snapDrive);
+    }
+    if (input.rightJoystickTriggerPressed()) {
+      superstructure.intake();
     }
     // joystick inputs galore!
     // if (input.leftJoystickTrigger()) {
