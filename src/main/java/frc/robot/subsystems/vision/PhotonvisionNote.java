@@ -4,6 +4,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -61,6 +62,7 @@ public class PhotonvisionNote {
         }
         double distance = camHeight / Math.tan(getPitch());
         initTrans = new Translation2d(distance, getYaw());
+        initTrans = initTrans.rotateBy(new Rotation2d(getYaw()));
         initTrans.plus(new Translation2d(camFrontOffset,camRightOffset));
         return initTrans;
     }
