@@ -87,6 +87,7 @@ public final class Constants {
 
   public final class IntakeConstants {
     // Fill in
+    public static final int INTAKE_ID = 0;
   }
 
   public static enum Mode {
