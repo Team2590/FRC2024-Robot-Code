@@ -94,7 +94,7 @@ public class ArmIOTalonFX implements ArmIO {
     slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     FeedbackConfigs fdb = cfg.Feedback;
-    fdb.SensorToMechanismRatio = 200;
+    fdb.RotorToSensorRatio = 200;
     fdb.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     fdb.FeedbackRemoteSensorID = 0;
     MagnetSensorConfigs mag = new MagnetSensorConfigs();
@@ -157,7 +157,7 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   public boolean atsetpoint() {
-    return Math.abs(setpointcalculator.getValue(speakerdistance) - arm.getPosition().getValueAsDouble()) <= 0.001;  
+    return Math.abs(setpointcalculator.getValue(speakerdistance) - armCancoder.getPosition().getValueAsDouble()) <= 0.001;  
 
   }
 
