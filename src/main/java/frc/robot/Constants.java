@@ -44,7 +44,7 @@ public final class Constants {
     public static final Pose2d SPEAKER_BLUE =
         new Pose2d(0.3, 5.55, new Rotation2d()); // value was tested for
     public static final Pose2d SPEAKER_RED =
-        new Pose2d(FIELD_LENGTH_METERS - 0.3, 5.55, new Rotation2d()); // value was tested for
+        new Pose2d(0.3, FIELD_WIDTH_METERS - 5.55, new Rotation2d()); // value was tested for
   }
 
   public final class VisionConstants {

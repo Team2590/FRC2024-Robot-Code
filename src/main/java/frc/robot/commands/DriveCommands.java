@@ -75,6 +75,7 @@ public class DriveCommands {
    * @param xSupplier - left joystick x value
    * @param ySupplier - left joystick y value
    * @param target - pos to snap to
+   * @author Ian Keller
    * @see <a href =
    *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
    *     Reference</a>
@@ -83,7 +84,6 @@ public class DriveCommands {
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
     return Commands.run(
         (() -> {
-          // TODO: look for bug altering controls during snap drive
           Transform2d difference = drive.getPose().minus(target);
           double theta = Math.atan2(difference.getY(), difference.getX());
           double currentAngle = drive.getRotation().getRadians();
@@ -96,10 +96,10 @@ public class DriveCommands {
           Logger.recordOutput("SnapController/TargetPose", target);
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  -xSupplier.getAsDouble()
+                  xSupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.snapControllermultiplier.get(),
-                  -ySupplier.getAsDouble()
+                  ySupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.snapControllermultiplier.get(),
                   drive.snapController.calculate(currentAngle, theta)

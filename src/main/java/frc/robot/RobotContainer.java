@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants;
@@ -25,7 +28,9 @@ import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
-import frc.robot.util.PoseEstimator;
+import frc.robot.util.LoggedTunableNumber;
+import frc.util.PoseEstimator;
+import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -48,11 +53,22 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  private Command snapDrive;
+  // field values
+  private Pose2d speaker;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     input = UserInput.getInstance();
+    // set field positions based on alliance (use driverstation to change alliance for testing purposes)
+    if (DriverStation.getAlliance().equals(Optional.of(Alliance.Red))) {
+      speaker = FieldConstants.SPEAKER_RED;
+    } else if (DriverStation.getAlliance().equals(Optional.of(Alliance.Blue))) {
+      speaker = FieldConstants.SPEAKER_BLUE;
+    } else {
+      // default value, only really used in sim
+      speaker = FieldConstants.SPEAKER_RED;
+    }
+
     switch (Constants.currentMode) {
       case REAL:
         drive =
@@ -131,15 +147,11 @@ public class RobotContainer {
   public void updateUserInput() {
     // joystick inputs galore!
     if (input.leftJoystickTriggerPressed()) {
-      snapDrive =
-          DriveCommands.SnapToTarget(
-              drive,
-              () -> input.leftJoystickX(),
-              () -> input.leftJoystickY(),
-              FieldConstants.SPEAKER_BLUE);
-      CommandScheduler.getInstance().schedule(snapDrive);
-    } else if (input.leftJoystickButtonReleased(1)) {
-      CommandScheduler.getInstance().cancel(snapDrive);
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), speaker)
+                  .until(() -> input.leftJoystickButtonReleased(1)));
     }
     if (input.rightJoystickTriggerPressed()) {
       flywheel.shoot(flywheelspeed.get());
