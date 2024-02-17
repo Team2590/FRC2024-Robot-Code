@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -68,7 +69,10 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    // Fill in
+  public static final double GEAR_RATIO = 1.5;
+  public static final TalonFX LEADER = new TalonFX(0);
+  public static final TalonFX FOLLOWER = new TalonFX(1);
+  
   }
 
   public final class ConveyorConstants {
