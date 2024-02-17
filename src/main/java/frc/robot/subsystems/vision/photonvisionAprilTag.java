@@ -38,15 +38,15 @@ public final class photonvisionAprilTag {
   private static final double leftcamFrontOffset = Units.inchesToMeters(0);
   private static final double leftcamRightOffset = Units.inchesToMeters(0);
 
-  private PhotonPipelineResult leftResult;
+  private static PhotonPipelineResult leftResult;
 
   // Again, just in case lol
   // private double rangeLeft;
   // private double rangeRight;
 
-  private PhotonTrackedTarget leftTarget;
+  private static PhotonTrackedTarget leftTarget;
 
-  private Transform3d transformCamLeft;
+  private static Transform3d transformCamLeft;
 
   private static final double rollLeft = Math.toRadians(0.0);
   private static final double pitchLeft = Math.toRadians(45);
@@ -56,8 +56,8 @@ public final class photonvisionAprilTag {
   private static PhotonPoseEstimator poseEstimatorSourceSpeakerLeft;
   private static PhotonPoseEstimator poseEstimatorAmpStageLeft;
 
-  private Pose3d prevPoseSingleLeft;
-  private Pose3d prevPoseMultiLeft;
+  private static Pose3d prevPoseSingleLeft;
+  private static Pose3d prevPoseMultiLeft;
 
   /////////////////////////////////
   //////////  RIGHT  CAM  //////////
@@ -70,15 +70,15 @@ public final class photonvisionAprilTag {
   private static final double rightcamFrontOffset = Units.inchesToMeters(0);
   private static final double rightcamRightOffset = Units.inchesToMeters(0);
 
-  private PhotonPipelineResult rightResult;
+  private static PhotonPipelineResult rightResult;
 
   // Again, just in case lol
   // private double rangeLeft;
   // private double rangeRight;
 
-  private PhotonTrackedTarget rightTarget;
+  private static PhotonTrackedTarget rightTarget;
 
-  private Transform3d transformCamRight;
+  private static Transform3d transformCamRight;
 
   private static final double rollRight = Math.toRadians(0.0);
   private static final double pitchRight = Math.toRadians(45);
@@ -88,33 +88,33 @@ public final class photonvisionAprilTag {
   private static PhotonPoseEstimator poseEstimatorSourceSpeakerRight;
   private static PhotonPoseEstimator poseEstimatorAmpStageRight;
 
-  private Pose3d prevPoseSingleRight;
-  private Pose3d prevPoseMultiRight;
+  private static Pose3d prevPoseSingleRight;
+  private static Pose3d prevPoseMultiRight;
 
-  private final double speakerHeight = Units.inchesToMeters(80.5);
-  private final double ampHeight = Units.inchesToMeters(38);
-  private final double sourceHeight = Units.inchesToMeters(0);
-  private final double stageHeight = Units.inchesToMeters(0);
+  private final static double speakerHeight = Units.inchesToMeters(80.5);
+  private final static double ampHeight = Units.inchesToMeters(38);
+  private final static double sourceHeight = Units.inchesToMeters(0);
+  private final static double stageHeight = Units.inchesToMeters(0);
 
-  private final Translation3d speakerRed = new Translation3d(16.58, 5.55, speakerHeight);
-  private final Translation3d ampRed = new Translation3d(14.70, 8.20, ampHeight);
-  private final Translation3d sourceRed = new Translation3d(0.91, 0.565, sourceHeight);
-  private final Translation3d[] nearestStageRed = {
+  private final static Translation3d speakerRed = new Translation3d(16.58, 5.55, speakerHeight);
+  private final static Translation3d ampRed = new Translation3d(14.70, 8.20, ampHeight);
+  private final static Translation3d sourceRed = new Translation3d(0.91, 0.565, sourceHeight);
+  private final static Translation3d[] nearestStageRed = {
     new Translation3d(11.90, 3.71, stageHeight),
     new Translation3d(11.90, 4.50, stageHeight),
     new Translation3d(11.22, 4.11, stageHeight)
   };
 
-  private final Translation3d speakerBlue = new Translation3d(-0.04, 5.55, speakerHeight);
-  private final Translation3d ampBlue = new Translation3d(1.84, 8.20, ampHeight);
-  private final Translation3d sourceBlue = new Translation3d(15.635, 0.565, sourceHeight);
-  private final Translation3d[] nearestStageBlue = {
+  private final static Translation3d speakerBlue = new Translation3d(-0.04, 5.55, speakerHeight);
+  private final static Translation3d ampBlue = new Translation3d(1.84, 8.20, ampHeight);
+  private final static Translation3d sourceBlue = new Translation3d(15.635, 0.565, sourceHeight);
+  private final static Translation3d[] nearestStageBlue = {
     new Translation3d(5.32, 4.11, stageHeight),
     new Translation3d(4.64, 4.50, stageHeight),
     new Translation3d(4.64, 3.71, stageHeight)
   };
 
-  private final Translation3d[] arrTranslations = {
+  private final static Translation3d[] arrTranslations = {
     null,
     sourceBlue,
     sourceBlue,
@@ -153,7 +153,7 @@ public final class photonvisionAprilTag {
   }
 
   // UPDATING CAMERA RESULTS
-  public void updateResults() {
+  public static void updateResults() {
     leftResult = leftCam.getLatestResult();
     leftTarget = leftResult.getBestTarget();
     if(hasTargetsLeft()){
@@ -186,13 +186,13 @@ public final class photonvisionAprilTag {
   /////////////////////////////////
 
   // TRUE IF ANY TARGET IS DETECTED
-  public boolean hasTargetsLeft() {
+  public static boolean hasTargetsLeft() {
     if(leftResult == null){return false;}
     return leftResult.hasTargets();
   }
 
   // RETURNS FIDUCIALID OF THE DETECTED TAG
-  public int getIDLeft() {
+  public static int getIDLeft() {
     if (!hasTargetsLeft()) {
       return -1;
     }
@@ -200,7 +200,7 @@ public final class photonvisionAprilTag {
   }
 
   // AFTER CALIBRATING CAMERA W/ 3D VIEWING CAPABILITY
-  public Transform3d getCamToTargetTransformLeft(){
+  public static Transform3d getCamToTargetTransformLeft(){
     if(!hasTargetsLeft()){return null;}
     transformCamLeft = leftTarget.getBestCameraToTarget();
     double xi = transformCamLeft.getX();
@@ -211,7 +211,7 @@ public final class photonvisionAprilTag {
   }
 
   // RETURNS DISTANCE FROM CAMERA TO TARGET IN METERS
-  public double getDistanceLeft(){
+  public static double getDistanceLeft(){
     if(!hasTargetsLeft()){return -1.0;}
     double X = getCamToTargetTransformLeft().getX();
     double Y = getCamToTargetTransformLeft().getY();
@@ -219,7 +219,7 @@ public final class photonvisionAprilTag {
   }
 
   //RETURNS DELTA Y DISPLACEMENT TO THE DETECTED TAG
-  public double getOffsetLeft(){
+  public static double getOffsetLeft(){
     if(hasTargetsLeft()){
       return getCamToTargetFinalTransformLeft().getY();
     }
@@ -227,19 +227,19 @@ public final class photonvisionAprilTag {
   }
 
   // RETURNS THE ANGULAR DISPLACEMENT FROM ROBOT TO DETECTED APRILTAG
-  public double getAngleLeft(){
+  public static double getAngleLeft(){
     return Math.atan2(getCamToTargetFinalTransformLeft().getY(), getCamToTargetFinalTransformLeft().getX());
   }
 
   // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET (CONSIDERING YAW)
-  public Transform3d getCamToTargetFinalTransformLeft(){
+  public static Transform3d getCamToTargetFinalTransformLeft(){
     if(!hasTargetsLeft()){return null;}
     Translation2d trans2d = PhotonUtils.estimateCameraToTargetTranslation(getDistanceLeft(), Rotation2d.fromDegrees(-leftTarget.getYaw()));
     return new Transform3d(trans2d.getX(), trans2d.getY(), getCamToTargetTransformLeft().getZ(), getCamToTargetTransformLeft().getRotation());
   }
 
   // USES MULTI TAG POSE ESTIMATION @ AMP & SPEAKER
-  public Pose3d multiTagPose3dLeft(){
+  public static Pose3d multiTagPose3dLeft(){
     if(!hasTargetsLeft()){return null;}
     try{
       prevPoseMultiLeft = poseEstimatorSourceSpeakerLeft.update(leftResult).get().estimatedPose;
@@ -250,7 +250,7 @@ public final class photonvisionAprilTag {
   }
 
   // USES SINGLE TAG POSE ESTIMATION @ SOURCE & STAGE
-  public Pose3d singleTagPose3dLeft(){
+  public static Pose3d singleTagPose3dLeft(){
     if(!hasTargetsLeft()){return null;}
     try{
       prevPoseSingleLeft = poseEstimatorAmpStageLeft.update(leftResult).get().estimatedPose;
@@ -261,7 +261,7 @@ public final class photonvisionAprilTag {
   }
 
   // DECIDES WHICH POSE ESTIMATION TO USE AND ESTIMATES POSE OF ROBOT
-  public Pose3d getRobotPoseLeft(){
+  public static Pose3d getRobotPoseLeft(){
     if(!hasTargetsLeft()){return null;}
     if(leftResult.getTargets().size() > 1){
       return multiTagPose3dLeft();
@@ -275,13 +275,13 @@ public final class photonvisionAprilTag {
   /////////////////////////////////
 
   // TRUE IF ANY TARGET IS DETECTED
-  public boolean hasTargetsRight() {
+  public static boolean hasTargetsRight() {
     if(rightResult == null){return false;}
     return rightResult.hasTargets();
   }
 
   // RETURNS FIDUCIALID OF THE DETECTED TAG
-  public int getIDRight() {
+  public static int getIDRight() {
     if (!hasTargetsRight()) {
       return -1;
     }
@@ -289,7 +289,7 @@ public final class photonvisionAprilTag {
   }
 
   // AFTER CALIBRATING CAMERA W/ 3D VIEWING CAPABILITY
-  public Transform3d getCamToTargetTransformRight(){
+  public static Transform3d getCamToTargetTransformRight(){
     if(!hasTargetsRight()){return null;}
     transformCamRight = rightTarget.getBestCameraToTarget();
     double xi = transformCamRight.getX();
@@ -301,7 +301,7 @@ public final class photonvisionAprilTag {
   }
 
   // RETURNS DISTANCE FROM CAMERA TO TARGET IN METERS
-  public double getDistanceRight(){
+  public static double getDistanceRight(){
     if(!hasTargetsRight()){return -1.0;}
     double X = getCamToTargetTransformRight().getX();
     double Y = getCamToTargetTransformRight().getY();
@@ -309,7 +309,7 @@ public final class photonvisionAprilTag {
   }
 
   //RETURNS DELTA Y DISPLACEMENT TO THE DETECTED TAG
-  public double getOffsetRight(){
+  public static double getOffsetRight(){
     if(hasTargetsRight()){
       return getCamToTargetFinalTransformRight().getY();
     }
@@ -317,19 +317,19 @@ public final class photonvisionAprilTag {
   }
 
   // RETURNS THE ANGULAR DISPLACEMENT FROM ROBOT TO DETECTED APRILTAG
-  public double getAngleRight(){
+  public static double getAngleRight(){
     return Math.atan2(getCamToTargetFinalTransformRight().getY(),getCamToTargetFinalTransformRight().getX());
   }
 
   // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET (CONSIDERS YAW)
-  public Transform3d getCamToTargetFinalTransformRight(){
+  public static Transform3d getCamToTargetFinalTransformRight(){
     if(!hasTargetsRight()){return null;}
     Translation2d trans2d = PhotonUtils.estimateCameraToTargetTranslation(getDistanceRight(), Rotation2d.fromDegrees(-rightTarget.getYaw()));
     return new Transform3d(trans2d.getX(), trans2d.getY(), getCamToTargetTransformRight().getZ(), getCamToTargetTransformRight().getRotation());
   }
 
   // USES MULTI TAG POSE ESTIMATION @ AMP & SPEAKER
-  public Pose3d multiTagPose3dRight(){
+  public static Pose3d multiTagPose3dRight(){
     if(!hasTargetsRight()){return null;}
     try{
       prevPoseMultiRight = poseEstimatorSourceSpeakerRight.update(rightResult).get().estimatedPose;
@@ -340,7 +340,7 @@ public final class photonvisionAprilTag {
   }
 
   // USES SINGLE TAG POSE ESTIMATION @ SOURCE & STAGE
-  public Pose3d singleTagPose3dRight(){
+  public static Pose3d singleTagPose3dRight(){
     if(!hasTargetsRight()){return null;}
     try{
       prevPoseSingleRight = poseEstimatorAmpStageRight.update(rightResult).get().estimatedPose;
@@ -351,7 +351,7 @@ public final class photonvisionAprilTag {
   }
 
   // DECIDES WHICH POSE ESTIMATION TO USE AND ESTIMATES POSE OF ROBOT
-  public Pose3d getRobotPoseRight(){
+  public static Pose3d getRobotPoseRight(){
     if(!hasTargetsRight()){return null;}
     if(rightResult.getTargets().size() > 1){
       return multiTagPose3dRight();
@@ -364,7 +364,7 @@ public final class photonvisionAprilTag {
   //////////  MEGA POSE  //////////
   /////////////////////////////////
 
-  public Pose3d getRobotMegaPose(){
+  public static Pose3d getRobotMegaPose(){
     Pose3d poseLeft = getRobotPoseLeft();
     Pose3d poseRight = getRobotPoseRight();
     if(!hasTargetsRight() && !hasTargetsLeft()){return null;}
@@ -383,17 +383,17 @@ public final class photonvisionAprilTag {
   }
 
   // getting net hypotenuse (3d) to actual field target
-  public double getHypot(Translation3d trans){
+  public static double getHypot(Translation3d trans){
     return Math.hypot(trans.getX(), trans.getY());
   }
 
   // getting translation3d of robot to nearest target (speaker/amp/source/stage)
-  public Translation3d getTranslateToNearestTarget(){
+  public static Translation3d getTranslateToNearestTarget(){
     if(!hasTargetsLeft() && !hasTargetsRight()){return null;}
     return arrTranslations[checkID()].minus(getRobotMegaPose().getTranslation()); 
   }
 
-  public int checkID(){
+  public static int checkID(){
     if(!hasTargetsLeft() && !hasTargetsRight()){return -1;}
     if(!hasTargetsRight()){return getIDLeft();}
     if(!hasTargetsLeft()){return getIDRight();}
@@ -401,7 +401,7 @@ public final class photonvisionAprilTag {
   }
 
   // getting 3d hypotenuse/diagonal of robot to target in meters
-  public double getHypotToTarget(){
+  public static double getHypotToTarget(){
     if(!hasTargetsLeft() && !hasTargetsRight()){return -1.0;}
     return getHypot(getTranslateToNearestTarget());
   }
