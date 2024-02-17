@@ -411,4 +411,40 @@ public final class photonvisionAprilTag {
     return Math.atan2(getTranslateToNearestTarget().getY(), getTranslateToNearestTarget().getX());
   }
 
+  private static final double[] tagHeights = { 0,
+    1.36, 1.36,
+    1.45, 1.45,
+    1.36, 1.36,
+    1.45, 1.45,
+    1.36, 1.36,
+    1.32, 1.32,
+    1.32, 1.32,
+    1.32, 1.32
+  };
+
+  public static double getDistanceTagLeft(){
+    if(!hasTargetsLeft()){return -1;}
+    var result = leftCam.getLatestResult();
+    double range = PhotonUtils.calculateDistanceToTargetMeters(
+                                leftcamHeight,
+                                tagHeights[getIDLeft()],
+                                pitchLeft,
+                                Units.degreesToRadians(result.getBestTarget().getPitch()));
+    return range;
+  }
+
+  public static Translation3d getTranslationToTargetLeft(){
+    if(!hasTargetsLeft()){return null;}
+    return new Translation3d(Math.cos(getYawLeft())*getDistanceTagLeft(), Math.sin(getYawLeft())*getDistanceTagLeft(), tagHeights[getIDLeft()]-leftcamHeight);
+  }
+
+  public static double getYawLeft(){
+    return leftCam.getLatestResult().getBestTarget().getYaw();
+  }
+
+  public static void initTest(){
+    leftCam = new PhotonCamera(instance, "LeftCam");
+    leftCam.setPipelineIndex(0);
+  }
+
 }

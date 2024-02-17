@@ -9,11 +9,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class PhotonvisionNote {
-    private NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    private PhotonCamera cam;
-    private PhotonPipelineResult result;
-    private PhotonTrackedTarget target;
+public final class PhotonvisionNote {
+    private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
+    private static PhotonCamera cam;
+    private static PhotonPipelineResult result;
+    private static PhotonTrackedTarget target;
 
     // CONSTANTS FOR CAMERA HEIGHTS AND APRIL TAG HEIGHTS
     private static final double camHeight = Units.inchesToMeters(12);
@@ -24,45 +24,45 @@ public class PhotonvisionNote {
     //private static final double roll = Math.toRadians(0.0);
     private static final double pitch = Math.toRadians(-34);
     //private static final double yaw = Math.toRadians(0.0);
-    Translation2d initTrans;
+    private static Translation2d initTrans;
 
     
-    public PhotonvisionNote(){
+    public static void init(){
         cam = new PhotonCamera(instance, "NoteCam");
         cam.setPipelineIndex(0);
     }
 
-    public void updateResults(){
+    public static void updateResults(){
         result = cam.getLatestResult();
         target = result.getBestTarget();
     }
 
-    public boolean hasTargets(){
+    public static boolean hasTargets(){
         if(result==null){return false;}
         return result.hasTargets();
     }
 
-    public double getYaw(){
+    public static double getYaw(){
         if(result==null || !hasTargets()){
             return Math.PI;
         }
         return Math.toRadians(target.getYaw());
     }
 
-    public double getPitch(){
+    public static double getPitch(){
         if(result==null || !hasTargets()){
             return Math.PI;
         }
         return Math.abs(Math.toRadians(target.getPitch()) + pitch);
     }
 
-    public Translation2d getRobotToNote(){
+    public static Translation2d getRobotToNote(){
         if(result==null || !hasTargets()){
             return null;
         }
         double distance = camHeight / Math.tan(getPitch());
         initTrans = new Translation2d(distance, getYaw());
-        initTrans = initTrans.rotateBy(new Rotation2d(getYaw()));
+        initTrans = initTrans.rotateBy(new Rotation2d(-1 * getYaw()));
         initTrans.plus(new Translation2d(camFrontOffset,camRightOffset));
         return initTrans;
     }
