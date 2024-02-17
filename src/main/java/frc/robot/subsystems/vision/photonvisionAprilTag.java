@@ -1,4 +1,4 @@
-package frc.robot.subsystems.vision;
+package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -92,16 +93,46 @@ public final class photonvisionAprilTag {
 
   private final double speakerHeight = Units.inchesToMeters(80.5);
   private final double ampHeight = Units.inchesToMeters(38);
+  private final double sourceHeight = Units.inchesToMeters(0);
+  private final double stageHeight = Units.inchesToMeters(0);
 
-  // private final Pose3d speakerRed;
-  // private final Pose3d ampRed;
-  // private final Pose3d sourceRed;
-  // private final Pose3d nearestStageRed;
+  private final Translation3d speakerRed = new Translation3d(16.58, 5.55, speakerHeight);
+  private final Translation3d ampRed = new Translation3d(14.70, 8.20, ampHeight);
+  private final Translation3d sourceRed = new Translation3d(0.91, 0.565, sourceHeight);
+  private final Translation3d[] nearestStageRed = {
+    new Translation3d(11.90, 3.71, stageHeight),
+    new Translation3d(11.90, 4.50, stageHeight),
+    new Translation3d(11.22, 4.11, stageHeight)
+  };
 
-  // private final Pose3d speakerBlue;
-  // private final Pose3d ampBlue;
-  // private final Pose3d sourceBlue;
-  // private final Pose3d nearestStageBlue;
+  private final Translation3d speakerBlue = new Translation3d(-0.04, 5.55, speakerHeight);
+  private final Translation3d ampBlue = new Translation3d(1.84, 8.20, ampHeight);
+  private final Translation3d sourceBlue = new Translation3d(15.635, 0.565, sourceHeight);
+  private final Translation3d[] nearestStageBlue = {
+    new Translation3d(5.32, 4.11, stageHeight),
+    new Translation3d(4.64, 4.50, stageHeight),
+    new Translation3d(4.64, 3.71, stageHeight)
+  };
+
+  private final Translation3d[] arrTranslations = {
+    null,
+    sourceBlue,
+    sourceBlue,
+    speakerRed,
+    speakerRed,
+    ampRed,
+    ampBlue,
+    speakerBlue,
+    speakerBlue,
+    sourceRed,
+    sourceRed,
+    nearestStageRed[0],
+    nearestStageRed[1],
+    nearestStageRed[2],
+    nearestStageBlue[0],
+    nearestStageBlue[1],
+    nearestStageBlue[2]
+  };
 
   public static void init() {
     leftCam = new PhotonCamera(instance, "LeftCam");
@@ -200,7 +231,7 @@ public final class photonvisionAprilTag {
     return Math.atan2(getCamToTargetFinalTransformLeft().getY(), getCamToTargetFinalTransformLeft().getX());
   }
 
-  // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET
+  // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET (CONSIDERING YAW)
   public Transform3d getCamToTargetFinalTransformLeft(){
     if(!hasTargetsLeft()){return null;}
     Translation2d trans2d = PhotonUtils.estimateCameraToTargetTranslation(getDistanceLeft(), Rotation2d.fromDegrees(-leftTarget.getYaw()));
@@ -290,7 +321,7 @@ public final class photonvisionAprilTag {
     return Math.atan2(getCamToTargetFinalTransformRight().getY(),getCamToTargetFinalTransformRight().getX());
   }
 
-  // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET
+  // RETURNS FINAL 3d TRANSFORMATION OF CAM TO TARGET (CONSIDERS YAW)
   public Transform3d getCamToTargetFinalTransformRight(){
     if(!hasTargetsRight()){return null;}
     Translation2d trans2d = PhotonUtils.estimateCameraToTargetTranslation(getDistanceRight(), Rotation2d.fromDegrees(-rightTarget.getYaw()));
@@ -351,6 +382,28 @@ public final class photonvisionAprilTag {
     }
   }
 
+  // getting net hypotenuse (3d) to actual field target
+  public double getHypot(Translation3d trans){
+    return Math.hypot(trans.getX(), trans.getY());
+  }
 
+  // getting translation3d of robot to nearest target (speaker/amp/source/stage)
+  public Translation3d getTranslateToNearestTarget(){
+    if(!hasTargetsLeft() && !hasTargetsRight()){return null;}
+    return arrTranslations[checkID()].minus(getRobotMegaPose().getTranslation()); 
+  }
+
+  public int checkID(){
+    if(!hasTargetsLeft() && !hasTargetsRight()){return -1;}
+    if(!hasTargetsRight()){return getIDLeft();}
+    if(!hasTargetsLeft()){return getIDRight();}
+    return getIDLeft(); //could be changed to getIDRight()
+  }
+
+  // getting 3d hypotenuse/diagonal of robot to target in meters
+  public double getHypotToTarget(){
+    if(!hasTargetsLeft() && !hasTargetsRight()){return -1.0;}
+    return getHypot(getTranslateToNearestTarget());
+  }
 
 }
