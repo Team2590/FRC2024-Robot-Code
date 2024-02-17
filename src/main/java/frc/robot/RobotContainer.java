@@ -15,6 +15,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import frc.robot.subsystems.user_input.UserInput;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,12 +33,16 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevatorarm.Arm;
+import frc.robot.subsystems.elevatorarm.ArmConstants;
+import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
+import frc.robot.subsystems.elevatorarm.ArmIO;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
+import frc.robot.commands.DriveCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,11 +54,9 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Flywheel flywheel;
-  private final Arm arm = new Arm();
+  private final Arm arm;
+  private final UserInput input;
 
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(1);
-  private final CommandJoystick joystick = new CommandJoystick(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -58,17 +64,21 @@ public class RobotContainer {
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+    public RobotContainer() {
+    input = UserInput.getInstance();
     switch (Constants.currentMode) {
       case REAL:
         drive =
             new Drive(
-                new GyroIOPigeon2(true),
+                new GyroIOPigeon2(true) {},
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
                 new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
+        // instantiate other subsystems
+        arm = new Arm(new ArmIOTalonFX());
+        
         break;
 
       case SIM:
@@ -81,6 +91,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         flywheel = new Flywheel(new FlywheelIOSim());
+        // instantiate SIM VERSIONS F other subsystems
+        arm = new Arm(new ArmIOTalonFX());
         break;
 
       default:
@@ -93,16 +105,89 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
+        arm = new Arm(new ArmIOTalonFX());
         break;
     }
+    // pass in all subsystems into superstructure
 
     // Set up auto routines
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    registerAutoCommands();
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices");
+    populateAutoChooser();
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -input.leftJoystickY(),
+            () -> -input.leftJoystickX(),
+            () -> input.rightJoystickX()));
+  }
+
+  public void stop() {
+    drive.stop();
+    arm.stop();
+  }
+
+  public void updateSubsystems() {
+    // call update functions of all subsystems
+    arm.periodic();
+    input.update();
+  }
+
+  public void updateUserInput() {
+    // joystick inputs galore!
+    // if (input.leftJoystickTriggerPressed()) {
+    //   snapDrive =
+    //       DriveCommands.SnapToTarget(
+    //           drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
+    //   CommandScheduler.getInstance().schedule(snapDrive);
+    // } else if (input.leftJoystickButtonReleased(1)) {
+    //   CommandScheduler.getInstance().cancel(snapDrive);
+    // }
+    // if (input.rightJoystickTriggerPressed()) {
+    //   superstructure.intake();
+    // }
+
+    if (input.leftJoystickButtonPressed(2)) {
+      arm.motionmagic1();
+    }
+    else if (input.leftJoystickButtonPressed(3)) {
+      arm.motionmagicintake();
+    }
+    else if (input.leftJoystickButtonPressed(4)) {
+      arm.motionmagicamp();
+    }
+    else if (input.leftJoystickButton(5)) {
+      arm.armmanualup();
+    }
+    else if (input.leftJoystickButton(6)) {
+      arm.armmanualdown();
+    }
+    // joystick inputs galore!
+    // if (input.leftJoystickTrigger()) {
+    // superstructure.intake();
+    // superstructure.intake();
+    // } else if (input.leftJoystickButton(2)) {
+    // superstructure.amp();
+    // } else {
+    // superstructure.stop();
+    // }
+  }
+
+  // --------AUTO CHOOSER FUNCTIONS------------
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
+  }
+  /**
+   * Use this branch to build the commands from the autos that you want to run, and add the commands
+   * to the AutoChooser.
+   */
+  private void populateAutoChooser() {
 
     // Set up feedforward characterization
     autoChooser.addOption(
@@ -113,50 +198,17 @@ public class RobotContainer {
         "Flywheel FF Characterization",
         new FeedForwardCharacterization(
             flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
-
-    // Configure the button bindings
-    configureButtonBindings();
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   * Use this to register all of the commands with the AutoBuilder This should include all commands
+   * used in the autos (except drive commands)
    */
-  private void configureButtonBindings() {
-    // drive.setDefaultCommand(
-    //     DriveCommands.joystickDrive(
-    //         drive,
-    //         () -> -controller.getLeftY(),
-    //         () -> -controller.getLeftX(),
-    //         () -> -controller.getRightX()));
-    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    // controller
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
-    // controller
-    //     .a()
-    //     .whileTrue(
-    //         Commands.startEnd(
-    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
-    joystick.button(5).onTrue(Commands.runOnce(() -> arm.motionmagic1(), arm));
-    // joystick.button(6).onTrue(Commands.runOnce(() -> arm.motionmagic2(), arm));
-    joystick.button(3).onTrue(Commands.runOnce(() -> arm.stop(), arm));
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
+  private void registerAutoCommands() {
+    NamedCommands.registerCommand(
+        "Run Flywheel",
+        Commands.startEnd(
+                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+            .withTimeout(5.0));
   }
 }

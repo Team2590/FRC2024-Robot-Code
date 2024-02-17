@@ -18,8 +18,9 @@ public class Arm extends SubsystemBase {
         STOPPED, MANUAL, HOLDSETPOINT, APPROACHINGSETPOINT, AMPTRAP, /*STOWED, */INTAKE
     }
 
-  /** Creates a new Flywheel. */
-  public Arm() {
+  /** Creates a new Flywheel. 
+ * @param armIOTalonFX */
+  public Arm(ArmIOTalonFX armIOTalonFX) {
     state = States.STOPPED;
   }
 
