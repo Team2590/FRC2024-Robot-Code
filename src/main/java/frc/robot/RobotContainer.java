@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.VecBuilder;
@@ -116,10 +115,7 @@ public class RobotContainer {
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // SendableChooser<Command> sendable = new SendableChooser<>();
     // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
-   
- 
 
-   
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // SendableChooser<Command> sendable = new SendableChooser<>();
     // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
@@ -130,7 +126,6 @@ public class RobotContainer {
     // autoChooser.addOption("Under the Stage 3 piece",
     // AutoBuilder.buildAuto("under_stage_3piece"));
     autoChooser.addOption("inception_test", AutoBuilder.buildAuto("testing"));
- 
 
     // autoChooser.addOption(
     // "3 piece root far sweep", AutoBuilder.buildAuto("3 piece root far sweep"));

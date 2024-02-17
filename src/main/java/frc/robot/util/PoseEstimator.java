@@ -67,7 +67,7 @@ public class PoseEstimator {
     update();
   }
 
-  public double getTargetAngle(){
+  public double getTargetAngle() {
 
     return Units.radiansToDegrees(photonEstimator.targetAngle);
   }

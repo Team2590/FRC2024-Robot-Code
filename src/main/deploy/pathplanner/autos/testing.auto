@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "note3rootinception"
+            "pathName": "Xtune"
           }
         },
         {
@@ -45,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "print Command"
+            "name": "auto_aim"
           }
         }
       ]

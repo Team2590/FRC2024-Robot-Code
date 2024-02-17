@@ -43,8 +43,6 @@ public class Flywheel extends SubsystemBase {
         io.configurePID(4.0, 0.0, 0.0);
         break;
 
-       
-
       case REPLAY:
         ffModel = new SimpleMotorFeedforward(0.1, 0.05);
         io.configurePID(1.0, 0.0, 0.0);
@@ -109,6 +107,4 @@ public class Flywheel extends SubsystemBase {
 
     return this.runOnce(() -> printCommand());
   }
-
- 
 }

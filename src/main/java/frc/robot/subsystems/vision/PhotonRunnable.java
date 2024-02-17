@@ -14,8 +14,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.littletonrobotics.junction.Logger;
@@ -32,14 +30,13 @@ public class PhotonRunnable implements Runnable {
   private final PhotonCamera photonCamera;
   private static final double leftcamFrontOffset = Units.inchesToMeters(0);
   private static final double leftcamRightOffset = Units.inchesToMeters(0);
-  private static final double leftcamHeight=Units.inchesToMeters(2.25);
+  private static final double leftcamHeight = Units.inchesToMeters(2.25);
   public double targetAngle;
-  /* 
+  /*
    * Ayan's additons ft AarushVision
-   * 
-  */
-  private static final double pitchLeft = Math.toRadians(45); 
-
+   *
+   */
+  private static final double pitchLeft = Math.toRadians(45);
 
   private final AtomicReference<EstimatedRobotPose> atomicEstimatedRobotPose =
       new AtomicReference<EstimatedRobotPose>();
@@ -49,7 +46,7 @@ public class PhotonRunnable implements Runnable {
 
   public PhotonRunnable() {
     this.photonCamera = new PhotonCamera("SmallPhotonCamera");
-    
+
     PhotonPoseEstimator photonPoseEstimator = null;
     var layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // PV estimates will always be blue, they'll get flipped by robot thread
@@ -61,20 +58,15 @@ public class PhotonRunnable implements Runnable {
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
               photonCamera,
               RobotToCam.inverse());
-
-
-
     }
     this.photonPoseEstimator = photonPoseEstimator;
 
     //  try {
-    //   aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+    //   aprilTagFieldLayout =
+    // AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
     // } catch (IOException e) {
     //   e.printStackTrace();
     // }
-
-
-
 
   }
 
@@ -85,13 +77,11 @@ public class PhotonRunnable implements Runnable {
       var photonResults = photonCamera.getLatestResult();
       var timestamp = photonResults.getTimestampSeconds();
 
-
-
       if (photonResults.hasTargets()
           && (photonResults.targets.size() > 1
               || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) {
 
-        targetAngle=getAngleLeft(true, photonResults );
+        targetAngle = getAngleLeft(true, photonResults);
 
         photonPoseEstimator
             .update(photonResults)
@@ -108,7 +98,7 @@ public class PhotonRunnable implements Runnable {
                     System.out.println("check");
                     RobotContainer.poseEstimator.addVisionData(updates); // ADD ONLY WHEN USING
                     // VISION
-                    
+
                     /** not able to get to this point */
                     System.out.println("Should be loggoing vision pose");
                     Logger.recordOutput("VisionEstimatedPose", estimatedPose);
@@ -117,31 +107,32 @@ public class PhotonRunnable implements Runnable {
                 });
       }
     }
-
-
-
   }
 
-  public Transform3d getCamToTargetTransformLeft(boolean hasTargets,PhotonPipelineResult result){
-    if(!hasTargets){return null;}
+  public Transform3d getCamToTargetTransformLeft(boolean hasTargets, PhotonPipelineResult result) {
+    if (!hasTargets) {
+      return null;
+    }
     var target = result.getBestTarget();
-    var transformCamLeft=target.getBestCameraToTarget();
+    var transformCamLeft = target.getBestCameraToTarget();
     double xi = transformCamLeft.getX();
     double zi = transformCamLeft.getZ();
-    double deltaPitch = Math.atan(zi/xi) + pitchLeft;
-    double di = Math.sqrt(xi*xi + zi*zi);
-    return new Transform3d(di * Math.cos(deltaPitch) - leftcamFrontOffset, transformCamLeft.getY() - leftcamRightOffset, di * Math.sin(deltaPitch) + leftcamHeight, transformCamLeft.getRotation());
-    
+    double deltaPitch = Math.atan(zi / xi) + pitchLeft;
+    double di = Math.sqrt(xi * xi + zi * zi);
+    return new Transform3d(
+        di * Math.cos(deltaPitch) - leftcamFrontOffset,
+        transformCamLeft.getY() - leftcamRightOffset,
+        di * Math.sin(deltaPitch) + leftcamHeight,
+        transformCamLeft.getRotation());
   }
 
-  public double getAngleLeft(boolean hasTargets, PhotonPipelineResult result){
-    return Math.atan(getCamToTargetTransformLeft(hasTargets,result ).getY()/getCamToTargetTransformLeft(hasTargets, result).getX());
+  public double getAngleLeft(boolean hasTargets, PhotonPipelineResult result) {
+    return Math.atan(
+        getCamToTargetTransformLeft(hasTargets, result).getY()
+            / getCamToTargetTransformLeft(hasTargets, result).getX());
   }
 
-  /* I couldn't think of a name, have fun figuring out what this is for */ 
- 
-
-
+  /* I couldn't think of a name, have fun figuring out what this is for */
 
   /**
    * Gets the latest robot pose. Calling this will only return the pose once. If it returns a
@@ -153,8 +144,6 @@ public class PhotonRunnable implements Runnable {
   public EstimatedRobotPose grabLatestEstimatedPose() {
     return atomicEstimatedRobotPose.getAndSet(null);
   }
-
-
 
   public TimestampedVisionUpdate getPoseAtTimestamp(double timestamp) {
     return new TimestampedVisionUpdate(
