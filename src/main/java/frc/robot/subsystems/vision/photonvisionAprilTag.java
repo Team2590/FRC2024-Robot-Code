@@ -406,4 +406,9 @@ public final class photonvisionAprilTag {
     return getHypot(getTranslateToNearestTarget());
   }
 
+  public static double getYaw(){
+    if(getTranslateToNearestTarget()==null){return Math.PI;}
+    return Math.atan2(getTranslateToNearestTarget().getY(), getTranslateToNearestTarget().getX());
+  }
+
 }
