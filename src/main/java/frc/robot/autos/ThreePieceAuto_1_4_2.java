@@ -13,16 +13,19 @@ public class ThreePieceAuto_1_4_2 extends SequentialCommandGroup {
     addRequirements(drive);
 
     addCommands(
-       // Start up the intake system and follow path to first position in parallel.
+        // Start up the intake system and follow path to first position in parallel.
         Commands.parallel(
-          // TODO: command to start the start the intake system.
-          Commands.print("Starting up Intake .... "),
-          // Move to note1 from starting position B (speaker)
-          paths.getFollowPathCommand("startB_note1")
-        ),
+            // TODO: command to start the start the intake system.
+            Commands.print("Starting up Intake .... "),
+            // Move to note1 from starting position B (speaker)
+            paths.getFollowPathCommand("startB_note1")),
         Commands.print("Picking up Note1 "),
         // Intake
         new InstantCommand(() -> superstructure.intake()),
+        // TODO: Need methods like following to wait for the robot
+        // to get into the right state before executing actions?
+        // Commands.waitUntil(superstructure.isReadyToShoot()),
+
         // TODO: Position the robote towards speaker??
         // Could we use snapping logic to lock on to target.
         // Shoot
