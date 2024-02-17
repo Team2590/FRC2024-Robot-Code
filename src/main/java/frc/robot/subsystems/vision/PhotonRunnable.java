@@ -139,14 +139,7 @@ public class PhotonRunnable implements Runnable {
   }
 
   /* I couldn't think of a name, have fun figuring out what this is for */ 
-  public ArrayList<Double> ayan_function(boolean hasTargets, PhotonPipelineResult res){
-    ArrayList<Double> ret= new ArrayList<Double>();
-    
-
-
-    return ret;
-
-  }
+ 
 
 
 

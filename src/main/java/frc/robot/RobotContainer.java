@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.core.sym.Name;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.VecBuilder;
@@ -110,13 +111,15 @@ public class RobotContainer {
         Commands.startEnd(() -> flywheel.runVolts(.5), flywheel::stop, flywheel).withTimeout(3));
 
     NamedCommands.registerCommand("print Command", flywheel.printCom());
+
+    NamedCommands.registerCommand("auto_aim", DriveCommands.auto_aim(drive));
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // SendableChooser<Command> sendable = new SendableChooser<>();
     // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
    
  
 
-    NamedCommands.registerCommand("print Command", flywheel.printCom());
+   
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // SendableChooser<Command> sendable = new SendableChooser<>();
     // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
@@ -127,9 +130,7 @@ public class RobotContainer {
     // autoChooser.addOption("Under the Stage 3 piece",
     // AutoBuilder.buildAuto("under_stage_3piece"));
     autoChooser.addOption("inception_test", AutoBuilder.buildAuto("testing"));
-    autoChooser.addOption(
-        "3 piece root amp sweep", AutoBuilder.buildAuto("3 piece root amp sweep"));
-    autoChooser.addOption("for_you", AutoBuilder.buildAuto("heulitt_auto"));
+ 
 
     // autoChooser.addOption(
     // "3 piece root far sweep", AutoBuilder.buildAuto("3 piece root far sweep"));
