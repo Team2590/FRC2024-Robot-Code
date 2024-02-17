@@ -29,3 +29,34 @@
   "folder": null,
   "choreoAuto": false
 }
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.33,
+      "y": 5.51
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "note2rootinception"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "getnote3blue"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

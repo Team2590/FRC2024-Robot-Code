@@ -67,4 +67,6 @@ public class DriveCommands {
         },
         drive);
   }
+
+  public static Command auto_aim(Drive drive){return drive.turnToTag();}
 }

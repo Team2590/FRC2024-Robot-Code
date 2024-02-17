@@ -113,6 +113,13 @@ public class RobotContainer {
     // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // SendableChooser<Command> sendable = new SendableChooser<>();
     // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
+   
+ 
+
+    NamedCommands.registerCommand("print Command", flywheel.printCom());
+    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    // SendableChooser<Command> sendable = new SendableChooser<>();
+    // sendable.addOption("demo3piece", AutoBuilder.buildAuto("demo3piece"));
     autoChooser = new LoggedDashboardChooser<Command>("Auto Choice");
 
     // Set up feedforward characterization
