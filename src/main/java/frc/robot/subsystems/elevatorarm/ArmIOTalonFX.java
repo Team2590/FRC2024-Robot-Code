@@ -1,12 +1,18 @@
 package frc.robot.subsystems.elevatorarm;
 
+import java.util.concurrent.CancellationException;
+
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
 import frc.robot.util.LookupTable;
@@ -20,16 +26,19 @@ public class ArmIOTalonFX implements ArmIO {
   private double manualPower;
 
   TalonFX arm = new TalonFX(4);
-  LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 2.7);
+  CANcoder armCancoder = new CANcoder(0);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 0);
   LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", 0);
-  LoggedTunableNumber kD = new LoggedTunableNumber("Arm/kD", 1);
-  LoggedTunableNumber kS = new LoggedTunableNumber("Arm/kS", 0.5);
+  LoggedTunableNumber kD = new LoggedTunableNumber("Arm/kD", 0);
+  LoggedTunableNumber kS = new LoggedTunableNumber("Arm/kS", 0);
+  LoggedTunableNumber kV = new LoggedTunableNumber("Arm/kV", 0);
+  LoggedTunableNumber kG = new LoggedTunableNumber("Arm/kG", 0);
   LoggedTunableNumber MotionMagicCruiseVelocity1 =
-      new LoggedTunableNumber("Arm/MotionMagicCruiseVelocity", 1000);
+      new LoggedTunableNumber("Arm/MotionMagicCruiseVelocity", 0);
   LoggedTunableNumber MotionMagicAcceleration1 =
-      new LoggedTunableNumber("Arm/MotionMagicAcceleration", 500);
+      new LoggedTunableNumber("Arm/MotionMagicAcceleration", 0);
   LoggedTunableNumber MotionMagicJerk1 =
-      new LoggedTunableNumber("Arm/MotionMagicJerk", 250);
+      new LoggedTunableNumber("Arm/MotionMagicJerk", 0);
   Slot0Configs slot0;
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
@@ -80,11 +89,19 @@ public class ArmIOTalonFX implements ArmIO {
     slot0.kI = kI.get();
     slot0.kD = kD.get();
     slot0.kS = kS.get();
-    slot0.kG = 0;
+    slot0.kG = kG.get();
+    slot0.kV = kV.get();
     slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     FeedbackConfigs fdb = cfg.Feedback;
     fdb.SensorToMechanismRatio = 200;
+    fdb.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    fdb.FeedbackRemoteSensorID = 0;
+    MagnetSensorConfigs mag = new MagnetSensorConfigs();
+    mag.MagnetOffset = 0;
+    CANcoderConfiguration can = new CANcoderConfiguration();
+    can.withMagnetSensor(mag);
+    armCancoder.getConfigurator().apply(can);
 
     arm.getConfigurator().apply(cfg);
     mmv = new MotionMagicDutyCycle(0, true, 0, 0, false, false, false);
