@@ -6,6 +6,7 @@ import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
 import static frc.robot.Constants.VisionConstants.RobotToCam;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.RobotState;
@@ -22,6 +23,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 public class PhotonRunnable implements Runnable {
 
   private final PhotonPoseEstimator photonPoseEstimator;
+  public AprilTagFieldLayout layout;
   private final PhotonCamera photonCamera;
   private final AtomicReference<EstimatedRobotPose> atomicEstimatedRobotPose =
       new AtomicReference<EstimatedRobotPose>();
@@ -32,9 +34,11 @@ public class PhotonRunnable implements Runnable {
     this.photonCamera = new PhotonCamera("SmallPhotonCamera");
     ;
     PhotonPoseEstimator photonPoseEstimator = null;
-    var layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    
     // PV estimates will always be blue, they'll get flipped by robot thread
     layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+    
     if (photonCamera != null) {
       photonPoseEstimator =
           new PhotonPoseEstimator(
@@ -87,6 +91,7 @@ public class PhotonRunnable implements Runnable {
     return atomicEstimatedRobotPose.getAndSet(null);
   }
 
+  
   public TimestampedVisionUpdate getPoseAtTimestamp(double timestamp) {
     return new TimestampedVisionUpdate(
         timestamp,

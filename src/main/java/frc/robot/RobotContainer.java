@@ -128,7 +128,7 @@ public class RobotContainer {
     if (input.leftJoystickTriggerPressed()) {
       snapDrive =
           DriveCommands.SnapToTarget(
-              drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
+              drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), Constants.TARGETS.SPEAKER);
       CommandScheduler.getInstance().schedule(snapDrive);
     } else if (input.leftJoystickButtonReleased(1)) {
       CommandScheduler.getInstance().cancel(snapDrive);

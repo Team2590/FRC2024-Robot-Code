@@ -19,8 +19,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -80,7 +84,24 @@ public class DriveCommands {
    *     Reference</a>
    */
   public static Command SnapToTarget(
-      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Constants.TARGETS location) {
+    Pose2d target;
+
+    switch(location){
+
+        case SPEAKER:
+            target=DriverStation.getAlliance().get()==Alliance.Red?RobotContainer.poseEstimator.get_tag_pose(4):RobotContainer.poseEstimator.get_tag_pose(7);
+            break;
+        // case STAGE:
+        //     target=DriverStation.getAlliance().get()==Alliance.Red?RobotContainer.poseEstimator.get_tag_pose(4):RobotContainer.poseEstimator.get_tag_pose(7);
+        default:
+            target = new Pose2d();
+            break;
+            
+
+    }
+    
+
     return Commands.run(
         (() -> {
           Transform2d difference = drive.getPose().minus(target);

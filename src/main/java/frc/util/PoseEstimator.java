@@ -221,4 +221,9 @@ public class PoseEstimator {
   public void setPose(Pose2d pose) {
     this.latestPose = pose;
   }
+
+  public Pose2d get_tag_pose(int tag_id){
+
+    return photonEstimator.layout.getTags().get(tag_id).pose.toPose2d();
+  }
 }
