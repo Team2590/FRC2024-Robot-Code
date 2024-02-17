@@ -14,6 +14,9 @@
 package frc.robot.subsystems.drive;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -31,16 +34,20 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
+
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(1);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
   // Uncomment for Jynx
@@ -277,7 +284,7 @@ public class Drive extends SubsystemBase {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return pose;
+    return RobotContainer.poseEstimator.getLatestPose();
   }
 
   /** Returns the current odometry rotation. */
@@ -301,6 +308,35 @@ public class Drive extends SubsystemBase {
   public double getMaxAngularSpeedRadPerSec() {
     return MAX_ANGULAR_SPEED;
   }
+
+  /*
+   * NEXT STEP IS VISION TRACKING WITH AUTONS
+   * We will use align to target with Aarush's photonvision class 
+   *
+   *
+   *
+   *
+   *
+   */
+
+   public Command turnToTag(){
+    RobotContainer.poseEstimator.getTargetAngle();
+    List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+    getPose()
+    
+   
+);
+    
+    PathPlannerPath path = new PathPlannerPath(
+    bezierPoints,
+    new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
+    new GoalEndState(0.0, Rotation2d.fromDegrees(RobotContainer.poseEstimator.getTargetAngle())) 
+);
+    return AutoBuilder.followPath(path);
+
+    //REASON IM DOING THIS UNECCESCARY STUFF IS TO TURN TO TARGET AS WELL AS TEST ON THE FLY PATH MAKING 
+
+   }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {

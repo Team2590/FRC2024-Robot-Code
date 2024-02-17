@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.vision.PhotonRunnable;
@@ -38,7 +39,7 @@ public class PoseEstimator {
       q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
     }
     photonNotifier.setName("PhotonRunnable");
-    // photonNotifier.startPeriodic(0.02);
+    // photonNotifier.startPeriodic(0.02); // / turn off if you don't want vision
   }
 
   /** Returns the latest robot pose based on drive and vision data. */
@@ -59,9 +60,16 @@ public class PoseEstimator {
   }
 
   /** Records a new drive movement. */
+  // TODO - SYNC
+
   public void addDriveData(double timestamp, Twist2d twist) {
     updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
     update();
+  }
+
+  public double getTargetAngle(){
+
+    return Units.radiansToDegrees(photonEstimator.targetAngle);
   }
 
   /** Records a new set of vision updates. */

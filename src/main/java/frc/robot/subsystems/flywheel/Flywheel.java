@@ -27,11 +27,13 @@ public class Flywheel extends SubsystemBase {
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private boolean printCommand;
+  private boolean ifRun;
 
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
     printCommand = false;
+    ifRun = false;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -60,11 +62,15 @@ public class Flywheel extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Flywheel", inputs);
     SmartDashboard.putBoolean("print Command", printCommand);
+    SmartDashboard.putBoolean("auto-flywheel is run", ifRun);
   }
 
   /** Run open loop at the specified voltage. */
   public void runVolts(double volts) {
+    ifRun = true;
     io.setVoltage(volts);
+
+    // THIS IS BEING RUN HOWEVER MOTOR IS NOT MOVING
   }
 
   /** Run closed loop at the specified velocity. */
