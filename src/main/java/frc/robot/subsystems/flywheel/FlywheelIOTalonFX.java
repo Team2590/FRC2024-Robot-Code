@@ -25,8 +25,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.FlywheelIOInputs;;
+
 
 public class FlywheelIOTalonFX implements FlywheelIO {
+
+
+
+
   private final StatusSignal<Double> leaderPosition = ShooterConstants.LEADER.getPosition();
   private final StatusSignal<Double> leaderVelocity = ShooterConstants.LEADER.getVelocity();
   private final StatusSignal<Double> leaderAppliedVolts = ShooterConstants.LEADER.getMotorVoltage();
@@ -53,11 +59,11 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   public void updateInputs(FlywheelIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         leaderPosition, leaderVelocity, leaderAppliedVolts, leaderCurrent, followerCurrent);
-    inputs.positionRad = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / ShooterConstants.GEAR_RATIO;
-    inputs.velocityRadPerSec =
+    FlywheelIOInputs.inputs.POSITIONRAD = Units.rotationsToRadians(leaderPosition.getValueAsDouble()) / ShooterConstants.GEAR_RATIO;
+    FlywheelIOInputs.inputs.VELOCITYRADPERSEC =
         Units.rotationsToRadians(leaderVelocity.getValueAsDouble()) / ShooterConstants.GEAR_RATIO;
-    inputs.appliedVolts = leaderAppliedVolts.getValueAsDouble();
-    inputs.currentAmps =
+    FlywheelIOInputs.inputs.APPLIEDVOLTS = leaderAppliedVolts.getValueAsDouble();
+    FlywheelIOInputs.inputs.CURRENTAMPS =
         new double[] {leaderCurrent.getValueAsDouble(), followerCurrent.getValueAsDouble()};
   }
 

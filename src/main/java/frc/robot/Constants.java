@@ -72,7 +72,13 @@ public final class Constants {
   public static final double GEAR_RATIO = 1.5;
   public static final TalonFX LEADER = new TalonFX(0);
   public static final TalonFX FOLLOWER = new TalonFX(1);
-  
+  }
+
+  public static class FlywheelIOInputs {
+    public static double POSITIONRAD = 0.0;
+    public static double VELOCITYRADPERSEC = 0.0;
+    public static double APPLIEDVOLTS = 0.0;
+    public static double[] CURRENTAMPS = new double[] {};
   }
 
   public final class ConveyorConstants {
