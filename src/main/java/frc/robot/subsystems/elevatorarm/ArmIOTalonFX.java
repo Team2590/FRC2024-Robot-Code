@@ -179,6 +179,14 @@ public class ArmIOTalonFX implements ArmIO {
       slot0.kS = kS.get();
       arm.getConfigurator().apply(cfg);
     }
+    if (kV.hasChanged(0)) {
+      slot0.kV = kV.get();
+      arm.getConfigurator().apply(cfg);
+    }
+    if (kG.hasChanged(0)) {
+      slot0.kG = kG.get();
+      arm.getConfigurator().apply(cfg);
+    }
     if (MotionMagicCruiseVelocity1.hasChanged(0)) {
       mm.MotionMagicCruiseVelocity = MotionMagicCruiseVelocity1.get();
       arm.getConfigurator().apply(cfg);
