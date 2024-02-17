@@ -2,20 +2,21 @@ package frc.robot.autos;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PathPlannerPaths {
 
-  private final Map<String, Command> paths;
+  private final Map<String, PathPlannerPath> paths;
 
-  private PathPlannerPaths(Map<String, Command> paths) {
+  private PathPlannerPaths(Map<String, PathPlannerPath> paths) {
     this.paths = paths;
   }
 
   public static PathPlannerPaths create() {
-    Map<String, Command> paths = new HashMap<>();
+    Map<String, PathPlannerPath> paths = new HashMap<>();
     addPath(paths, "startB_note1");
     addPath(paths, "note1_note4");
 
@@ -24,19 +25,27 @@ public class PathPlannerPaths {
 
   /** Command to execute path for the given pathName. Throws an exception if the */
   public Command getFollowPathCommand(String pathName) {
-    Command command = paths.get(pathName);
-    if (command == null) {
-      throw new RuntimeException("Can't find command for " + pathName);
-    }
-    return command;
+    return AutoBuilder.followPath(getPath(pathName));
+  }
+
+  public Pose2d getStartingPose(String pathName) {
+    return getPath(pathName).getPreviewStartingHolonomicPose();
   }
 
   public void dispose() {
     paths.clear();
   }
 
-  private static void addPath(Map<String, Command> paths, String pathName) {
+  private PathPlannerPath getPath(String pathName) {
+    PathPlannerPath path = paths.get(pathName);
+    if (path == null) {
+      throw new RuntimeException("Can't find path for " + pathName);
+    }
+    return path;
+  }
+
+  private static void addPath(Map<String, PathPlannerPath> paths, String pathName) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-    paths.put(pathName, AutoBuilder.followPath(path));
+    paths.put(pathName, path);
   }
 }
