@@ -46,8 +46,8 @@ public final class Constants {
   }
 
   public final class VisionConstants {
-    public static final double CAMERA_HEIGHT_METERS = 45.5 / 100;
-    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(12.5);
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.1495);
+    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(12);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(.5);
     public static final double CAMERA_ROLL = 0;
     public static final double CAMERA_PITCH = Units.degreesToRadians(45);

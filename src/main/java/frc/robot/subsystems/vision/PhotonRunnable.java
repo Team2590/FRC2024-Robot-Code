@@ -8,7 +8,8 @@ import static frc.robot.Constants.VisionConstants.RobotToCam;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.RobotContainer;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
@@ -17,9 +18,27 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
 
 /** Runnable that gets AprilTag data from PhotonVision. */
 public class PhotonRunnable implements Runnable {
+
+  public enum Resolution {
+    RES_320_240(320, 240),
+    RES_640_480(640, 480),
+    RES_1280_720(1280, 720),
+    RES_1280_800(1280, 800),
+    RES_1920_1080(1920, 1080);
+
+    public final int width;
+    public final int height;
+
+    private Resolution(int width, int height) {
+      this.width = width;
+      this.height = height;
+    }
+  }
 
   private final PhotonPoseEstimator photonPoseEstimator;
   private final PhotonCamera photonCamera;
@@ -27,10 +46,12 @@ public class PhotonRunnable implements Runnable {
       new AtomicReference<EstimatedRobotPose>();
   public final ArrayList<TimestampedVisionUpdate> updates =
       new ArrayList<TimestampedVisionUpdate>();
+      private PhotonCameraSim m_cameraSim;
 
-  public PhotonRunnable() {
-    this.photonCamera = new PhotonCamera("SmallPhotonCamera");
-    ;
+
+  public PhotonRunnable(String name, Transform3d transform, Resolution resolution, Rotation2d fovDiag) {
+    this.photonCamera = new PhotonCamera(name);
+  
     PhotonPoseEstimator photonPoseEstimator = null;
     var layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // PV estimates will always be blue, they'll get flipped by robot thread
@@ -41,20 +62,30 @@ public class PhotonRunnable implements Runnable {
               layout,
               PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
               photonCamera,
-              RobotToCam.inverse());
+              transform);
+      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
     this.photonPoseEstimator = photonPoseEstimator;
+
+    var cameraProperties = SimCameraProperties.PERFECT_90DEG();
+    cameraProperties.setCalibration(resolution.width, resolution.height, fovDiag);
+    this.m_cameraSim = new PhotonCameraSim(photonCamera, cameraProperties);
+
+    // Enable wireframe in sim camera stream
+    m_cameraSim.enableDrawWireframe(true);
   }
 
   @Override
   public void run() {
     // Get AprilTag data
-    if (photonPoseEstimator != null && photonCamera != null && !RobotState.isAutonomous()) {
+    if (photonPoseEstimator != null && photonCamera != null) {
       var photonResults = photonCamera.getLatestResult();
       var timestamp = photonResults.getTimestampSeconds();
-      if (photonResults.hasTargets()
-          && (photonResults.targets.size() > 1
-              || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) {
+
+      if (!photonResults.hasTargets()) return;
+      if (photonResults.targets.size() == 1
+          && photonResults.targets.get(0).getPoseAmbiguity() > APRILTAG_AMBIGUITY_THRESHOLD) return;
+
         photonPoseEstimator
             .update(photonResults)
             .ifPresent(
@@ -68,11 +99,9 @@ public class PhotonRunnable implements Runnable {
                     atomicEstimatedRobotPose.set(estimatedRobotPose);
                     updates.add(getPoseAtTimestamp(timestamp));
                     RobotContainer.poseEstimator.addVisionData(updates);
-
                     updates.clear();
                   }
                 });
-      }
     }
   }
 
