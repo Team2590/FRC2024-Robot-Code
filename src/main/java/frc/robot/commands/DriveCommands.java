@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -97,10 +98,10 @@ public class DriveCommands {
               ChassisSpeeds.fromFieldRelativeSpeeds(
                   -xSupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
+                      * DrivetrainConstants.SNAPCONTROLLERMULTIPLIER.get(),
                   -ySupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
+                      * DrivetrainConstants.SNAPCONTROLLERMULTIPLIER.get(),
                   drive.snapController.calculate(currentAngle, theta)
                       * drive.getMaxAngularSpeedRadPerSec(),
                   drive.getRotation()));

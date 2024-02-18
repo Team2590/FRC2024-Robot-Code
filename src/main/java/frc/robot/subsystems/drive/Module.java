@@ -22,10 +22,9 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.DrivetrainConstants;
 
 public class Module {
-  private static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
-  public static final double ODOMETRY_FREQUENCY = 250.0;
 
   private final ModuleIO io;
   private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -106,8 +105,8 @@ public class Module {
     }
     // On first cycle, reset relative turn encoder
     // Wait until absolute angle is nonzero in case it wasn't initialized yet
-    if (turnRelativeOffset == null && inputs.turnAbsolutePosition.getRadians() != 0.0) {
-      turnRelativeOffset = inputs.turnAbsolutePosition.minus(inputs.turnPosition);
+    if (turnRelativeOffset == null && inputs.TURNABSOLUTEPOSITION.getRadians() != 0.0) {
+      turnRelativeOffset = inputs.TURNABSOLUTEPOSITION.minus(inputs.TURNPOSITION);
     }
 
     // Run closed loop turn control
@@ -126,21 +125,21 @@ public class Module {
         double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint / WHEEL_RADIUS;
+        double velocityRadPerSec = adjustSpeedSetpoint / DrivetrainConstants.WHEEL_RADIUS;
         io.setDriveVoltage(
             driveFeedforward.calculate(velocityRadPerSec)
-                + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
+                + driveFeedback.calculate(inputs.DRIVEVELOCITYRADPERSEC, velocityRadPerSec));
       }
     }
 
     // Calculate position deltas for odometry
     int deltaCount =
-        Math.min(inputs.odometryDrivePositionsRad.length, inputs.odometryTurnPositions.length);
+        Math.min(inputs.ODOMETRYDRIVEPOSITIONSRAD.length, inputs.ODOMETRYTURNPOSITIONS.length);
     positionDeltas = new SwerveModulePosition[deltaCount];
     for (int i = 0; i < deltaCount; i++) {
-      double positionMeters = inputs.odometryDrivePositionsRad[i] * WHEEL_RADIUS;
+      double positionMeters = inputs.ODOMETRYDRIVEPOSITIONSRAD[i] * DrivetrainConstants.WHEEL_RADIUS;
       Rotation2d angle =
-          inputs.odometryTurnPositions[i].plus(
+          inputs.ODOMETRYTURNPOSITIONS[i].plus(
               turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
       positionDeltas[i] = new SwerveModulePosition(positionMeters - lastPositionMeters, angle);
       lastPositionMeters = positionMeters;
@@ -193,18 +192,18 @@ public class Module {
     if (turnRelativeOffset == null) {
       return new Rotation2d();
     } else {
-      return inputs.turnPosition.plus(turnRelativeOffset);
+      return inputs.TURNPOSITION.plus(turnRelativeOffset);
     }
   }
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * WHEEL_RADIUS;
+    return inputs.DRIVEPOSITIONRAD * DrivetrainConstants.WHEEL_RADIUS;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * WHEEL_RADIUS;
+    return inputs.DRIVEVELOCITYRADPERSEC * DrivetrainConstants.WHEEL_RADIUS;
   }
 
   /** Returns the module position (turn angle and drive position). */
@@ -224,6 +223,6 @@ public class Module {
 
   /** Returns the drive velocity in radians/sec. */
   public double getCharacterizationVelocity() {
-    return inputs.driveVelocityRadPerSec;
+    return inputs.DRIVEVELOCITYRADPERSEC;
   }
 }

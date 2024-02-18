@@ -25,9 +25,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(intakePosition, intakeVelocity, intakeAppliedVolts, intakeCurrent);
-    inputs.appliedVolts = intakeAppliedVolts.getValueAsDouble();
-    inputs.current = intakeCurrent.getValueAsDouble();
-    inputs.position = intakePosition.getValueAsDouble();
-    inputs.velocity = intakeVelocity.getValueAsDouble();
+    inputs.APPLIEDVOLTS = intakeAppliedVolts.getValueAsDouble();
+    inputs.CURRENT = intakeCurrent.getValueAsDouble();
+    inputs.POSITION = intakePosition.getValueAsDouble();
+    inputs.VELOCITY = intakeVelocity.getValueAsDouble();
   }
 }

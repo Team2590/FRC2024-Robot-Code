@@ -17,6 +17,9 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.ParentDevice;
+
+import frc.robot.Constants.DrivetrainConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -57,7 +60,7 @@ public class PhoenixOdometryThread extends Thread {
   public Queue<Double> registerSignal(ParentDevice device, StatusSignal<Double> signal) {
     Queue<Double> queue = new ArrayBlockingQueue<>(100);
     signalsLock.lock();
-    Drive.odometryLock.lock();
+    DrivetrainConstants.ODOMETRY_LOCK.lock();
     try {
       isCANFD = CANBus.isNetworkFD(device.getNetwork());
       BaseStatusSignal[] newSignals = new BaseStatusSignal[signals.length + 1];
@@ -67,7 +70,7 @@ public class PhoenixOdometryThread extends Thread {
       queues.add(queue);
     } finally {
       signalsLock.unlock();
-      Drive.odometryLock.unlock();
+      DrivetrainConstants.ODOMETRY_LOCK.unlock();
     }
     return queue;
   }
@@ -79,13 +82,13 @@ public class PhoenixOdometryThread extends Thread {
       signalsLock.lock();
       try {
         if (isCANFD) {
-          BaseStatusSignal.waitForAll(2.0 / Module.ODOMETRY_FREQUENCY, signals);
+          BaseStatusSignal.waitForAll(2.0 / DrivetrainConstants.ODOMETRY_FREQUENCY, signals);
         } else {
           // "waitForAll" does not support blocking on multiple
           // signals with a bus that is not CAN FD, regardless
           // of Pro licensing. No reasoning for this behavior
           // is provided by the documentation.
-          Thread.sleep((long) (1000.0 / Module.ODOMETRY_FREQUENCY));
+          Thread.sleep((long) (1000.0 / DrivetrainConstants.ODOMETRY_FREQUENCY));
           if (signals.length > 0) BaseStatusSignal.refreshAll(signals);
         }
       } catch (InterruptedException e) {
@@ -95,13 +98,13 @@ public class PhoenixOdometryThread extends Thread {
       }
 
       // Save new data to queues
-      Drive.odometryLock.lock();
+      DrivetrainConstants.ODOMETRY_LOCK.lock();
       try {
         for (int i = 0; i < signals.length; i++) {
           queues.get(i).offer(signals[i].getValueAsDouble());
         }
       } finally {
-        Drive.odometryLock.unlock();
+        DrivetrainConstants.ODOMETRY_LOCK.unlock();
       }
     }
   }

@@ -40,19 +40,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.DrivetrainConstants;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
-  private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
-  private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+ 
   // Uncomment for Jynx
   // static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
   // static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
-  private static final double DRIVE_BASE_RADIUS =
-      Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
-
-  public static final Lock odometryLock = new ReentrantLock();
+  
   private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
   private final GyroIO gyroIO;
 
@@ -65,8 +60,6 @@ public class Drive extends SubsystemBase {
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
 
-  public static LoggedTunableNumber snapControllermultiplier =
-      new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
   LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", 2);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", 0);
   LoggedTunableNumber snapControllerTolerance =
@@ -101,8 +94,8 @@ public class Drive extends SubsystemBase {
         new HolonomicPathFollowerConfig(
             new PIDConstants(5, 0.0, 0),
             new PIDConstants(5.0, 0.0, 0.0),
-            MAX_LINEAR_SPEED,
-            DRIVE_BASE_RADIUS,
+            DrivetrainConstants.MAX_LINEAR_SPEED,
+            DrivetrainConstants.DRIVE_BASE_RADIUS,
             new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
@@ -121,12 +114,12 @@ public class Drive extends SubsystemBase {
   }
 
   public void periodic() {
-    odometryLock.lock(); // Prevents odometry updates while reading data
+    DrivetrainConstants.ODOMETRY_LOCK.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     for (var module : modules) {
       module.updateInputs();
     }
-    odometryLock.unlock();
+    DrivetrainConstants.ODOMETRY_LOCK.unlock();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
@@ -205,7 +198,7 @@ public class Drive extends SubsystemBase {
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, MAX_LINEAR_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, DrivetrainConstants.MAX_LINEAR_SPEED);
 
     // Send setpoints to modules
     SwerveModuleState[] optimizedSetpointStates = new SwerveModuleState[4];
@@ -283,21 +276,21 @@ public class Drive extends SubsystemBase {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return MAX_LINEAR_SPEED;
+    return DrivetrainConstants.MAX_LINEAR_SPEED;
   }
 
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
-    return MAX_ANGULAR_SPEED;
+    return DrivetrainConstants.MAX_ANGULAR_SPEED;
   }
 
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
-      new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-      new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
+      new Translation2d(DrivetrainConstants.TRACK_WIDTH_X / 2.0, DrivetrainConstants.TRACK_WIDTH_Y / 2.0),
+      new Translation2d(DrivetrainConstants.TRACK_WIDTH_X / 2.0, -1*(DrivetrainConstants.TRACK_WIDTH_Y) / 2.0),
+      new Translation2d(-1*(DrivetrainConstants.TRACK_WIDTH_X) / 2.0, DrivetrainConstants.TRACK_WIDTH_Y / 2.0),
+      new Translation2d(-1*(DrivetrainConstants.TRACK_WIDTH_X) / 2.0, -1*(DrivetrainConstants.TRACK_WIDTH_Y) / 2.0)
     };
   }
 

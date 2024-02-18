@@ -13,6 +13,9 @@
 
 package frc.robot;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import frc.util.LoggedTunableNumber;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -61,7 +65,16 @@ public final class Constants {
   }
 
   public final class DrivetrainConstants {
-    // Fill in
+    public static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+    public static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
+    public static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+    public static final double DRIVE_BASE_RADIUS =  Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+    public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+    public static LoggedTunableNumber SNAPCONTROLLERMULTIPLIER = new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
+    public static final Lock ODOMETRY_LOCK = new ReentrantLock();
+    //module constatns below
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(2.0);
+    public static final double ODOMETRY_FREQUENCY = 250.0;
   }
 
   public final class ArmConstants {
@@ -74,12 +87,7 @@ public final class Constants {
   public static final TalonFX FOLLOWER = new TalonFX(1);
   }
 
-  public static class FlywheelIOInputs {
-    public static double POSITIONRAD = 0.0;
-    public static double VELOCITYRADPERSEC = 0.0;
-    public static double APPLIEDVOLTS = 0.0;
-    public static double[] CURRENTAMPS = new double[] {};
-  }
+
 
   public final class ConveyorConstants {
     public static final int FEEDER_ID = 0;
@@ -96,7 +104,6 @@ public final class Constants {
   }
 
   public final class IntakeConstants {
-    // Fill in
     public static final int INTAKE_ID = 0;
   }
 

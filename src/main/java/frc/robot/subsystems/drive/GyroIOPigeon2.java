@@ -20,6 +20,8 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.DrivetrainConstants;
+
 import java.util.Queue;
 
 /** IO implementation for Pigeon2 */
@@ -32,7 +34,7 @@ public class GyroIOPigeon2 implements GyroIO {
   public GyroIOPigeon2(boolean phoenixDrive) {
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
-    yaw.setUpdateFrequency(Module.ODOMETRY_FREQUENCY);
+    yaw.setUpdateFrequency(DrivetrainConstants.ODOMETRY_FREQUENCY);
     yawVelocity.setUpdateFrequency(100.0);
     pigeon.optimizeBusUtilization();
     if (phoenixDrive) {
