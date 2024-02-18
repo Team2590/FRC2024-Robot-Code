@@ -21,6 +21,7 @@ import frc.robot.RobotContainer;
 import frc.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -108,7 +109,9 @@ public class PhotonRunnable implements Runnable {
                         updates.clear();
                       }
                     });
-            // Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
+            Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
+            double distance = distanceToTargetPose();
+            Logger.recordOutput("Odometry/Photon Distance to target", distance);
           }
         }
       }
@@ -164,11 +167,12 @@ public class PhotonRunnable implements Runnable {
     nearestStageBlue[2]
   };
 
-  public Transform3d transformToTarget() {
+  public double distanceToTargetPose() {
     if (!photonResults.hasTargets()) {
-      return null;
+      return -1;
     }
-    return arrTranslations[photonResults.getBestTarget().getFiducialId()].minus(RobotPose);
+    Pose3d targetPose = arrTranslations[photonResults.getBestTarget().getFiducialId()];
+    return Math.hypot(RobotPose.getX() - targetPose.getX(), RobotPose.getY() - targetPose.getY());
   }
 
   public Pose3d getRobotPose3d() {
