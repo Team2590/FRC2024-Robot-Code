@@ -50,13 +50,13 @@ public final class Constants {
     public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(12.5);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(.5);
     public static final double CAMERA_ROLL = 0;
-    public static final double CAMERA_PITCH = Units.degreesToRadians(60);
+    public static final double CAMERA_PITCH = Units.degreesToRadians(45);
     public static final double CAMERA_YAW = 0;
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
     public static final Transform3d RobotToCam =
         new Transform3d(
             CAMERA_X_DISTANCE_FROM_CENTER_METERS,
-            CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
+            -1 * CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
             CAMERA_HEIGHT_METERS,
             new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
   }
