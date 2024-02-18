@@ -1,8 +1,6 @@
 package frc.robot.util;
 
-/**
- * Misc. helper functions.
- */
+/** Misc. helper functions. */
 public class HelperFunctions {
 
   // Helper class with static functions, not instantiable.
@@ -10,13 +8,14 @@ public class HelperFunctions {
 
   /**
    * Returns true if the currentValue is within +/- of tolerance of the setPoint.
+   *
    * @param currentValue
    * @param setPoint
    * @param tolerance
    * @return
    */
   public static boolean isWithinTolerance(double currentValue, double setPoint, double tolerance) {
-      // Check if tolerance is positive
+    // Check if tolerance is positive
     if (tolerance <= 0) {
       throw new IllegalArgumentException("Tolerance must be positive.");
     }
@@ -28,6 +27,4 @@ public class HelperFunctions {
     // Check if currentValue is within the bounds
     return currentValue >= lowerBound && currentValue <= upperBound;
   }
-
-
 }

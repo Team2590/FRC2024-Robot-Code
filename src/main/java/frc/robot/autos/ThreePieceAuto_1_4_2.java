@@ -26,6 +26,6 @@ public class ThreePieceAuto_1_4_2 extends SequentialCommandGroup {
         Commands.print("Shoot Note1"),
         new InstantCommand(() -> superstructure.shoot()),
         paths.getFollowPathCommand("note1_note4"));
-        // TODO: intake note4, shoot and then go to note 2, intake, move to speaker and shoot.
+    // TODO: intake note4, shoot and then go to note 2, intake, move to speaker and shoot.
   }
 }

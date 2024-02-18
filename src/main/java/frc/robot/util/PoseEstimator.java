@@ -7,12 +7,6 @@
 
 package frc.robot.util;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
@@ -23,6 +17,11 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.vision.PhotonRunnable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class PoseEstimator {
   private static final double historyLengthSecs = 0.3;
