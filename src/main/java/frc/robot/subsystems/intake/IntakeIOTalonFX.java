@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import frc.robot.Constants;
 
 public class IntakeIOTalonFX implements IntakeIO {
@@ -22,13 +21,13 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void stop() {
     talon.stopMotor();
   }
+
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-        BaseStatusSignal.refreshAll(
-        intakePosition, intakeVelocity, intakeAppliedVolts, intakeCurrent);
-        inputs.appliedVolts = intakeAppliedVolts.getValueAsDouble();
-        inputs.current = intakeCurrent.getValueAsDouble();
-        inputs.position = intakePosition.getValueAsDouble();
-        inputs.velocity = intakeVelocity.getValueAsDouble();
+    BaseStatusSignal.refreshAll(intakePosition, intakeVelocity, intakeAppliedVolts, intakeCurrent);
+    inputs.appliedVolts = intakeAppliedVolts.getValueAsDouble();
+    inputs.current = intakeCurrent.getValueAsDouble();
+    inputs.position = intakePosition.getValueAsDouble();
+    inputs.velocity = intakeVelocity.getValueAsDouble();
   }
 }

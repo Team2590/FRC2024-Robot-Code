@@ -1,12 +1,6 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 2.0,
-      "y": 7.0
-    },
-    "rotation": 0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
@@ -15,6 +9,12 @@
           "type": "path",
           "data": {
             "pathName": "startB_note1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "note1_note4"
           }
         }
       ]
