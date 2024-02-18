@@ -1,10 +1,10 @@
-package frc.robot.util;
+package frc.util;
 
 /** Misc. helper functions. */
-public class HelperFunctions {
+public class HelperFn {
 
   // Helper class with static functions, not instantiable.
-  private HelperFunctions() {}
+  private HelperFn() {}
 
   /**
    * Returns true if the currentValue is within +/- of tolerance of the setPoint.
