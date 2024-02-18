@@ -62,6 +62,10 @@ public class Drive extends SubsystemBase {
 
   LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", 2);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", 0);
+  public static LoggedTunableNumber snapControllermultiplier =
+      new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .44);
+  LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
       new LoggedTunableNumber("SnapController/tolerance", .1);
 
@@ -157,10 +161,11 @@ public class Drive extends SubsystemBase {
       if (gyroInputs.connected) {
         // If the gyro is connected, replace the theta component of the twist
         // with the change in angle since the last sample.
-        Rotation2d gyroRotation1 = gyroInputs.odometryYawPositions[deltaIndex1];
-        twist1 =
-            new Twist2d(twist1.dx, twist1.dy, gyroRotation1.minus(lastGyroRotation).getRadians());
-        lastGyroRotation = gyroRotation1;
+        // Rotation2d gyroRotation1 = gyroInputs.odometryYawPositions[deltaIndex1];
+        // twist1 =
+        //     new Twist2d(twist1.dx, twist1.dy,
+        // gyroRotation1.minus(lastGyroRotation).getRadians());
+        // lastGyroRotation = gyroRotation1;
       }
       // Apply the twist (change since last sample) to the current pose
 

@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.*;
@@ -99,10 +100,9 @@ public class RobotContainer {
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake);
     // Set up auto routines
-    // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    registerAutoCommands();
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices");
-    populateAutoChooser();
+    autoChooser = AutoRoutines.buildChooser(drive, superstructure);
+    // registerAutoCommands();
+    // populateAutoChooser();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -161,7 +161,6 @@ public class RobotContainer {
    * to the AutoChooser.
    */
   private void populateAutoChooser() {
-
     // Set up feedforward characterization
     autoChooser.addOption(
         "Drive FF Characterization",
