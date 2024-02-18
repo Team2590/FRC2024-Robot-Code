@@ -18,7 +18,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
-import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
+import frc.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.photonvision.EstimatedRobotPose;
