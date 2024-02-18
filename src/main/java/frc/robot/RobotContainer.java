@@ -1,15 +1,17 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.subsystems.conveyor.*;
+import frc.robot.subsystems.conveyor.Conveyor;
+import frc.robot.subsystems.conveyor.ConveyorIO;
+import frc.robot.subsystems.conveyor.ConveyorIOSim;
+import frc.robot.subsystems.conveyor.ConveyorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -24,8 +26,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.util.PoseEstimator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,8 +45,6 @@ public class RobotContainer {
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   private Command snapDrive;
 
@@ -160,27 +158,15 @@ public class RobotContainer {
    * Use this branch to build the commands from the autos that you want to run, and add the commands
    * to the AutoChooser.
    */
-  private void populateAutoChooser() {
-    // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
-  }
-
-  /**
-   * Use this to register all of the commands with the AutoBuilder This should include all commands
-   * used in the autos (except drive commands)
-   */
-  private void registerAutoCommands() {
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
-  }
+  // private void populateAutoChooser() {
+  //   // Set up feedforward characterization
+  //   autoChooser.addOption(
+  //       "Drive FF Characterization",
+  //       new FeedForwardCharacterization(
+  //           drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+  //   autoChooser.addOption(
+  //       "Flywheel FF Characterization",
+  //       new FeedForwardCharacterization(
+  //           flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+  // }
 }
