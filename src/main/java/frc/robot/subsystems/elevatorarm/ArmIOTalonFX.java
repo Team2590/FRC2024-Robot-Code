@@ -157,7 +157,7 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   public boolean atsetpoint() {
-    return Math.abs(setpointcalculator.getValue(speakerdistance) - armCancoder.getPosition().getValueAsDouble()) <= 0.001;  
+    return Math.abs(setpointcalculator.getValue(speakerdistance) - armCancoder.getAbsolutePosition().getValueAsDouble()) <= 0.001;
 
   }
 
