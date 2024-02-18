@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevatorarm;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -19,7 +20,7 @@ import frc.robot.util.LookupTable;
  * @author Vidur Janapureddy
  */
 public class ArmIOTalonFX implements ArmIO {
-  private double manualPower;
+  
 
   TalonFX arm = new TalonFX(4);
   CANcoder armCancoder = new CANcoder(0);
@@ -106,10 +107,10 @@ public class ArmIOTalonFX implements ArmIO {
     mmv = new MotionMagicDutyCycle(0, true, 0, 0, false, false, false);
   }
 
-  // public void updateInputs(ArmIOInputs inputs) {
-  //   BaseStatusSignal.refreshAll(arm.getMotorVoltage(), arm.getSupplyVoltage());
-  //   updateTunableNumbers();
-  // }
+  public void updateInputs(ArmIOInputs inputs) {
+     BaseStatusSignal.refreshAll(armCancoder.getAbsolutePosition(), armCancoder.getPosition());
+     updateTunableNumbers();
+  }
 
   public String print() {
     return arm.getMotionMagicIsRunning().getValue().toString();
