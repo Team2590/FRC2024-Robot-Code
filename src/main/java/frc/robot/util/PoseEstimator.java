@@ -38,7 +38,7 @@ public class PoseEstimator {
       q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
     }
     photonNotifier.setName("PhotonRunnable");
-    // photonNotifier.startPeriodic(0.02);
+    photonNotifier.startPeriodic(0.02);
   }
 
   /** Returns the latest robot pose based on drive and vision data. */
@@ -66,6 +66,8 @@ public class PoseEstimator {
 
   /** Records a new set of vision updates. */
   public void addVisionData(List<TimestampedVisionUpdate> visionData) {
+    Logger.recordOutput("Odometry/Photonvision", photonEstimator.getRobotPose3d());
+
     for (var timestampedVisionUpdate : visionData) {
       var timestamp = timestampedVisionUpdate.timestamp();
       var visionUpdate =
