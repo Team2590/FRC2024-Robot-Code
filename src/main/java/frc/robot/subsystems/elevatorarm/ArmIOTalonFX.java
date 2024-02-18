@@ -1,11 +1,9 @@
 package frc.robot.subsystems.elevatorarm;
 
-import java.util.concurrent.CancellationException;
-
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -14,14 +12,12 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-
+import frc.robot.commons.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 
-import frc.robot.commons.LoggedTunableNumber;
 /**
  * @author Vidur Janapureddy
  */
-
 public class ArmIOTalonFX implements ArmIO {
   private double manualPower;
 
@@ -37,8 +33,7 @@ public class ArmIOTalonFX implements ArmIO {
       new LoggedTunableNumber("Arm/MotionMagicCruiseVelocity", 0);
   LoggedTunableNumber MotionMagicAcceleration1 =
       new LoggedTunableNumber("Arm/MotionMagicAcceleration", 0);
-  LoggedTunableNumber MotionMagicJerk1 =
-      new LoggedTunableNumber("Arm/MotionMagicJerk", 0);
+  LoggedTunableNumber MotionMagicJerk1 = new LoggedTunableNumber("Arm/MotionMagicJerk", 0);
   Slot0Configs slot0;
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
@@ -47,24 +42,28 @@ public class ArmIOTalonFX implements ArmIO {
   final DutyCycleOut m_request1 = new DutyCycleOut(0.1);
   final DutyCycleOut m_request2 = new DutyCycleOut(-0.1);
   DutyCycleOut mrequest3 = new DutyCycleOut(0);
-  double[] distances = new double[] {
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0 };
-  double[] setpoints = new double[] {
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0 };
+  double[] distances =
+      new double[] {
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0
+      };
+  double[] setpoints =
+      new double[] {
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0
+      };
   private LookupTable setpointcalculator = new LookupTable(distances, setpoints);
   private double ampsetpoint = -0.2;
   private double intakesetpoint = -0.35;
@@ -130,6 +129,7 @@ public class ArmIOTalonFX implements ArmIO {
 
     arm.setControl(mmv.withPosition(ampsetpoint));
   }
+
   public void setmotionmagicintake() {
 
     arm.setControl(mmv.withPosition(intakesetpoint));
@@ -141,14 +141,13 @@ public class ArmIOTalonFX implements ArmIO {
 
   public void armmanualup() {
     mrequest3 = m_request1;
-
   }
 
   public void armmanualdown() {
     mrequest3 = m_request2;
-
   }
-  public void armmanual(){
+
+  public void armmanual() {
     arm.setControl(mrequest3);
   }
 
@@ -157,8 +156,10 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   public boolean atsetpoint() {
-    return Math.abs(setpointcalculator.getValue(speakerdistance) - armCancoder.getAbsolutePosition().getValueAsDouble()) <= 0.001;
-
+    return Math.abs(
+            setpointcalculator.getValue(speakerdistance)
+                - armCancoder.getAbsolutePosition().getValueAsDouble())
+        <= 0.001;
   }
 
   public void updateTunableNumbers() {

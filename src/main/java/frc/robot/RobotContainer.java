@@ -13,18 +13,10 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import frc.robot.subsystems.user_input.UserInput;
-
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.PoseEstimator;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -33,16 +25,14 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevatorarm.Arm;
-import frc.robot.subsystems.elevatorarm.ArmConstants;
 import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
-import frc.robot.subsystems.elevatorarm.ArmIO;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.user_input.UserInput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-import frc.robot.commands.DriveCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -57,14 +47,13 @@ public class RobotContainer {
   private final Arm arm;
   private final UserInput input;
 
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
+  public RobotContainer() {
     input = UserInput.getInstance();
     switch (Constants.currentMode) {
       case REAL:
@@ -78,7 +67,7 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         // instantiate other subsystems
         arm = new Arm(new ArmIOTalonFX());
-        
+
         break;
 
       case SIM:
@@ -150,17 +139,13 @@ public class RobotContainer {
 
     if (input.leftJoystickButtonPressed(2)) {
       arm.motionmagic1();
-    }
-    else if (input.leftJoystickButtonPressed(3)) {
+    } else if (input.leftJoystickButtonPressed(3)) {
       arm.motionmagicintake();
-    }
-    else if (input.leftJoystickButtonPressed(4)) {
+    } else if (input.leftJoystickButtonPressed(4)) {
       arm.motionmagicamp();
-    }
-    else if (input.leftJoystickButton(5)) {
+    } else if (input.leftJoystickButton(5)) {
       arm.armmanualup();
-    }
-    else if (input.leftJoystickButton(6)) {
+    } else if (input.leftJoystickButton(6)) {
       arm.armmanualdown();
     }
     // joystick inputs galore!

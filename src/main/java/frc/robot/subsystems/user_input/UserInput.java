@@ -123,4 +123,3 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
     return rightJoystick.getRawButtonReleased(button);
   }
 }
-
