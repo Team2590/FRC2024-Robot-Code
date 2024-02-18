@@ -1,13 +1,13 @@
 package frc.robot.autos;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Contains all the paths used by Auto routines. */
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;es. */
 public class PathPlannerPaths {
 
   private final Map<String, PathPlannerPath> paths;
@@ -26,11 +26,12 @@ public class PathPlannerPaths {
     return new PathPlannerPaths(paths);
   }
 
-  /** Command to execute path for the given pathName. Throws an exception if the */
+  /** Command to execute path for the given pathName. Throws an exception if the path is not found. */
   public Command getFollowPathCommand(String pathName) {
     return AutoBuilder.followPath(getPath(pathName));
   }
 
+  /** Returns the starting pose from the given path name. */
   public Pose2d getStartingPose(String pathName) {
     return getPath(pathName).getPreviewStartingHolonomicPose();
   }

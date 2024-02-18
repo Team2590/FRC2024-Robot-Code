@@ -1,9 +1,10 @@
 package frc.robot.autos;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutoRoutines {
 
