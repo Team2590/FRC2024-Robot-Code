@@ -9,7 +9,7 @@ import frc.robot.RobotContainer;
 /**
  * Performs all the initialization needed and executes the first path.
  *
- * This should be the first path in the auto routine.
+ * <p>This should be the first path in the auto routine.
  */
 public class StartPathCommand extends SequentialCommandGroup {
 
@@ -25,5 +25,4 @@ public class StartPathCommand extends SequentialCommandGroup {
             // Move to note1 from starting position B (speaker)
             paths.getFollowPathCommand(startingPath)));
   }
-
 }
