@@ -6,17 +6,17 @@ import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
-  private States state;
+  private ArmStates state;
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  public static enum States {
+  public static enum ArmStates {
     STOPPED,
     MANUAL,
-    HOLDSETPOINT,
+    AT_SETPOINT,
     APPROACHINGSETPOINT,
     AMPTRAP, /*STOWED, */
-    INTAKE
+    HOME
   }
 
   /**
@@ -25,7 +25,7 @@ public class Arm extends SubsystemBase {
    * @param armIOTalonFX
    */
   public Arm(ArmIOTalonFX armIOTalonFX) {
-    state = States.STOPPED;
+    state = ArmStates.STOPPED;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
     switch (state) {
       case STOPPED:
-        arm.stop();
+        // arm.stop();
         break;
       case MANUAL:
         arm.armmanual();
@@ -43,19 +43,19 @@ public class Arm extends SubsystemBase {
       case APPROACHINGSETPOINT:
         arm.setmotionmagic();
         if (arm.atsetpoint()) {
-          state = States.HOLDSETPOINT;
+          state = ArmStates.AT_SETPOINT;
 
         } else {
-          state = States.APPROACHINGSETPOINT;
+          state = ArmStates.APPROACHINGSETPOINT;
         }
         break;
-      case HOLDSETPOINT:
+      case AT_SETPOINT:
         arm.setmotionmagic();
         if (arm.atsetpoint()) {
-          state = States.HOLDSETPOINT;
+          state = ArmStates.AT_SETPOINT;
 
         } else {
-          state = States.APPROACHINGSETPOINT;
+          state = ArmStates.APPROACHINGSETPOINT;
         }
         break;
         // case STOWED:
@@ -64,32 +64,33 @@ public class Arm extends SubsystemBase {
       case AMPTRAP:
         arm.setmotionmagicamp();
         break;
-      case INTAKE:
+      case HOME:
         arm.setmotionmagicintake();
         break;
     }
   }
 
   /** Run open loop at the specified voltage. */
-  public void motionmagic1() {
-    state = States.APPROACHINGSETPOINT;
+  public void setPosition() {
+    arm.setmotionmagicintake();
+    state = ArmStates.APPROACHINGSETPOINT;
   }
 
   public void motionmagicintake() {
-    state = States.INTAKE;
+    state = ArmStates.HOME;
   }
 
   public void motionmagicamp() {
-    state = States.AMPTRAP;
+    state = ArmStates.AMPTRAP;
   }
 
   public void armmanualup() {
-    state = States.MANUAL;
+    state = ArmStates.MANUAL;
     arm.armmanualup();
   }
 
   public void armmanualdown() {
-    state = States.MANUAL;
+    state = ArmStates.MANUAL;
     arm.armmanualdown();
   }
 
@@ -99,9 +100,9 @@ public class Arm extends SubsystemBase {
 
   public void atsetpoint() {
     if (arm.atsetpoint()) {
-      state = States.HOLDSETPOINT;
+      state = ArmStates.AT_SETPOINT;
     } else {
-      state = States.APPROACHINGSETPOINT;
+      state = ArmStates.APPROACHINGSETPOINT;
     }
   }
 
@@ -109,8 +110,8 @@ public class Arm extends SubsystemBase {
   public void runVelocity(double velocityRPM) {}
 
   /** Stops the flywheel. */
-  public void stop() {
-    state = States.STOPPED;
+  public void setStopped() {
+    state = ArmStates.STOPPED;
   }
 
   /** Returns the current velocity in RPM. */
@@ -122,5 +123,10 @@ public class Arm extends SubsystemBase {
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return 0.0;
+  }
+
+  public ArmStates getState() {
+    //return state;
+    return ArmStates.HOME; 
   }
 }

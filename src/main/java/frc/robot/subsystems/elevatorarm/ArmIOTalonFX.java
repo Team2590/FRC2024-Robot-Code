@@ -70,7 +70,7 @@ public class ArmIOTalonFX implements ArmIO {
       };
   private LookupTable setpointcalculator = new LookupTable(distances, setpoints);
   private double ampsetpoint = -0.18;
-  private double intakesetpoint = 0.18;
+  private double intakesetpoint = 0.168;
   private double speakerdistance = 0;
   private final StatusSignal<Double> armpos = armCancoder.getPosition();
   private final StatusSignal<Double> armabspos = armCancoder.getAbsolutePosition();
