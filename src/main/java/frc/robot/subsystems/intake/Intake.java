@@ -52,7 +52,7 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  public void setStop() {
+  public void setStopped() {
     state = IntakeStates.STOPPED;
   }
 

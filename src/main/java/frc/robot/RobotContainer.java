@@ -1,9 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -39,8 +38,8 @@ public class RobotContainer {
   private final Drive drive;
   private final Flywheel flywheel;
   private final Conveyor conveyor;
-  private final Intake intake;
   private final Arm arm;
+  private final Intake intake;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -101,7 +100,7 @@ public class RobotContainer {
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake, arm);
+    superstructure = new Superstructure(conveyor, intake, flywheel, arm);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     // populateAutoChooser();
@@ -122,42 +121,39 @@ public class RobotContainer {
     // call update functions of all subsystems
     superstructure.periodic();
     conveyor.periodic();
+    flywheel.periodic();
+    intake.periodic();
+    arm.periodic();
     input.update();
   }
 
   public void updateUserInput() {
     // joystick inputs galore!
-    if (input.leftJoystickTriggerPressed()) {
-      snapDrive =
-          DriveCommands.SnapToTarget(
-              drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
-      CommandScheduler.getInstance().schedule(snapDrive);
-    } else if (input.leftJoystickButtonReleased(1)) {
-      CommandScheduler.getInstance().cancel(snapDrive);
-    }
-    if (input.rightJoystickTriggerPressed()) {
-      superstructure.intake();
-    }
-    // joystick inputs galore!
-    // if (input.leftJoystickTrigger()) {
-    // superstructure.intake();
-    // superstructure.intake();
-    // } else if (input.leftJoystickButton(2)) {
-    // superstructure.amp();
-    // } else {
-    // superstructure.stop();
+    // if (input.leftJoystickTriggerPressed()) {
+    //   snapDrive =
+    //       DriveCommands.SnapToTarget(
+    //           drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
+    //   CommandScheduler.getInstance().schedule(snapDrive);
+    // } else if (input.leftJoystickButtonReleased(1)) {
+    //   CommandScheduler.getInstance().cancel(snapDrive);
     // }
 
-    if (input.leftJoystickButtonPressed(2)) {
-      arm.motionmagic1();
-    } else if (input.leftJoystickButtonPressed(3)) {
-      arm.motionmagicintake();
-    } else if (input.leftJoystickButtonPressed(4)) {
-      arm.motionmagicamp();
-    } else if (input.leftJoystickButton(5)) {
-      arm.armmanualup();
-    } else if (input.leftJoystickButton(6)) {
-      arm.armmanualdown();
+    /*
+     * Driver input w/ superstructure
+     */
+    if (input.leftJoystickTriggerPressed()) {
+      superstructure.intake();
+    } else if (input.leftJoystickButtonPressed(1)) {
+      superstructure.primeShooter();
+    } else if (input.rightJoystickTriggerPressed()
+        && superstructure.getState() == SuperstructureStates.HAS_NOTE) {
+      superstructure.shoot();
+    } else if (input.rightJoystickButtonPressed(1)) {
+      superstructure.primingAmp();
+    } else if (input.rightJoystickButtonPressed(2)) {
+      superstructure.scoreAmp();
+    } else {
+      superstructure.idle();
     }
   }
 
@@ -174,6 +170,32 @@ public class RobotContainer {
    * Use this branch to build the commands from the autos that you want to run, and add the commands
    * to the AutoChooser.
    */
+  private void populateAutoChooser() {
+
+    // // Set up feedforward characterization
+    // autoChooser.addOption(
+    //     "Drive FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Flywheel FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+  }
+
+  /**
+   * Use this to register all of the commands with the AutoBuilder This should include all commands
+   * used in the autos (except drive commands)
+   */
+  private void registerAutoCommands() {
+    // NamedCommands.registerCommand(
+    //     "Run Flywheel",
+    //     Commands.startEnd(
+    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()),
+    //             flywheel::setStopped,
+    //             flywheel)
+    //         .withTimeout(5.0));
+  }
   // private void populateAutoChooser() {
   //   // Set up feedforward characterization
   //   autoChooser.addOption(
