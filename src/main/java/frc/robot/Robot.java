@@ -15,7 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.user_input.UserInput;
+import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -31,9 +31,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-  private Superstructure superstructure;
   private RobotContainer robotContainer;
-  private UserInput input = UserInput.getInstance();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -62,7 +61,13 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        File usbDrive = new File("/U/");
+        // Only set up usb logging if the folder exists.
+        if (usbDrive.exists()) {
+          System.err.println("No USB found, not writing logs");
+          Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        }
+        usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -124,12 +129,7 @@ public class Robot extends LoggedRobot {
       System.err.println("No autonomous command set");
       return;
     }
-
-    // robotContainer.initRobot(autonomousCommand.getName());
-    // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
-    }
+    autonomousCommand.schedule();
   }
 
   /** This function is called periodically during autonomous. */

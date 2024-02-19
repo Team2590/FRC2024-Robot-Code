@@ -16,7 +16,7 @@ public class AutoRoutines {
     autoChooser.addDefaultOption(
         "ThreePieceAuto_1_4_2", new ThreePieceAuto_1_4_2(paths, drive, superstructure));
 
-    // dispose of the paths to save memory.
+    // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
     return autoChooser;
   }

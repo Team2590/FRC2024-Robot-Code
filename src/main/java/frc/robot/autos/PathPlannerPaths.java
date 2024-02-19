@@ -17,17 +17,22 @@ public class PathPlannerPaths {
 
   public static PathPlannerPaths create() {
     Map<String, PathPlannerPath> paths = new HashMap<>();
+
+    // Add paths that will be used in Auto routines.
     addPath(paths, "startB_note1");
     addPath(paths, "note1_note4");
 
     return new PathPlannerPaths(paths);
   }
 
-  /** Command to execute path for the given pathName. Throws an exception if the */
+  /**
+   * Command to execute path for the given pathName. Throws an exception if the path is not found.
+   */
   public Command getFollowPathCommand(String pathName) {
     return AutoBuilder.followPath(getPath(pathName));
   }
 
+  /** Returns the starting pose from the given path name. */
   public Pose2d getStartingPose(String pathName) {
     return getPath(pathName).getPreviewStartingHolonomicPose();
   }
