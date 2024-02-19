@@ -17,7 +17,8 @@ import frc.robot.util.LoggedTunableNumber;
  */
 public class ConveyorIOTalonFX implements ConveyorIO {
   // motors + sensors
-  private final TalonFX feederMotor = new TalonFX(57, Constants.canbus);
+  private final TalonFX feederMotor =
+      new TalonFX(Constants.ConveyorConstants.FEEDER_ID, Constants.canbus);
   private final TalonFX diverterMotor =
       new TalonFX(ConveyorConstants.DIVRETER_ID, Constants.canbus);
   private final AnalogInput intakeProx = new AnalogInput(ConveyorConstants.INTAKE_PROX_ID);

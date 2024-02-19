@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevatorarm;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
@@ -30,44 +29,44 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    arm.updateTunableNumbers();
-    arm.updateInputs(inputs);
-    Logger.processInputs("Arm", inputs);
-    switch (state) {
-      case STOPPED:
-        // arm.stop();
-        break;
-      case MANUAL:
-        arm.armmanual();
-        break;
-      case APPROACHINGSETPOINT:
-        arm.setmotionmagic();
-        if (arm.atsetpoint()) {
-          state = ArmStates.AT_SETPOINT;
+    // arm.updateTunableNumbers();
+    // arm.updateInputs(inputs);
+    // Logger.processInputs("Arm", inputs);
+    // switch (state) {
+    //   case STOPPED:
+    //     // arm.stop();
+    //     break;
+    //   case MANUAL:
+    //     arm.armmanual();
+    //     break;
+    //   case APPROACHINGSETPOINT:
+    //     arm.setmotionmagic();
+    //     if (arm.atsetpoint()) {
+    //       state = ArmStates.AT_SETPOINT;
 
-        } else {
-          state = ArmStates.APPROACHINGSETPOINT;
-        }
-        break;
-      case AT_SETPOINT:
-        arm.setmotionmagic();
-        if (arm.atsetpoint()) {
-          state = ArmStates.AT_SETPOINT;
+    //     } else {
+    //       state = ArmStates.APPROACHINGSETPOINT;
+    //     }
+    //     break;
+    //   case AT_SETPOINT:
+    //     arm.setmotionmagic();
+    //     if (arm.atsetpoint()) {
+    //       state = ArmStates.AT_SETPOINT;
 
-        } else {
-          state = ArmStates.APPROACHINGSETPOINT;
-        }
-        break;
-        // case STOWED:
-        //     arm.setmotionmagicstow();
-        //     break;
-      case AMPTRAP:
-        arm.setmotionmagicamp();
-        break;
-      case HOME:
-        arm.setmotionmagicintake();
-        break;
-    }
+    //     } else {
+    //       state = ArmStates.APPROACHINGSETPOINT;
+    //     }
+    //     break;
+    //     // case STOWED:
+    //     //     arm.setmotionmagicstow();
+    //     //     break;
+    //   case AMPTRAP:
+    //     arm.setmotionmagicamp();
+    //     break;
+    //   case HOME:
+    //     arm.setmotionmagicintake();
+    //     break;
+    // }
   }
 
   /** Run open loop at the specified voltage. */
@@ -126,7 +125,7 @@ public class Arm extends SubsystemBase {
   }
 
   public ArmStates getState() {
-    //return state;
-    return ArmStates.HOME; 
+    // return state;
+    return ArmStates.HOME;
   }
 }
