@@ -15,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 
@@ -23,7 +24,7 @@ import frc.robot.util.LookupTable;
  */
 public class ArmIOTalonFX implements ArmIO {
 
-  TalonFX arm = new TalonFX(45, "Takeover");
+  TalonFX arm = new TalonFX(Constants.ArmConstants.ARM, Constants.canbus);
   CANcoder armCancoder = new CANcoder(44, "Takeover");
   LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 16);
   LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", 0);

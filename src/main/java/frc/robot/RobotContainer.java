@@ -148,7 +148,6 @@ public class RobotContainer {
     // superstructure.stop();
     // }
 
-
     if (input.leftJoystickButtonPressed(2)) {
       arm.motionmagic1();
     } else if (input.leftJoystickButtonPressed(3)) {
@@ -159,7 +158,8 @@ public class RobotContainer {
       arm.armmanualup();
     } else if (input.leftJoystickButton(6)) {
       arm.armmanualdown();
-    }  }
+    }
+  }
 
   // --------AUTO CHOOSER FUNCTIONS------------
   /**
