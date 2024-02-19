@@ -10,14 +10,12 @@
 
 package frc.robot;
 
-// import subsystems
 import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.elevatorarm.Arm;
-import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
-import frc.robot.subsystems.flywheel.*;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,7 +35,7 @@ public class Superstructure {
     HAS_NOTE,
     SHOOT,
     PRIMING_AMP,
-    PRIMED_AMP,
+    SCORE_AMP,
     CLIMB
   }
 
@@ -61,10 +59,10 @@ public class Superstructure {
 
   /** Call all of the periodic methods of the subsystems */
   public void updateSubsystems() {
-    intake.periodic();
-    conveyor.periodic();
-    shooter.periodic();
-    arm.periodic();
+    // intake.periodic();
+    // conveyor.periodic();
+    // shooter.periodic();
+    // arm.periodic();
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
@@ -75,7 +73,7 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
-        arm.setStopped();
+        // arm.setStopped();
         break;
 
       case RESET:
@@ -90,7 +88,7 @@ public class Superstructure {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        arm.setPosition();
+        // arm.setPosition();
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
@@ -103,11 +101,11 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        arm.setPosition();
-        if (arm.getState() == ArmStates.HOME) {
-          intake.setIntake();
-          conveyor.setIntaking();
-        }
+        // arm.setPosition();
+        // if (arm.getState() == ArmStates.HOME) {
+        intake.setIntake();
+        conveyor.setIntaking();
+        // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -117,21 +115,21 @@ public class Superstructure {
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
-      case PRIMING_SHOOTER:
-        /*
-         * PRIMING_SHOOTER (On Button Press)
-         * Run flywheel at desired velocity
-         * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
-         * state
-         */
-        // arm.setposition(SPEAKER) --> Dynamic(Vision)
-        shooter.runVelocity(5000); // Run shooter at set velocity (**Need to find**)
-        if (shooter.getState() == ShooterStates.AT_SETPOINT
-            // && arm.getState() == ArmStates.AT_SETPOINT {
-        ){
-          systemState = SuperstructureStates.PRIMED_SHOOTER;
-        }
-        break;
+        // case PRIMING_SHOOTER:
+        //   /*
+        //    * PRIMING_SHOOTER (On Button Press)
+        //    * Run flywheel at desired velocity
+        //    * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
+        //    * state
+        //    */
+        //   // arm.setposition(SPEAKER) --> Dynamic(Vision)
+        //   shooter.shoot(1000); // Run shooter at set velocity (**Need to find**)
+        //   if (shooter.getState() == ShooterStates.AT_SETPOINT
+        //   // && arm.getState() == ArmStates.AT_SETPOINT {
+        //   ) {
+        //     systemState = SuperstructureStates.PRIMED_SHOOTER;
+        //   }
+        //   break;
 
       case PRIMED_SHOOTER:
         /*
@@ -139,20 +137,24 @@ public class Superstructure {
          * If flywheel and arm are not ready to shoot, go back to PRIMING state to
          * adjust
          */
-        if (shooter.getState() != ShooterStates.AT_SETPOINT
-            || arm.getState() != ArmStates.AT_SETPOINT) {
+        // arm.getState() != ArmStates.AT_SETPOINT
+        if (shooter.getState() != ShooterStates.AT_SETPOINT) {
           systemState = SuperstructureStates.PRIMING_SHOOTER;
         }
         break;
 
       case SHOOT:
+        shooter.shoot(1000);
+        if (shooter.getState() == ShooterStates.AT_SETPOINT) {
+          conveyor.setShooting();
+        }
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
          */
-        if (systemState == SuperstructureStates.PRIMED_SHOOTER) {
-          conveyor.setShooting();
-        }
+        // if (systemState == SuperstructureStates.PRIMED_SHOOTER) {
+        //   conveyor.setShooting();
+        // }
         break;
 
       case PRIMING_AMP:
@@ -163,7 +165,7 @@ public class Superstructure {
         // arm.setposition(AMP);
         break;
 
-      case PRIMED_AMP:
+      case SCORE_AMP:
         /*
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
@@ -179,6 +181,11 @@ public class Superstructure {
          */
         break;
     }
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
@@ -210,7 +217,7 @@ public class Superstructure {
   }
 
   public void scoreAmp() {
-    systemState = SuperstructureStates.PRIMED_AMP;
+    systemState = SuperstructureStates.SCORE_AMP;
   }
 
   public void climb() {

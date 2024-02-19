@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // handle inputs
     io.updateInputs(inputs);
-    Logger.processInputs("Conveyor", inputs);
+    Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/State", state);
 
     // run the motors based on current state

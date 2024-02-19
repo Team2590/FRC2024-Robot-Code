@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -141,16 +140,11 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    if (input.leftJoystickTriggerPressed()) {
+    if (input.leftJoystickTrigger()) {
       superstructure.intake();
-    } else if (input.leftJoystickButtonPressed(1)) {
-      superstructure.primeShooter();
-    } else if (input.rightJoystickTriggerPressed()
-        && superstructure.getState() == SuperstructureStates.HAS_NOTE) {
+    } else if (input.rightJoystickTrigger()) {
       superstructure.shoot();
-    } else if (input.rightJoystickButtonPressed(1)) {
-      superstructure.primingAmp();
-    } else if (input.rightJoystickButtonPressed(2)) {
+    } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else {
       superstructure.idle();
