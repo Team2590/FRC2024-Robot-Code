@@ -42,9 +42,6 @@ public class ArmIOTalonFX implements ArmIO {
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
   MotionMagicDutyCycle mmv;
-  final DutyCycleOut m_request = new DutyCycleOut(0);
-  final DutyCycleOut m_request1 = new DutyCycleOut(0.1);
-  final DutyCycleOut m_request2 = new DutyCycleOut(-0.1);
   DutyCycleOut mrequest3 = new DutyCycleOut(0);
   double[] distances =
       new double[] {
@@ -69,9 +66,6 @@ public class ArmIOTalonFX implements ArmIO {
         0, 0, 0
       };
   private LookupTable setpointcalculator = new LookupTable(distances, setpoints);
-  private double ampsetpoint = -0.18;
-  private double intakesetpoint = 0.168;
-  private double speakerdistance = 0;
   private final StatusSignal<Double> armpos = armCancoder.getPosition();
   private final StatusSignal<Double> armabspos = armCancoder.getAbsolutePosition();
 
@@ -125,55 +119,12 @@ public class ArmIOTalonFX implements ArmIO {
     updateTunableNumbers();
   }
 
-  public String print() {
-    return arm.getMotionMagicIsRunning().getValue().toString();
-  }
-
-  public void setmotionmagic() {
-    // mmv.Slot = 0;
-    // arm.setControl(mmv.withPosition(-0.165));
-    arm.setControl(mmv.withPosition(setpointcalculator.getValue(speakerdistance)));
-  }
-
-  // public void setmotionmagicstow() {
-
-  //   arm.setControl(mmv.withPosition(0));
-  // }
-  public void setmotionmagicamp() {
-
-    arm.setControl(mmv.withPosition(ampsetpoint));
-  }
-
-  public void setmotionmagicintake() {
-
-    arm.setControl(mmv.withPosition(intakesetpoint));
-  }
-
-  public void resetArm() {
-    arm.setPosition(0);
-  }
-
-  public void armmanualup() {
-    mrequest3 = m_request1;
-  }
-
-  public void armmanualdown() {
-    mrequest3 = m_request2;
-  }
-
-  public void armmanual() {
-    arm.setControl(mrequest3);
+  public void setPosition(double position){
+    arm.setControl(mmv.withPosition(position));
   }
 
   public void stop() {
-    arm.setControl(m_request);
-  }
-
-  public boolean atsetpoint() {
-    return Math.abs(
-            setpointcalculator.getValue(speakerdistance)
-                - armCancoder.getAbsolutePosition().getValueAsDouble())
-        <= 0.001;
+    arm.stopMotor();
   }
 
   public void updateTunableNumbers() {
