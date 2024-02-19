@@ -13,15 +13,14 @@
 
 package frc.robot.subsystems.flywheel;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.util.HelperFn;
 import frc.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
   LoggedTunableNumber flywheelP = new LoggedTunableNumber("Flywheel/kP", 0);

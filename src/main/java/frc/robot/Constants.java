@@ -67,15 +67,18 @@ public final class Constants {
 
   public final class ArmConstants {
     // Fill in
+    public static final int ARM = 45;
   }
 
   public final class ShooterConstants {
     // Fill in
+    public static final int LEADER = 55;
+    public static final int FOLLOWER = 56;
   }
 
   public final class ConveyorConstants {
-    public static final int FEEDER_ID = 0;
-    public static final int DIVRETER_ID = 0;
+    public static final int FEEDER_ID = 57;
+    public static final int DIVRETER_ID = 58;
     public static final int INTAKE_PROX_ID = 0;
     public static final int SHOOTER_PROX_ID = 1;
     public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for
@@ -89,7 +92,7 @@ public final class Constants {
 
   public final class IntakeConstants {
     // Fill in
-    public static final int INTAKE_ID = 0;
+    public static final int INTAKE_ID = 14;
   }
 
   public static enum Mode {
