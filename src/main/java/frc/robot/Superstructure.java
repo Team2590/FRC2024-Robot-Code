@@ -88,7 +88,7 @@ public class Superstructure {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        // arm.setPosition();
+        arm.setHome();;
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
@@ -101,11 +101,11 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        // arm.setPosition();
-        // if (arm.getState() == ArmStates.HOME) {
-        intake.setIntake();
-        conveyor.setIntaking();
-        // }
+        arm.setPosition(.168);
+        if (arm.getState() == ArmStates.HOME) {
+          intake.setIntake();
+          conveyor.setIntaking();
+        }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;

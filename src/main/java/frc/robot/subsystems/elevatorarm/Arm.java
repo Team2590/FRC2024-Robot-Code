@@ -1,11 +1,17 @@
 package frc.robot.subsystems.elevatorarm;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.util.HelperFn;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
   private ArmStates state;
+  private double armSetpoint;
+  private double tolerance = .001;
+  private boolean requestHome = false;
+  private boolean requestVertical = false;
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
@@ -29,50 +35,60 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // arm.updateTunableNumbers();
-    // arm.updateInputs(inputs);
-    // Logger.processInputs("Arm", inputs);
-    // switch (state) {
-    //   case STOPPED:
-    //     // arm.stop();
-    //     break;
-    //   case MANUAL:
-    //     arm.armmanual();
-    //     break;
-    //   case APPROACHINGSETPOINT:
-    //     arm.setmotionmagic();
-    //     if (arm.atsetpoint()) {
-    //       state = ArmStates.AT_SETPOINT;
-
-    //     } else {
-    //       state = ArmStates.APPROACHINGSETPOINT;
-    //     }
-    //     break;
-    //   case AT_SETPOINT:
-    //     arm.setmotionmagic();
-    //     if (arm.atsetpoint()) {
-    //       state = ArmStates.AT_SETPOINT;
-
-    //     } else {
-    //       state = ArmStates.APPROACHINGSETPOINT;
-    //     }
-    //     break;
-    //     // case STOWED:
-    //     //     arm.setmotionmagicstow();
-    //     //     break;
-    //   case AMPTRAP:
-    //     arm.setmotionmagicamp();
-    //     break;
-    //   case HOME:
-    //     arm.setmotionmagicintake();
-    //     break;
-    // }
+    arm.updateTunableNumbers();
+    arm.updateInputs(inputs);
+    Logger.processInputs("Arm", inputs);
+    switch (state) {
+      case STOPPED:
+        arm.stop();
+        break;
+      case MANUAL:
+        // arm.armmanual();
+        break;
+      case APPROACHINGSETPOINT:
+        arm.setPosition(armSetpoint);
+        if (!HelperFn.isWithinTolerance(arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+          state = ArmStates.APPROACHINGSETPOINT;
+        } else {
+          state = ArmStates.AT_SETPOINT;
+        }
+        break;
+      case AT_SETPOINT:
+        arm.setPosition(armSetpoint);
+        if (HelperFn.isWithinTolerance(arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+          if (requestHome){
+            state = ArmStates.HOME;
+          }
+          else if (requestVertical){
+            state = ArmStates.AMPTRAP;
+          }
+        } else {
+          state = ArmStates.APPROACHINGSETPOINT;
+        }
+        break;
+      case AMPTRAP:
+        requestVertical = false;
+        break;
+      case HOME:
+        requestHome = false;
+        break;
+    }
   }
 
   /** Run open loop at the specified voltage. */
-  public void setPosition() {
-    arm.setmotionmagicintake();
+  public void setPosition(double setpoint) {
+    armSetpoint = setpoint;
     state = ArmStates.APPROACHINGSETPOINT;
+  }
+
+  public void setHome(){
+    requestHome = true;
+    setPosition(.168);
+  }
+
+    public void setVertical(){
+    requestVertical = true;
+    setPosition(-2.0);
   }
 
   public void motionmagicintake() {
@@ -83,26 +99,8 @@ public class Arm extends SubsystemBase {
     state = ArmStates.AMPTRAP;
   }
 
-  public void armmanualup() {
-    state = ArmStates.MANUAL;
-    arm.armmanualup();
-  }
-
-  public void armmanualdown() {
-    state = ArmStates.MANUAL;
-    arm.armmanualdown();
-  }
-
   public void resetarm() {
     arm.resetArm();
-  }
-
-  public void atsetpoint() {
-    if (arm.atsetpoint()) {
-      state = ArmStates.AT_SETPOINT;
-    } else {
-      state = ArmStates.APPROACHINGSETPOINT;
-    }
   }
 
   /** Run closed loop at the specified velocity. */
