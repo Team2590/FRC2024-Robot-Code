@@ -16,6 +16,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevatorarm.Arm;
+import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
@@ -38,6 +40,7 @@ public class RobotContainer {
   private final Flywheel flywheel;
   private final Conveyor conveyor;
   private final Intake intake;
+  private final Arm arm;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -63,6 +66,7 @@ public class RobotContainer {
         // instantiate other subsystems
         conveyor = new Conveyor(new ConveyorIOTalonFX());
         intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
         break;
 
       case SIM:
@@ -78,6 +82,7 @@ public class RobotContainer {
         // instantiate SIM VERSIONS of other subsystems
         conveyor = new Conveyor(new ConveyorIOSim());
         intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
         break;
 
       default:
@@ -92,10 +97,11 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {});
         conveyor = new Conveyor(new ConveyorIO() {});
         intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake);
+    superstructure = new Superstructure(conveyor, intake, arm);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     // populateAutoChooser();
@@ -141,7 +147,19 @@ public class RobotContainer {
     // } else {
     // superstructure.stop();
     // }
-  }
+
+
+    if (input.leftJoystickButtonPressed(2)) {
+      arm.motionmagic1();
+    } else if (input.leftJoystickButtonPressed(3)) {
+      arm.motionmagicintake();
+    } else if (input.leftJoystickButtonPressed(4)) {
+      arm.motionmagicamp();
+    } else if (input.leftJoystickButton(5)) {
+      arm.armmanualup();
+    } else if (input.leftJoystickButton(6)) {
+      arm.armmanualdown();
+    }  }
 
   // --------AUTO CHOOSER FUNCTIONS------------
   /**

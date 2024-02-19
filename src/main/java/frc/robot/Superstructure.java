@@ -12,6 +12,7 @@ package frc.robot;
 
 // import subsystems
 import frc.robot.subsystems.conveyor.*;
+import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.intake.Intake;
 
 /**
@@ -38,7 +39,7 @@ public class Superstructure {
   //     new LoggedDashboardNumber("Flywheel Speed", 1500.0);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake) {
+  public Superstructure(Conveyor conveyor, Intake intake, Arm arm) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
