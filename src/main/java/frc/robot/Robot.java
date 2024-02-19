@@ -13,9 +13,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.vision.photonvisionAprilTag;
+import frc.robot.subsystems.vision.PhotonvisionNote;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -33,8 +34,6 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
 
-  private photonvisionAprilTag aprilTagVision;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -42,7 +41,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     // Record metadata
-    aprilTagVision = new photonvisionAprilTag();
+    PhotonvisionNote.init();
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -102,7 +101,7 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    aprilTagVision.updateResults();
+    PhotonvisionNote.updateResults();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -140,26 +139,17 @@ public class Robot extends LoggedRobot {
     }
   }
 
+  public String stringify(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString();
+  }
+
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // Larger/left Camera
-    System.out.println("Left - Does it have targets: " + aprilTagVision.hasTargets("left"));
-    System.out.println("Left - Detected ID: " + aprilTagVision.getID("left"));
-    System.out.println("Left - Range of detected tag: " + aprilTagVision.getRangeTag("left"));
-    System.out.println("Left - Forward speed: " + aprilTagVision.getForwardSpeed("left"));
-    System.out.println("Left - Rotation speed: " + aprilTagVision.getRotationSpeed("left"));
-    System.out.println(
-        "Left - Tranform3d displacement camera->target: " + aprilTagVision.camToTarget("left"));
-
-    // Smaller/right Camera
-    System.out.println("Right - Does it have targets: " + aprilTagVision.hasTargets("right"));
-    System.out.println("Right - Detected ID: " + aprilTagVision.getID("right"));
-    System.out.println("Right - Range of detected tag: " + aprilTagVision.getRangeTag("right"));
-    System.out.println("Right - Forward speed: " + aprilTagVision.getForwardSpeed("right"));
-    System.out.println("Right - Rotation speed: " + aprilTagVision.getRotationSpeed("right"));
-    System.out.println(
-        "Right - Tranform3d displacement camera->target: " + aprilTagVision.camToTarget("right"));
+    SmartDashboard.putString("toNote", stringify(PhotonvisionNote.getRobotToNote()));
   }
 
   /** This function is called once when test mode is enabled. */

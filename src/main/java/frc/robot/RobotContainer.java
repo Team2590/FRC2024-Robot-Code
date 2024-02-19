@@ -36,7 +36,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -51,9 +51,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
-  //pose estimator
-
-
+  // pose estimator
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
