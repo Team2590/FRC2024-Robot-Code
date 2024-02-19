@@ -15,6 +15,8 @@ public interface ArmIO {
     public double tempCelcius = 0.0;
     public double armTargetPosition = 0.0;
     public double armTargetVelocity = 0.0;
+    public double armabspos = 0.0;
+    public double armpos = 0.0;
   }
 
   /** Updates the set of loggable inputs */

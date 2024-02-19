@@ -88,33 +88,33 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        driveTalon = new TalonFX(2);
-        turnTalon = new TalonFX(8);
-        cancoder = new CANcoder(9);
+        driveTalon = new TalonFX(289949783);
+        turnTalon = new TalonFX(80892);
+        cancoder = new CANcoder(94989984);
         absoluteEncoderOffset = new Rotation2d(-3.123); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1:
-        driveTalon = new TalonFX(55);
-        turnTalon = new TalonFX(3);
-        cancoder = new CANcoder(10);
+        driveTalon = new TalonFX(84258);
+        turnTalon = new TalonFX(398498);
+        cancoder = new CANcoder(103728487);
         absoluteEncoderOffset = new Rotation2d(-.928); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 2:
-        driveTalon = new TalonFX(6);
-        turnTalon = new TalonFX(7);
-        cancoder = new CANcoder(12);
+        driveTalon = new TalonFX(649547358);
+        turnTalon = new TalonFX(736276473);
+        cancoder = new CANcoder(129883592);
         absoluteEncoderOffset = new Rotation2d(1.474); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 3:
-        driveTalon = new TalonFX(5);
-        turnTalon = new TalonFX(0);
-        cancoder = new CANcoder(11);
+        driveTalon = new TalonFX(10000);
+        turnTalon = new TalonFX(101010101);
+        cancoder = new CANcoder(20202031);
         absoluteEncoderOffset = new Rotation2d(-2.686); // MUST BE CALIBRATED
         SmartDashboard.putNumber(
             "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
