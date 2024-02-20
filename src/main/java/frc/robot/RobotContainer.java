@@ -4,13 +4,13 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
 import frc.robot.subsystems.conveyor.ConveyorIOSim;
 import frc.robot.subsystems.conveyor.ConveyorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -55,7 +55,7 @@ public class RobotContainer {
       case REAL:
         drive =
             new Drive(
-                new GyroIOPigeon2(true) {},
+                new GyroIO() {},
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
@@ -102,7 +102,7 @@ public class RobotContainer {
     superstructure = new Superstructure(conveyor, intake, flywheel, arm);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
-    // populateAutoChooser();
+    populateAutoChooser();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -166,11 +166,11 @@ public class RobotContainer {
    */
   private void populateAutoChooser() {
 
-    // // Set up feedforward characterization
-    // autoChooser.addOption(
-    //     "Drive FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // Set up feedforward characterization
+    autoChooser.addOption(
+        "Drive FF Characterization",
+        new FeedForwardCharacterization(
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     // autoChooser.addOption(
     //     "Flywheel FF Characterization",
     //     new FeedForwardCharacterization(
