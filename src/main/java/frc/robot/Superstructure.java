@@ -12,6 +12,7 @@ package frc.robot;
 
 import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.elevatorarm.Arm;
+import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
@@ -101,11 +102,11 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        arm.setPosition(.168);
-        if (arm.getState() == ArmStates.HOME) {
-          intake.setIntake();
-          conveyor.setIntaking();
-        }
+        arm.setHome();
+        // if (arm.getState() == ArmStates.HOME) {
+        intake.setIntake();
+        conveyor.setIntaking();
+        // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -144,8 +145,15 @@ public class Superstructure {
         break;
 
       case SHOOT:
-        shooter.shoot(1000);
-        if (shooter.getState() == ShooterStates.AT_SETPOINT) {
+        if (arm.getState() != ArmStates.AT_SETPOINT) {
+          arm.setPosition(0);
+        }
+        if (shooter.getState() != ShooterStates.AT_SETPOINT) {
+          shooter.shoot(1000);
+        }
+
+        if (arm.getState() == ArmStates.AT_SETPOINT
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
         /*

@@ -119,7 +119,7 @@ public class ArmIOTalonFX implements ArmIO {
     updateTunableNumbers();
   }
 
-  public void setPosition(double position){
+  public void setPosition(double position) {
     arm.setControl(mmv.withPosition(position));
   }
 
