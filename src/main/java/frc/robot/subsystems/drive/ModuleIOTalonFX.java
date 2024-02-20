@@ -90,64 +90,65 @@ public class ModuleIOTalonFX implements ModuleIO {
   public ModuleIOTalonFX(int index) {
     switch (index) {
       case 0: // Front Left
-        // try {
-        //   Thread.sleep(1000);
-        // } catch (InterruptedException e) {
-        //   // TODO Auto-generated catch block
-        //   e.printStackTrace();
-        // }
+        try {
+          Thread.sleep(2000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         driveTalon = new TalonFX(13, "Takeover");
         turnTalon = new TalonFX(11, "Takeover");
         cancoder = new CANcoder(12, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(0.066);
+        absoluteEncoderOffset = new Rotation2d(0054);
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
         SmartDashboard.putNumber(
             "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
       case 1: // Front Right
-        // try {
-        //   Thread.sleep(1000);
-        // } catch (InterruptedException e) {
-        //   // TODO Auto-generated catch block
-        //   e.printStackTrace();
-        // }
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
         driveTalon = new TalonFX(23, "Takeover");
         turnTalon = new TalonFX(21, "Takeover");
         cancoder = new CANcoder(22, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(-1.805);
+        absoluteEncoderOffset = new Rotation2d(-1.795);
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-.928 + Math.PI); // 2.778
         SmartDashboard.putNumber(
             "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 2: // Back Left
-        // try {
-        //   Thread.sleep(1000);
-        // } catch (InterruptedException e) {
-        //   // TODO Auto-generated catch block
-        //   e.printStackTrace();
-        // }
+      case 3: // Back RIGHT
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         driveTalon = new TalonFX(33, "Takeover");
         turnTalon = new TalonFX(31, "Takeover");
         cancoder = new CANcoder(32, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(0.603);
+        absoluteEncoderOffset = new Rotation2d(0.537);
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(1.474 + Math.PI); // -2.551
         SmartDashboard.putNumber(
             "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
         break;
-      case 3: // Back Right
-        // try {
-        //   Thread.sleep(1000);
-        // } catch (InterruptedException e) {
-        //   // TODO Auto-generated catch block
-        //   e.printStackTrace();
-        // }
+      case 2: // Back LEFT
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         driveTalon = new TalonFX(43, "Takeover");
         turnTalon = new TalonFX(41, "Takeover");
         cancoder = new CANcoder(42, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(2.034);
+        absoluteEncoderOffset = new Rotation2d(2.071);
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-2.686 + Math.PI); // -1/717
         SmartDashboard.putNumber(
