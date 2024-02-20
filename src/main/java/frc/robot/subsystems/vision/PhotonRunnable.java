@@ -8,6 +8,7 @@ import static frc.robot.Constants.VisionConstants.CAMERA_ROLL;
 import static frc.robot.Constants.VisionConstants.CAMERA_YAW;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -43,12 +44,13 @@ public class PhotonRunnable implements Runnable {
   private static Pose3d RobotPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
+  public final AprilTagFieldLayout layout;
 
   public PhotonRunnable(String name, Transform3d cameraTransform3d) {
     this.photonCamera = new PhotonCamera(name);
     this.cameraTransform = cameraTransform3d;
     PhotonPoseEstimator photonPoseEstimator = null;
-    var layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // PV estimates will always be blue, they'll get flipped by robot thread
     layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     if (photonCamera != null) {

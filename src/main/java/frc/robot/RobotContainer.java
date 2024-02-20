@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -53,22 +54,9 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  // field values
-  private Pose2d speaker;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     input = UserInput.getInstance();
-    // set field positions based on alliance (use driverstation to change alliance for testing purposes)
-    if (DriverStation.getAlliance().equals(Optional.of(Alliance.Red))) {
-      speaker = FieldConstants.SPEAKER_RED;
-    } else if (DriverStation.getAlliance().equals(Optional.of(Alliance.Blue))) {
-      speaker = FieldConstants.SPEAKER_BLUE;
-    } else {
-      // default value, only really used in sim
-      speaker = FieldConstants.SPEAKER_RED;
-    }
-
     switch (Constants.currentMode) {
       case REAL:
         drive =
@@ -150,7 +138,7 @@ public class RobotContainer {
       CommandScheduler.getInstance()
           .schedule(
               DriveCommands.SnapToTarget(
-                      drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), speaker)
+                      drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.SPEAKER)
                   .until(() -> input.leftJoystickButtonReleased(1)));
     }
     if (input.rightJoystickTriggerPressed()) {
