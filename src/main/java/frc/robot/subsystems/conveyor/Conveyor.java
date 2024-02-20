@@ -17,9 +17,9 @@ public class Conveyor extends SubsystemBase {
   // TODO: update constants once we get the robot
   // tunable constants
   private LoggedTunableNumber conveyorSpeed =
-      new LoggedTunableNumber("Conveyor/ConveyorSpeed", 0.5);
+      new LoggedTunableNumber("Conveyor/ConveyorSpeed", 0.25);
   private LoggedTunableNumber diverterSpeed =
-      new LoggedTunableNumber("Conveyor/DiverterSpeed", 0.5);
+      new LoggedTunableNumber("Conveyor/DiverterSpeed", 0.75);
 
   // conveyor states
   public enum ConveyorStates {
