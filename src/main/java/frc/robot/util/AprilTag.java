@@ -5,6 +5,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 
+/**
+ * A static class storing information about all april tags on the field
+ * <p>IMPORTANT: all positions in this class were found manually. If you wish to reuse this class,
+ * you will need to update all the positions.
+ */
 public class AprilTag {
 
   public static final double[] tagHeights = {
@@ -81,6 +86,11 @@ public class AprilTag {
     new Pose3d(4.64, 3.71, tagHeights[16], new Rotation3d(0, 0, Math.toRadians(-120)))
   };
 
+  /**
+   * Get the 2d position of an april tag
+   * @param tagId - the tag's id
+   * @return given tag's position
+   */
   public static Pose2d getTagPose(int tagId) {
     return tagPoses[tagId].toPose2d();
   }

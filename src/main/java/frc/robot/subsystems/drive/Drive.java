@@ -60,7 +60,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   public final PIDController snapController = new PIDController(.34, 0.0, 0.0);
-  public final PIDController noteController = new PIDController(.44, 0.0, .00001);
+  public final PIDController linearMovementController = new PIDController(.44, 0.0, .00001);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
@@ -69,16 +69,18 @@ public class Drive extends SubsystemBase {
   public static LoggedTunableNumber snapControllermultiplier =
       new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
   public static LoggedTunableNumber noteControllermultiplier =
-      new LoggedTunableNumber("NoteController/MaxSpeedRatio", 6);
+      new LoggedTunableNumber("noteController/MaxSpeedRatio", 6);
+  public static LoggedTunableNumber alignControllermultiplier =
+      new LoggedTunableNumber("alignController/MaxSpeedRatio", 6);
   LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
       new LoggedTunableNumber("SnapController/tolerance", .1);
 
-  LoggedTunableNumber noteControllerP = new LoggedTunableNumber("NoteController/kP", .44);
-  LoggedTunableNumber noteControllerD = new LoggedTunableNumber("NoteController/kD", .00001);
-  LoggedTunableNumber noteControllerTolerance =
-      new LoggedTunableNumber("NoteController/tolerance", .1);
+  LoggedTunableNumber linearMovementControllerP = new LoggedTunableNumber("linearMovementController/kP", .44);
+  LoggedTunableNumber linearMovementControllerD = new LoggedTunableNumber("linearMovementController/kD", .00001);
+  LoggedTunableNumber linearMovementControllerTolerance =
+      new LoggedTunableNumber("linearMovementController/tolerance", .1);
 
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;
@@ -97,7 +99,7 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
 
     snapController.setTolerance(.2);
-    noteController.setTolerance(noteControllerTolerance.get());
+    linearMovementController.setTolerance(linearMovementControllerTolerance.get());
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -320,11 +322,11 @@ public class Drive extends SubsystemBase {
       snapController.setPID(snapControllerP.get(), 0.0, snapControllerD.get());
       snapController.setTolerance(snapControllerTolerance.get());
     }
-    if (noteControllerP.hasChanged(hashCode())
-        || noteControllerD.hasChanged(hashCode())
-        || noteControllerTolerance.hasChanged(hashCode())) {
-      noteController.setPID(noteControllerP.get(), 0.0, noteControllerD.get());
-      noteController.setTolerance(noteControllerTolerance.get());
+    if (linearMovementControllerP.hasChanged(hashCode())
+        || linearMovementControllerD.hasChanged(hashCode())
+        || linearMovementControllerTolerance.hasChanged(hashCode())) {
+      linearMovementController.setPID(linearMovementControllerP.get(), 0.0, linearMovementControllerD.get());
+      linearMovementController.setTolerance(linearMovementControllerTolerance.get());
     }
   }
 

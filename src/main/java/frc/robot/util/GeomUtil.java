@@ -143,6 +143,13 @@ public class GeomUtil {
     return new Translation2d(translation.getX(), translation.getZ());
   }
 
+  /**
+   * Returns the position of the center point of an equilateral triangle of given position
+   * @param a - 1st vertex of triangle
+   * @param b - 2nd vertex of triangle
+   * @param c - 3rd vertex of triangle
+   * @return the position of the center point
+   */
   public static Pose2d triangleCenter(Pose2d a, Pose2d b, Pose2d c) {
     return new Pose2d(
         (a.getX() + b.getX() + c.getX()) / 3,

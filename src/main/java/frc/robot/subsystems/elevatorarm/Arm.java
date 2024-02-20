@@ -79,6 +79,11 @@ public class Arm extends SubsystemBase {
     }
   }
 
+  /**
+   * Check if the arm is at the given setpoint, with tolerance
+   * @param setPoint - arm setpoint
+   * @return if the arm is within tolerance
+   */
   private boolean isArmAtSetPointPosition(double setPoint) {
     return HelperFn.isWithinTolerance(
         arm.armCancoder.getAbsolutePosition().getValueAsDouble(), setPoint, tolerance);
@@ -103,6 +108,7 @@ public class Arm extends SubsystemBase {
   //   manualPower = percent;
   // }
 
+  /** Move the arm into home position */
   public void setHome() {
     if (isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
       state = ArmStates.HOME;
@@ -110,31 +116,35 @@ public class Arm extends SubsystemBase {
       state = ArmStates.APPROACHING_HOME;
     }
   }
-
+  
   public void resetarm() {
     arm.resetArm();
   }
 
+  /** Run the arm manually */
   public void manual(DutyCycleOut request) {
     power = request;
     state = ArmStates.MANUAL;
   }
 
+  /** Manually move the arm down */
   public void armmanualdown() {
     state = ArmStates.MANUAL;
     DutyCycleOut power = new DutyCycleOut(0.1);
     arm.setPower(power);
   }
-
-  /** Stops the flywheel. */
+  
+  /** Stops the arm. */
   public void setStopped() {
     state = ArmStates.STOPPED;
   }
 
+  /** Get the position of the arm's absolute encoder */
   public double getAbsolutePosition() {
     return arm.armCancoder.getAbsolutePosition().getValueAsDouble();
   }
 
+  /** Get the current state of the arm */
   public ArmStates getState() {
     return state;
   }

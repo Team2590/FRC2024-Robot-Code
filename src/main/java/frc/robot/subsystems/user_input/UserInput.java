@@ -228,6 +228,11 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return operatorController.getPOV();
   }
 
+  /**
+   * Sets the controller rumble.
+   * <p>This function is useful to provide feedback through touch to the operator
+   * @param intensity - intensity of the rumble, from 0 to 1
+   */
   public void setOperatorRumble(double intensity) {
     operatorController.setRumble(RumbleType.kBothRumble, intensity);
   }

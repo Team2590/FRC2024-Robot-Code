@@ -138,6 +138,7 @@ public class Flywheel extends SubsystemBase {
     return inputs.velocityRadPerSec;
   }
 
+  /** Returns the current state of the shooter */
   public ShooterStates getState() {
     return state;
   }

@@ -9,10 +9,10 @@ public class HelperFn {
   /**
    * Returns true if the currentValue is within +/- of tolerance of the setPoint.
    *
-   * @param currentValue
-   * @param setPoint
-   * @param tolerance
-   * @return
+   * @param currentValue - current value
+   * @param setPoint - ideal value
+   * @param tolerance - allowable error
+   * @return if the value is within allowable error
    */
   public static boolean isWithinTolerance(double currentValue, double setPoint, double tolerance) {
     // Check if tolerance is positive

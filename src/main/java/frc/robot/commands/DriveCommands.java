@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -30,6 +31,8 @@ import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.List;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -168,23 +171,31 @@ public class DriveCommands {
     return Commands.run(
         (() -> {
           Logger.recordOutput(
-              "Drive/NoteController/PID Output",
-              drive.noteController.calculate(-yError.getAsDouble(), 0)
+              "Drive/noteController/PID Output",
+              drive.linearMovementController.calculate(-yError.getAsDouble(), 0)
                   * drive.getMaxLinearSpeedMetersPerSec());
-          Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
+          Logger.recordOutput("Drive/noteController/YError", yError.getAsDouble());
           drive.runVelocity(
               new ChassisSpeeds(
                   // joystick magnitude
                   -Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble())
                       * drive.getMaxLinearSpeedMetersPerSec(),
-                  drive.noteController.calculate(-yError.getAsDouble(), 0)
+                  drive.linearMovementController.calculate(-yError.getAsDouble(), 0)
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.noteControllermultiplier.get(),
                   0));
         }),
         drive);
   }
-
+  
+  /**
+   * Turn towards a grounded note while maintaining joystick movement; use camera data to get relative note yaw
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param yawSupplier - yaw to note; take from camera
+   * @return the command
+   */
   public static Command turnToNote(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
     final var yaw = yawSupplier.getAsDouble();

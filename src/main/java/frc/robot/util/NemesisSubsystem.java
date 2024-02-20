@@ -7,9 +7,11 @@ import java.util.function.Supplier;
 /**
  * A base class for any class that has an update method and has data to be published to the
  * dashboard.
+ * @deprecated This class is current unused in the codebase and can be safely removed
  *
  * @author Elan Ronen
  */
+@Deprecated(forRemoval = true)
 public abstract class NemesisSubsystem {
 
   /** Updates over a regular interval. This method should be called once per loop iteration. */
