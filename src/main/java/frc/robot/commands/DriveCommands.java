@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -30,6 +31,8 @@ import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.targeting.PhotonTrackedTarget;
+import java.util.List;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -184,6 +187,59 @@ public class DriveCommands {
         }),
         drive);
   }
+
+  /**
+   * Aligns to the target, based on the april tags seen
+   * @param drive - drive instanec
+   * @param targets - list of targets seen; can be taken straight from vision
+   * @return the command
+   */
+  public static Command TurnTranslateToTarget(
+    Drive drive, List<PhotonTrackedTarget> targets) {
+      // TODO: both turn and translate might need their own pids with seperate gains; just using snap controller for now 
+      // TODO: INSTEAD OF getBestCameraToTarget(), USE TAG POSE FROM FIELD LAYOUT MINUS ROBOT POSE
+      return Commands.run((() -> {
+        for (PhotonTrackedTarget t: targets) {
+          // turn to speaker (center tag only, red and blue)
+          if (t.getFiducialId() == 4 || t.getFiducialId() == 7) {
+            Transform3d difference = t.getBestCameraToTarget();
+            double theta = Math.atan2(difference.getY(),difference.getX());
+            double currentAngle = drive.getRotation().getRadians();
+            double currentError = theta - currentAngle;
+            if (currentError > Math.PI) {
+              currentAngle += 2 * Math.PI;
+            } else if (currentError < -Math.PI) {
+              currentAngle -= 2 * Math.PI;
+            }
+            Logger.recordOutput("AlignController/TagId", t.getFiducialId());
+            Logger.recordOutput("AlignController/TagPose",difference);
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    0,0,
+                    drive.snapController.calculate(currentAngle, theta)
+                        * drive.getMaxAngularSpeedRadPerSec(),
+                    drive.getRotation()));
+            break;
+          // translate to amp/stage (centered, all 3 stage sides, red and blue)
+          } else if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
+            Transform3d difference = t.getBestCameraToTarget();
+            double xOffset = difference.getX();
+            double yOffset = difference.getY();
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                  drive.snapController.calculate(xOffset, 0)
+                    * drive.getMaxLinearSpeedMetersPerSec()
+                    * Drive.snapControllermultiplier.get(),
+                  drive.snapController.calculate(yOffset,0)
+                    * drive.getMaxLinearSpeedMetersPerSec()
+                    * Drive.snapControllermultiplier.get(),
+                  0,
+                  drive.getRotation()));
+          }
+        }
+      }),
+      drive);
+    }
 
   public static Command turnToNote(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
