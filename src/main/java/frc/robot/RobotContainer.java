@@ -119,10 +119,10 @@ public class RobotContainer {
   public void updateSubsystems() {
     // call update functions of all subsystems
     superstructure.periodic();
-    conveyor.periodic();
-    flywheel.periodic();
-    intake.periodic();
-    arm.periodic();
+    // conveyor.periodic();
+    // flywheel.periodic();
+    // intake.periodic();
+    // arm.periodic();
     input.update();
   }
 
