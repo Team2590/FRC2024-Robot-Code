@@ -5,7 +5,6 @@ import java.util.Arrays;
 /**
  * @author Elan Ronen
  * 
- * TODO: make solving quartic work (just check that it lines up with the desmos)
  * TODO: add formula for shooting with entry angle
  * TODO: finish simplifying equation for t_f
  * TODO: find inequality to check if a target is "within reach"
