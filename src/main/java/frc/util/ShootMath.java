@@ -38,13 +38,15 @@ public interface ShootMath {
         double rvx, double rvy, double rvz,
         double g
     ) {
-        final var tf = solveQuartic(
+        final var tf = approxQuartic(
             Math.pow(g, 2) / 4,
             -rvz * g,
             dz * g - Math.pow(pv, 2) + Math.pow(rvx, 2) + Math.pow(rvy, 2) + Math.pow(rvz, 2),
             -2 * (dx * rvx + dy * rvy + dz * rvz),
-            Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2)
-        )[1];
+            Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2),
+            Math.hypot(Math.hypot(dx, dy), dz) / pv,
+            10
+        );
 
         final var vx = dx / tf - rvx;
         final var vy = dy / tf - rvy;
@@ -57,7 +59,28 @@ public interface ShootMath {
     }
 
     /**
-     * Solves for the roots of a general quartic.
+     * Uses Newton's Method to approximate the roots of a quartic.
+     * @param a - x^4
+     * @param b - x^3
+     * @param c - x^2
+     * @param d - x^1
+     * @param e - x^0
+     * @param x - initial approximation
+     * @param n - iterations of the algorithm
+     * @return An approximate root.
+     */
+    public static double approxQuartic(double a, double b, double c, double d, double e, double x, double n) {
+        for (; n > 0; n--) {
+            final var x4 = Math.pow(x, 4);
+            final var x3 = Math.pow(x, 3);
+            final var x2 = Math.pow(x, 2);
+            x -= (a*x4 + b*x3 + c*x2 + d*x + e) / (4*a*x3 + 3*b*x2 + 2*c*x + d);
+        }
+        return x;
+    }
+
+    /**
+     * Solves for the roots of a general quartic. DOES NOT WORK
      * https://www.desmos.com/calculator/gamythajrx
      * @param a - x^4
      * @param b - x^3
@@ -95,7 +118,7 @@ public interface ShootMath {
     }
 
     public static void main(String[] args) {
-        System.out.println(Arrays.toString(solveQuartic(0.5, -3, 2, 1, -0.5)));
+        System.out.println(calcConstantVelocity(12.4, 9, 8, 4, 5, -5, 3.5, 9.8));
     }
 
 }
