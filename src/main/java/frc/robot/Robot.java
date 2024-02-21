@@ -44,8 +44,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
 
-    vision = new PhotonRunnable();
-
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);

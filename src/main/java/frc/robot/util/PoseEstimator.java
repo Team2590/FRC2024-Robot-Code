@@ -16,6 +16,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.subsystems.vision.PhotonRunnable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,7 +27,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class PoseEstimator {
   private static final double historyLengthSecs = 0.3;
-  private final PhotonRunnable photonEstimator = new PhotonRunnable();
+  private final PhotonRunnable photonEstimator = new PhotonRunnable("FrontCamera", Constants.VisionConstants.RobotToCam);
   private final Notifier photonNotifier = new Notifier(photonEstimator);
   private Pose2d basePose = new Pose2d();
   private Pose2d latestPose = new Pose2d();
