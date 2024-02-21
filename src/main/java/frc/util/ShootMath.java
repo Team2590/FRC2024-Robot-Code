@@ -41,7 +41,7 @@ public interface ShootMath {
             dz * g - Math.pow(pv, 2) + Math.pow(rvx, 2) + Math.pow(rvy, 2) + Math.pow(rvz, 2),
             -2 * (dx * rvx + dy * rvy + dz * rvz),
             Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2),
-            Math.hypot(Math.hypot(dx, dy), dz) / pv,
+            Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2)) / pv,
             10
         );
 
