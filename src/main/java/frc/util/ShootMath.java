@@ -1,9 +1,31 @@
 package frc.util;
 
+import java.util.Arrays;
+
+/**
+ * @author Elan Ronen
+ */
 public interface ShootMath {
 
-    public record ShootState(double velocity, double yaw, double pitch) {};
+    /**
+     * Represents the state of the shooter.
+     * The yaw is zero when facing positive x and increases counter-clockwise.
+     * The pitch is zero when parallel to the xy-plane and increases pointing up.
+     */
+    public static record ShootState(double velocity, double yaw, double pitch) {};
 
+    /**
+     * Calculates the yaw and pitch of the shooter from a set shooting velocity.
+     * @param pv - shooting velocity
+     * @param dx - x distance to target
+     * @param dy - y distance to target
+     * @param dz - z distance to target
+     * @param rvx - initial x velocity relative to target
+     * @param rvy - initial y velocity relative to target
+     * @param rvz - initial z velocity relative to target
+     * @param g - constant of gravity
+     * @return The shooting velocity, yaw, and pitch.
+     */
     public static ShootState calcConstantVelocity(
         double pv,
         double dx, double dy, double dz,
@@ -28,6 +50,17 @@ public interface ShootMath {
         return new ShootState(pv, pv_theta, pv_phi);
     }
 
+    /**
+     * Solves for the roots of a general quartic.
+     * https://www.desmos.com/calculator/gamythajrx
+     * TODO: MAKE THIS WORK
+     * @param a - x^4
+     * @param b - x^3
+     * @param c - x^2
+     * @param d - x^1
+     * @param e - x^0
+     * @return The four roots.
+     */
     public static double[] solveQuartic(double a, double b, double c, double d, double e) {
         final var a3 = b / a;
         final var a2 = c / a;
@@ -54,6 +87,10 @@ public interface ShootMath {
             -a3 / 4 - R / 2 + E / 2,
             -a3 / 4 - R / 2 - E / 2
         };
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(solveQuartic(0.5, -3, 2, 1, -0.5)));
     }
 
 }
