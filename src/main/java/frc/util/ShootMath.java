@@ -77,6 +77,40 @@ public interface ShootMath {
     }
 
     /**
+     * Calculates the velocity, yaw, and pitch of the shooter from the
+     * entry angle to the target (zero is parallel to the ground).
+     * @param phi - entry angle
+     * @param dx - x distance to target
+     * @param dy - y distance to target
+     * @param dz - z distance to target
+     * @param rvx - initial x velocity relative to target
+     * @param rvy - initial y velocity relative to target
+     * @param rvz - initial z velocity relative to target
+     * @param g - constant of gravity
+     * @return The shooting velocity, yaw, and pitch.
+     */
+    public static ShootState calcEntryAngle(
+        double phi,
+        double dx, double dy, double dz,
+        double rvx, double rvy, double rvz,
+        double g
+    ) {
+        final var dm = Math.tan(phi) * (Math.abs(dx) - Math.abs(dy) > 0 ? dx : dy);
+        final var tf = Math.sqrt(-2 * (dm - dz) / g);
+
+        final var vx = dx / tf - rvx;
+        final var vy = dy / tf - rvy;
+        final var vxy = Math.hypot(vx, vy);
+        final var vz = 2 * (dz - dm) / tf;
+        
+        final var pv_theta = Math.atan2(vy, vx);
+        final var pv_phi = Math.atan2(vz, vxy);
+        final var pv = Math.hypot(vxy, vz);
+
+        return new ShootState(pv, pv_theta, pv_phi);
+    }
+
+    /**
      * Solves for the roots of a general quartic. DOES NOT WORK
      * https://www.desmos.com/calculator/gamythajrx
      * @param a - x^4
