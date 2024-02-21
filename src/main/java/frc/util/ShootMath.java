@@ -16,6 +16,7 @@ public interface ShootMath {
 
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
+     * https://www.desmos.com/3d/adcac4804e
      * @param pv - shooting velocity
      * @param dx - x distance to target
      * @param dy - y distance to target
