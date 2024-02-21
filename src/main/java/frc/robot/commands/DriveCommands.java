@@ -107,4 +107,20 @@ public class DriveCommands {
         }),
         drive);
   }
+  
+  /**
+   * 
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param yError - lateral error from note; take directly from note camera
+   * @return the command
+   */
+  public static Command translateToNote(
+    Drive drive, DoubleSupplier xSupplier, DoubleSupplier yError) {
+      return Commands.run(
+        (() -> {
+          
+        }),
+        drive);
+  }
 }
