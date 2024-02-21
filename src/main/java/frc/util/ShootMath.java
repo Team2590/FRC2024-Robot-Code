@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 /**
  * @author Elan Ronen
+ * 
+ * TODO: make solving quartic work (just check that it lines up with the desmos)
+ * TODO: add formula for shooting with entry angle
+ * TODO: finish simplifying equation for t_f
+ * TODO: find inequality to check if a target is "within reach"
  */
 public interface ShootMath {
 
@@ -54,7 +59,6 @@ public interface ShootMath {
     /**
      * Solves for the roots of a general quartic.
      * https://www.desmos.com/calculator/gamythajrx
-     * TODO: MAKE THIS WORK
      * @param a - x^4
      * @param b - x^3
      * @param c - x^2
