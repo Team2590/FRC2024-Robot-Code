@@ -11,6 +11,7 @@ import frc.robot.subsystems.conveyor.ConveyorIOSim;
 import frc.robot.subsystems.conveyor.ConveyorIOTalonFX;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
@@ -55,7 +56,7 @@ public class RobotContainer {
       case REAL:
         drive =
             new Drive(
-                new GyroIO() {},
+                new GyroIOPigeon2(true),
                 new ModuleIOTalonFX(0),
                 new ModuleIOTalonFX(1),
                 new ModuleIOTalonFX(2),
@@ -146,6 +147,9 @@ public class RobotContainer {
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
+    } else if (input.rightJoystickButton(5)) {
+      drive.zeroGyro();
+      System.out.println("Gyro is reset");
     } else {
       superstructure.idle();
     }

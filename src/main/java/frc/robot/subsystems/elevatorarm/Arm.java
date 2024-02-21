@@ -79,7 +79,7 @@ public class Arm extends SubsystemBase {
         break;
     }
 
-    System.out.println("State is after periodic " + state);
+    // System.out.println("State is after periodic " + state);
   }
 
   /** Run open loop at the specified voltage. */
