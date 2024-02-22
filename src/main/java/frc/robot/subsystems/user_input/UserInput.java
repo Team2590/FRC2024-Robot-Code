@@ -1,10 +1,11 @@
 package frc.robot.subsystems.user_input;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotMap;
-import frc.util.BandedJoystick;
-import frc.util.NemesisSubsystem;
-import frc.util.Smoother;
+import frc.robot.util.BandedJoystick;
+import frc.robot.util.NemesisSubsystem;
+import frc.robot.util.Smoother;
 
 /**
  * Handles input from 2 joysticks and a button panel. The button panel is numbered 1 to 18, numbered
@@ -29,6 +30,7 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
   private final Smoother.Wrapper leftYInput;
   private final Smoother.Wrapper rightXInput;
   private final Joystick operatorPanel;
+  private final XboxController operatorController;
 
   private UserInput() {
     leftJoystick = new BandedJoystick(LEFT_JOYSTICK, 0.1, 0.1);
@@ -36,7 +38,8 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
     leftXInput = Smoother.wrap(2, leftJoystick::getXBanded);
     leftYInput = Smoother.wrap(2, leftJoystick::getYBanded);
     rightXInput = Smoother.wrap(1, rightJoystick::getXBanded);
-    operatorPanel = new Joystick(2);
+    operatorPanel = new Joystick(3);
+    operatorController = new XboxController(2);
   }
 
   public void update() {
@@ -121,5 +124,30 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
 
   public boolean rightJoystickButtonReleased(int button) {
     return rightJoystick.getRawButtonReleased(button);
+  }
+
+  // OPERATOR CONTROLLER
+  public boolean XbuttonPressed() {
+    return operatorController.getXButtonPressed();
+  }
+
+  public boolean YbuttonPressed() {
+    return operatorController.getYButtonPressed();
+  }
+
+  public boolean BbuttonPressed() {
+    return operatorController.getBButtonPressed();
+  }
+
+  public boolean AbuttonPressed() {
+    return operatorController.getAButtonPressed();
+  }
+
+  public boolean controllerLeftTriggerPressed() {
+    return operatorController.getLeftBumperPressed();
+  }
+
+  public boolean controllerRightTriggerPressed() {
+    return operatorController.getRightBumperPressed();
   }
 }

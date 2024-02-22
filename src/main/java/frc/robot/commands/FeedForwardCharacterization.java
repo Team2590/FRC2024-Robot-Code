@@ -16,7 +16,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.util.PolynomialRegression;
+import frc.robot.util.PolynomialRegression;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -57,7 +58,7 @@ public class FeedForwardCharacterization extends Command {
       double voltage = (timer.get() - START_DELAY_SECS) * RAMP_VOLTS_PER_SEC;
       voltageConsumer.accept(voltage);
       data.add(velocitySupplier.get(), voltage);
-      if (timer.get() > 9.0) {
+      if (timer.get() > 5.0) {
         data.print();
       }
     }

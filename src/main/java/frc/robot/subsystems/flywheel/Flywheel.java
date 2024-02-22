@@ -17,22 +17,23 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.util.HelperFn;
-import frc.util.LoggedTunableNumber;
+import frc.robot.util.HelperFn;
+import frc.robot.util.LoggedTunableNumber;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
   LoggedTunableNumber flywheelP = new LoggedTunableNumber("Flywheel/kP", 0);
   LoggedTunableNumber flywheelD = new LoggedTunableNumber("Flywheel/kD", 0);
-  LoggedTunableNumber tolerance = new LoggedTunableNumber("Flywheel/toleranceRPM", 10);
+  LoggedTunableNumber tolerance = new LoggedTunableNumber("Flywheel/toleranceRPM", 100);
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
-  private States state;
+  private ShooterStates state;
   private double currentSetpoint;
   // private final double tolerance = 10;
-  public static enum States {
+  public static enum ShooterStates {
     STOP,
     MANUAL,
     APPROACHING_SETPOINT,
@@ -42,7 +43,7 @@ public class Flywheel extends SubsystemBase {
   /** Creates a new Flywheel. */
   public Flywheel(FlywheelIO io) {
     this.io = io;
-    state = States.STOP;
+    state = ShooterStates.STOP;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -82,13 +83,13 @@ public class Flywheel extends SubsystemBase {
       case APPROACHING_SETPOINT:
         runVelocity(currentSetpoint);
         if (isMotorSpeedAtSetPoint()) {
-          state = States.AT_SETPOINT;
+          state = ShooterStates.AT_SETPOINT;
         }
         break;
       case AT_SETPOINT:
         runVelocity(currentSetpoint);
         if (!isMotorSpeedAtSetPoint()) {
-          state = States.APPROACHING_SETPOINT;
+          state = ShooterStates.APPROACHING_SETPOINT;
         }
         break;
     }
@@ -109,7 +110,7 @@ public class Flywheel extends SubsystemBase {
 
   public void shoot(double rpm) {
     if (inputs.velocityRadPerSec == 0) {
-      state = States.APPROACHING_SETPOINT;
+      state = ShooterStates.APPROACHING_SETPOINT;
     }
     currentSetpoint = rpm;
   }
@@ -124,9 +125,9 @@ public class Flywheel extends SubsystemBase {
   }
 
   /** Stops the flywheel. */
-  public void stop() {
+  public void setStopped() {
     io.stop();
-    state = States.STOP;
+    state = ShooterStates.STOP;
     currentSetpoint = 0;
   }
 
@@ -145,5 +146,9 @@ public class Flywheel extends SubsystemBase {
     if (flywheelP.hasChanged(hashCode()) || flywheelD.hasChanged(hashCode())) {
       io.configurePID(flywheelP.get(), 0, flywheelD.get());
     }
+  }
+
+  public ShooterStates getState() {
+    return state;
   }
 }

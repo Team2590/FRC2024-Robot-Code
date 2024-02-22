@@ -34,8 +34,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.util.LocalADStarAK;
-import frc.util.LoggedTunableNumber;
+import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTunableNumber;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;

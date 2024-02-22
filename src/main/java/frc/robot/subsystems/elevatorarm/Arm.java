@@ -1,22 +1,30 @@
 package frc.robot.subsystems.elevatorarm;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.HelperFn;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
-  private States state;
+  private ArmStates state;
+  private double armSetpoint;
+  private double tolerance = .01;
+  // private boolean requestHome = false;
+  private boolean requestVertical = false;
+  private DutyCycleOut power = new DutyCycleOut(0);
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  public static enum States {
+  public static enum ArmStates {
     STOPPED,
     MANUAL,
-    HOLDSETPOINT,
+    AT_SETPOINT,
     APPROACHINGSETPOINT,
     AMPTRAP, /*STOWED, */
-    INTAKE
+    HOME
   }
 
   /**
@@ -25,92 +33,112 @@ public class Arm extends SubsystemBase {
    * @param armIOTalonFX
    */
   public Arm(ArmIOTalonFX armIOTalonFX) {
-    state = States.STOPPED;
+    state = ArmStates.STOPPED;
   }
 
   @Override
   public void periodic() {
+    // System.out.println("request home: " + requestHome);
     arm.updateTunableNumbers();
     arm.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
+    Logger.recordOutput("Arm/State", state);
     switch (state) {
       case STOPPED:
         arm.stop();
         break;
       case MANUAL:
-        arm.armmanual();
+        arm.setPower(power);
         break;
       case APPROACHINGSETPOINT:
-        arm.setmotionmagic();
-        if (arm.atsetpoint()) {
-          state = States.HOLDSETPOINT;
-
+        arm.setPosition(armSetpoint);
+        if (!HelperFn.isWithinTolerance(
+            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+          state = ArmStates.APPROACHINGSETPOINT;
         } else {
-          state = States.APPROACHINGSETPOINT;
+          state = ArmStates.AT_SETPOINT;
+          // System.out.println("State is " + state);
         }
         break;
-      case HOLDSETPOINT:
-        arm.setmotionmagic();
-        if (arm.atsetpoint()) {
-          state = States.HOLDSETPOINT;
-
+      case AT_SETPOINT:
+        // arm.setPosition(armSetpoint);
+        if (HelperFn.isWithinTolerance(
+            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+          state = ArmStates.AT_SETPOINT;
+          // if (armSetpoint == .168) {
+          //   state = ArmStates.HOME;
+          // }
+          //  if (requestVertical) {
+          //   state = ArmStates.AMPTRAP;
+          // }
         } else {
-          state = States.APPROACHINGSETPOINT;
+          state = ArmStates.APPROACHINGSETPOINT;
         }
         break;
-        // case STOWED:
-        //     arm.setmotionmagicstow();
-        //     break;
       case AMPTRAP:
-        arm.setmotionmagicamp();
+        requestVertical = false;
         break;
-      case INTAKE:
-        arm.setmotionmagicintake();
+      case HOME:
         break;
     }
+
+    System.out.println("State is after periodic " + state);
   }
 
   /** Run open loop at the specified voltage. */
-  public void motionmagic1() {
-    state = States.APPROACHINGSETPOINT;
+  public void setPosition(double setpoint) {
+    armSetpoint = setpoint;
+    System.out.println(setpoint);
+    if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
+      state = ArmStates.APPROACHINGSETPOINT;
+    } else {
+      state = ArmStates.AT_SETPOINT;
+    }
+  }
+
+  // public void setManualPower(double percent) {
+  //   manualPower = percent;
+  // }
+
+  public void setHome() {
+    // requestHome = true;
+    setPosition(.168);
+  }
+
+  public void setVertical() {
+    requestVertical = true;
+    setPosition(-2.0);
   }
 
   public void motionmagicintake() {
-    state = States.INTAKE;
+    state = ArmStates.HOME;
   }
 
   public void motionmagicamp() {
-    state = States.AMPTRAP;
-  }
-
-  public void armmanualup() {
-    state = States.MANUAL;
-    arm.armmanualup();
-  }
-
-  public void armmanualdown() {
-    state = States.MANUAL;
-    arm.armmanualdown();
+    state = ArmStates.AMPTRAP;
   }
 
   public void resetarm() {
     arm.resetArm();
   }
 
-  public void atsetpoint() {
-    if (arm.atsetpoint()) {
-      state = States.HOLDSETPOINT;
-    } else {
-      state = States.APPROACHINGSETPOINT;
-    }
+  public void manual(DutyCycleOut request) {
+    power = request;
+    state = ArmStates.MANUAL;
+  }
+
+  public void armmanualdown() {
+    state = ArmStates.MANUAL;
+    DutyCycleOut power = new DutyCycleOut(0.1);
+    arm.setPower(power);
   }
 
   /** Run closed loop at the specified velocity. */
   public void runVelocity(double velocityRPM) {}
 
   /** Stops the flywheel. */
-  public void stop() {
-    state = States.STOPPED;
+  public void setStopped() {
+    state = ArmStates.STOPPED;
   }
 
   /** Returns the current velocity in RPM. */
@@ -122,5 +150,10 @@ public class Arm extends SubsystemBase {
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return 0.0;
+  }
+
+  public ArmStates getState() {
+    // return state;
+    return state;
   }
 }
