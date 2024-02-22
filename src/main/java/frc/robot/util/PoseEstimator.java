@@ -20,9 +20,9 @@ import frc.robot.Constants;
 import frc.robot.subsystems.vision.PhotonRunnable;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.Logger;
 
 public class PoseEstimator {
@@ -31,7 +31,9 @@ public class PoseEstimator {
   private final Notifier photonNotifier = new Notifier(photonEstimator);
   private Pose2d basePose = new Pose2d();
   private Pose2d latestPose = new Pose2d();
-  private final NavigableMap<Double, PoseUpdate> updates = new TreeMap<>();
+  private final NavigableMap<Double, PoseUpdate> updates = new ConcurrentSkipListMap<>();
+  // Use this lock whenever we need to read or modify (add, update, remove) the updates map.
+  private final ReentrantLock updateLock = new ReentrantLock();
   private Matrix<N3, N1> q = new Matrix<>(Nat.N3(), Nat.N1());
 
   public PoseEstimator(Matrix<N3, N1> stateStdDevs) {
@@ -49,9 +51,14 @@ public class PoseEstimator {
 
   /** Resets the odometry to a known pose. */
   public void resetPose(Pose2d pose) {
-    basePose = pose;
-    updates.clear();
-    update();
+    updateLock.lock();
+    try {
+      basePose = pose;
+      updates.clear();
+    } finally {
+      updateLock.unlock();
+    }
+    // update();  // don't need to call update since there is nothing in there.
   }
 
   /** Sets the standard deviations of the model */
@@ -61,15 +68,30 @@ public class PoseEstimator {
 
   /** Records a new drive movement. */
   public void addDriveData(double timestamp, Twist2d twist) {
-    updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
-    update();
+    updateLock.lock();
+    try {
+      updates.put(timestamp, new PoseUpdate(twist, new ArrayList<>()));
+      // This is a reentrant lock so safe to call update()
+      update();
+    } finally {
+      updateLock.unlock();
+    }
+  }
+  /** Records a new set of vision updates. */
+  public void addVisionData(
+      ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> visionUpdates) {
+    updateLock.lock();
+    try {
+      processVisionUpdates(visionUpdates);
+    } finally {
+      updateLock.unlock();
+    }
   }
 
-  /** Records a new set of vision updates. */
-  public void addVisionData(List<TimestampedVisionUpdate> visionData) {
-    Logger.recordOutput("Odometry/Photonvision", photonEstimator.getRobotPose3d());
-
-    for (var timestampedVisionUpdate : visionData) {
+  /** Processes vision update. This should be called under an updateLock. */
+  private void processVisionUpdates(
+      ArrayList<frc.robot.util.PoseEstimator.TimestampedVisionUpdate> visionUpdates) {
+    for (var timestampedVisionUpdate : visionUpdates) {
       var timestamp = timestampedVisionUpdate.timestamp();
       var visionUpdate =
           new VisionUpdate(timestampedVisionUpdate.pose(), timestampedVisionUpdate.stdDevs());
@@ -79,7 +101,6 @@ public class PoseEstimator {
         var oldVisionUpdates = updates.get(timestamp).visionUpdates();
         oldVisionUpdates.add(visionUpdate);
         oldVisionUpdates.sort(VisionUpdate.compareDescStdDev);
-
       } else {
         // Insert a new update
         var prevUpdate = updates.floorEntry(timestamp);
@@ -115,19 +136,29 @@ public class PoseEstimator {
 
   /** Clears old data and calculates the latest pose. */
   private void update() {
-    // Clear old data and update base pose
-    while (updates.size() > 1
-        && updates.firstKey() < Timer.getFPGATimestamp() - historyLengthSecs) {
-      var update = updates.pollFirstEntry();
-      basePose = update.getValue().apply(basePose, q);
-    }
+    // This can be called from multiple threads, for example a thread that is
+    // adding vision data and another adding drive data. The lock prevent
+    updateLock.lock();
+    try {
+      // Clear old data and update base pose
+      while (updates.size() > 1
+          && updates.firstKey() < Timer.getFPGATimestamp() - historyLengthSecs) {
+        var update = updates.pollFirstEntry();
+        basePose = update.getValue().apply(basePose, q);
+      }
 
-    // Update latest pose
-    latestPose = basePose;
-    for (var updateEntry : updates.entrySet()) {
-      latestPose = updateEntry.getValue().apply(latestPose, q);
+      // Update latest pose
+      latestPose = basePose;
+      for (var updateEntry : updates.entrySet()) {
+        latestPose = updateEntry.getValue().apply(latestPose, q);
+      }
+    } finally {
+      // It's a good practice to surround the locking code with try/finally block
+      // so the lock gets released even if there is an exception.
+      updateLock.unlock();
     }
     Logger.recordOutput("Odometry/RobotPosition", latestPose);
+    Logger.recordOutput("Odometry/PoseUpdateMapSize", updates.size());
   }
 
   /**

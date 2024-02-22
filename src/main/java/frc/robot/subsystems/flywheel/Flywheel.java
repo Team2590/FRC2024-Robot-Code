@@ -17,15 +17,16 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.util.HelperFn;
-import frc.util.LoggedTunableNumber;
+import frc.robot.util.HelperFn;
+import frc.robot.util.LoggedTunableNumber;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
   LoggedTunableNumber flywheelP = new LoggedTunableNumber("Flywheel/kP", 0);
   LoggedTunableNumber flywheelD = new LoggedTunableNumber("Flywheel/kD", 0);
-  LoggedTunableNumber tolerance = new LoggedTunableNumber("Flywheel/toleranceRPM", 10);
+  LoggedTunableNumber tolerance = new LoggedTunableNumber("Flywheel/toleranceRPM", 100);
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;

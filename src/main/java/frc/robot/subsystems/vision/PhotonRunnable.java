@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotContainer;
-import frc.util.PoseEstimator.TimestampedVisionUpdate;
+import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.littletonrobotics.junction.Logger;

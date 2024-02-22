@@ -98,7 +98,7 @@ public class Superstructure {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        arm.setHome();;
+        // arm.setPosition();
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
