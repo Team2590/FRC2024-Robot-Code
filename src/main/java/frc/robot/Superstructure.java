@@ -53,7 +53,7 @@ public class Superstructure {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2500.0);
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 3000.0);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
