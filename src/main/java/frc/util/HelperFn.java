@@ -1,4 +1,4 @@
-package frc.robot.util;
+package frc.util;
 
 /** Misc. helper functions. */
 public class HelperFn {

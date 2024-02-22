@@ -2,8 +2,8 @@ package frc.robot.subsystems.elevatorarm;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.HelperFn;
-
+import frc.robot.Constants;
+import frc.util.HelperFn;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,6 +24,7 @@ public class Arm extends SubsystemBase {
     AT_SETPOINT,
     APPROACHINGSETPOINT,
     AMPTRAP, /*STOWED, */
+    APPROACHING_HOME,
     HOME
   }
 
@@ -38,7 +39,6 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // System.out.println("request home: " + requestHome);
     arm.updateTunableNumbers();
     arm.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
@@ -57,20 +57,15 @@ public class Arm extends SubsystemBase {
           state = ArmStates.APPROACHINGSETPOINT;
         } else {
           state = ArmStates.AT_SETPOINT;
-          // System.out.println("State is " + state);
         }
         break;
       case AT_SETPOINT:
-        // arm.setPosition(armSetpoint);
         if (HelperFn.isWithinTolerance(
             arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
           state = ArmStates.AT_SETPOINT;
-          // if (armSetpoint == .168) {
-          //   state = ArmStates.HOME;
-          // }
-          //  if (requestVertical) {
-          //   state = ArmStates.AMPTRAP;
-          // }
+          if (armSetpoint == Constants.ArmConstants.HOME_SETPOINT){
+            state = ArmStates.HOME;
+          }
         } else {
           state = ArmStates.APPROACHINGSETPOINT;
         }
@@ -78,17 +73,24 @@ public class Arm extends SubsystemBase {
       case AMPTRAP:
         requestVertical = false;
         break;
+      case APPROACHING_HOME:
+        arm.setPosition(Constants.ArmConstants.HOME_SETPOINT);
+        if (HelperFn.isWithinTolerance(
+          arm.armCancoder.getAbsolutePosition().getValueAsDouble(), Constants.ArmConstants.HOME_SETPOINT, tolerance)){
+            state = ArmStates.HOME;
+          }
       case HOME:
+      if (!HelperFn.isWithinTolerance(
+        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), Constants.ArmConstants.HOME_SETPOINT, tolerance)){
+          state = ArmStates.APPROACHING_HOME;
+        }
         break;
     }
-
-    System.out.println("State is after periodic " + state);
   }
 
   /** Run open loop at the specified voltage. */
   public void setPosition(double setpoint) {
     armSetpoint = setpoint;
-    System.out.println(setpoint);
     if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
       state = ArmStates.APPROACHINGSETPOINT;
     } else {
@@ -101,8 +103,7 @@ public class Arm extends SubsystemBase {
   // }
 
   public void setHome() {
-    // requestHome = true;
-    setPosition(.168);
+    state = ArmStates.APPROACHING_HOME;
   }
 
   public void setVertical() {

@@ -3,9 +3,9 @@ package frc.robot.subsystems.user_input;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotMap;
-import frc.robot.util.BandedJoystick;
-import frc.robot.util.NemesisSubsystem;
-import frc.robot.util.Smoother;
+import frc.util.BandedJoystick;
+import frc.util.NemesisSubsystem;
+import frc.util.Smoother;
 
 /**
  * Handles input from 2 joysticks and a button panel. The button panel is numbered 1 to 18, numbered
