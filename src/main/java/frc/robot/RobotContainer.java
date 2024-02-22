@@ -150,8 +150,6 @@ public class RobotContainer {
             Commands.startEnd(
                 () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
     right_Joystick.button(4).onTrue(Commands.runOnce(drive::zeroGyro, drive));
-    right_Joystick.button(5).whileTrue(Commands.runEnd(climb::up, climb::stop, climb));
-    right_Joystick.button(6).whileTrue(Commands.runEnd(climb::down, climb::stop, climb));
   }
 
   /**
