@@ -52,7 +52,8 @@ public class Superstructure {
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
-  private final LoggedTunableNumber flywheelSpeedInput = new LoggedTunableNumber("Flywheel/Flywheel Speed", 1500.0);
+  private final LoggedTunableNumber flywheelSpeedInput =
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 1500.0);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
@@ -74,6 +75,8 @@ public class Superstructure {
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
     Logger.recordOutput("hasnote", conveyor.hasNote());
+    Logger.recordOutput("Arm State", arm.getState());
+    // System.out.println("armstate at beginning of superstr");
     switch (systemState) {
       case DISABLED:
         // stop
@@ -99,7 +102,7 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
-        arm.setStopped();
+        arm.setHome();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -166,7 +169,8 @@ public class Superstructure {
 
       case SHOOT:
         arm.setPosition(armAngle.get());
-        shooter.shoot(flywheelSpeedInput.get());
+        // shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(3000);
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
