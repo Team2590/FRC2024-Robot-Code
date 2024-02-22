@@ -144,12 +144,18 @@ public class RobotContainer {
     if (input.leftJoystickTrigger()) {
       superstructure.intake();
     } else if (input.rightJoystickTrigger()) {
+      superstructure.outtake();
+    } else if (input.rightJoystickButton(2)) {
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
       System.out.println("Gyro is reset");
+    } else if (input.leftJoystickButton(2)) {
+      superstructure.armUp();
+    } else if (input.leftJoystickButton(3)) {
+      superstructure.armDown();
     } else {
       superstructure.idle();
     }

@@ -10,12 +10,14 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -31,6 +33,8 @@ public class Superstructure {
     RESET,
     IDLE,
     INTAKE,
+    OUTTAKE,
+    MANUAL_ARM,
     PRIMING_SHOOTER,
     PRIMED_SHOOTER,
     HAS_NOTE,
@@ -46,8 +50,9 @@ public class Superstructure {
   private final Flywheel shooter;
   private final Arm arm;
   public boolean readyToShoot = false;
-  // private final LoggedDashboardNumber flywheelSpeedInput =
-  // new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private DutyCycleOut pwr = new DutyCycleOut(0);
+  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
+  private final LoggedTunableNumber flywheelSpeedInput = new LoggedTunableNumber("Flywheel/Flywheel Speed", 1500.0);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
@@ -68,6 +73,7 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
+    Logger.recordOutput("hasnote", conveyor.hasNote());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -93,8 +99,11 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
+        arm.setStopped();
         break;
-
+      case MANUAL_ARM:
+        arm.manual(pwr);
+        break;
       case INTAKE:
         /*
          * INTAKE (On left Driver trigger)
@@ -113,6 +122,17 @@ public class Superstructure {
         }
         break;
 
+      case OUTTAKE:
+        /*
+         * OUTTAKE (On left Driver trigger)
+         * Gets subsytems ready for intaking
+         * If conveyor.hasNote is true :
+         * Stop intake && transition to HAS_NOTE state
+         */
+        arm.setHome();
+        intake.setOutake();
+        conveyor.setOuttaking();
+        break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
@@ -145,13 +165,8 @@ public class Superstructure {
         break;
 
       case SHOOT:
-        if (arm.getState() != ArmStates.AT_SETPOINT) {
-          arm.setPosition(0);
-        }
-        if (shooter.getState() != ShooterStates.AT_SETPOINT) {
-          shooter.shoot(1000);
-        }
-
+        arm.setPosition(armAngle.get());
+        shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
@@ -230,6 +245,22 @@ public class Superstructure {
 
   public void climb() {
     systemState = SuperstructureStates.CLIMB;
+  }
+
+  public void outtake() {
+    systemState = SuperstructureStates.OUTTAKE;
+  }
+
+  public void armUp() {
+    // optimiazaiton, make these two duty cycles local variables so these aren't created each time
+    pwr = new DutyCycleOut(-0.1);
+    systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public void armDown() {
+
+    pwr = new DutyCycleOut(0.1);
+    systemState = SuperstructureStates.MANUAL_ARM;
   }
 
   public SuperstructureStates getState() {

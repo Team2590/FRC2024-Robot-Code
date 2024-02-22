@@ -1,5 +1,6 @@
 package frc.robot.subsystems.elevatorarm;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.util.HelperFn;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -9,9 +10,10 @@ public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
   private ArmStates state;
   private double armSetpoint;
-  private double tolerance = .1;
+  private double tolerance = .01;
   private boolean requestHome = false;
   private boolean requestVertical = false;
+  private DutyCycleOut power = new DutyCycleOut(0);
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
@@ -44,7 +46,7 @@ public class Arm extends SubsystemBase {
         arm.stop();
         break;
       case MANUAL:
-        // arm.armmanual();
+        arm.setPower(power);
         break;
       case APPROACHINGSETPOINT:
         arm.setPosition(armSetpoint);
@@ -53,7 +55,7 @@ public class Arm extends SubsystemBase {
           state = ArmStates.APPROACHINGSETPOINT;
         } else {
           state = ArmStates.AT_SETPOINT;
-          System.out.println("State is " + state);
+          // System.out.println("State is " + state);
         }
         break;
       case AT_SETPOINT:
@@ -85,8 +87,14 @@ public class Arm extends SubsystemBase {
   /** Run open loop at the specified voltage. */
   public void setPosition(double setpoint) {
     armSetpoint = setpoint;
-    state = ArmStates.APPROACHINGSETPOINT;
+    if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
+      state = ArmStates.APPROACHINGSETPOINT;
+    }
   }
+
+  // public void setManualPower(double percent) {
+  //   manualPower = percent;
+  // }
 
   public void setHome() {
     requestHome = true;
@@ -108,6 +116,17 @@ public class Arm extends SubsystemBase {
 
   public void resetarm() {
     arm.resetArm();
+  }
+
+  public void manual(DutyCycleOut request) {
+    power = request;
+    state = ArmStates.MANUAL;
+  }
+
+  public void armmanualdown() {
+    state = ArmStates.MANUAL;
+    DutyCycleOut power = new DutyCycleOut(0.1);
+    arm.setPower(power);
   }
 
   /** Run closed loop at the specified velocity. */

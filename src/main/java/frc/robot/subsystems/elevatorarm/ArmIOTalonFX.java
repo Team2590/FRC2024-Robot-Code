@@ -42,7 +42,9 @@ public class ArmIOTalonFX implements ArmIO {
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
   MotionMagicDutyCycle mmv;
-  DutyCycleOut mrequest3 = new DutyCycleOut(0);
+  DutyCycleOut mrequest3 = new DutyCycleOut(-0.3);
+  DutyCycleOut mrequest4 = new DutyCycleOut(0.3);
+  DutyCycleOut mrequest5 = new DutyCycleOut(0);
   double[] distances =
       new double[] {
         0, 0, 0, 0,
@@ -169,6 +171,18 @@ public class ArmIOTalonFX implements ArmIO {
     if (ff.hasChanged(0)) {
       mmv.FeedForward = ff.get();
     }
+  }
+
+  // public void setPowerup() {
+  //   arm.setControl(mrequest3);
+  // }
+
+  // public void setPowerdown() {
+  //   arm.setControl(mrequest4);
+  // }
+
+  public void setPower(DutyCycleOut power) {
+    arm.setControl(power);
   }
 
   // private static double CANCoderSensorUnitsToDegrees(double sensorUnits) {
