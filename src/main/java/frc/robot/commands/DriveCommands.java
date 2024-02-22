@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.controller.PIDController;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
+  private static final PIDController noteController = new PIDController(0,0,0); // temp
 
   private DriveCommands() {}
 
@@ -109,7 +111,7 @@ public class DriveCommands {
   }
   
   /**
-   * 
+   * Translate in line to a grounded note. Use camera data to get relative not pos.
    * @param drive - drive instance
    * @param xSupplier - left joystick x value
    * @param yError - lateral error from note; take directly from note camera
@@ -119,7 +121,13 @@ public class DriveCommands {
     Drive drive, DoubleSupplier xSupplier, DoubleSupplier yError) {
       return Commands.run(
         (() -> {
-          
+          drive.runVelocity(
+            new ChassisSpeeds(
+              0,
+              noteController.calculate(yError.getAsDouble(), 0)
+                * drive.getMaxLinearSpeedMetersPerSec()
+                * Drive.snapControllermultiplier.get(),
+              0));
         }),
         drive);
   }
