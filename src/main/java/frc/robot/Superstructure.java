@@ -170,7 +170,7 @@ public class Superstructure {
       case SHOOT:
         arm.setPosition(armAngle.get());
         // shooter.shoot(flywheelSpeedInput.get());
-        shooter.shoot(3000);
+        shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();

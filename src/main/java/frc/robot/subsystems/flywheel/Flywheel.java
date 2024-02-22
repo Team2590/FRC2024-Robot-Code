@@ -11,7 +11,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-
 package frc.robot.subsystems.flywheel;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.HelperFn;
 import frc.robot.util.LoggedTunableNumber;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 

@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-
 package frc.robot.util;
 
 import frc.robot.Constants;

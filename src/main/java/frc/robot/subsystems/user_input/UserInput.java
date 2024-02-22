@@ -6,6 +6,7 @@ import frc.robot.RobotMap;
 import frc.robot.util.BandedJoystick;
 import frc.robot.util.NemesisSubsystem;
 import frc.robot.util.Smoother;
+
 /**
  * Handles input from 2 joysticks and a button panel. The button panel is numbered 1 to 18, numbered
  * as if reading English.

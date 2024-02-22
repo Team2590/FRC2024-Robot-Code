@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-
 /**
  * Nemesis Conveyor for 2024
  *
@@ -45,7 +44,6 @@ public class Conveyor extends SubsystemBase {
     // handle inputs
     io.updateInputs(inputs);
     Logger.processInputs("Conveyor", inputs);
-    Logger.recordOutput("Conveyor/State", state);
 
     // run the motors based on current state
     switch (state) {

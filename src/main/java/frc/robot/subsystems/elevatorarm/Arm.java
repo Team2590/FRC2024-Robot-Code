@@ -4,8 +4,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.HelperFn;
-
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,7 +42,6 @@ public class Arm extends SubsystemBase {
     arm.updateTunableNumbers();
     arm.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
-    Logger.recordOutput("Arm/State", state);
     switch (state) {
       case STOPPED:
         arm.stop();
@@ -65,7 +62,7 @@ public class Arm extends SubsystemBase {
         if (HelperFn.isWithinTolerance(
             arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
           state = ArmStates.AT_SETPOINT;
-          if (armSetpoint == ArmConstants.HOME_SETPOINT){
+          if (armSetpoint == ArmConstants.HOME_SETPOINT) {
             state = ArmStates.HOME;
           }
         } else {
@@ -78,12 +75,16 @@ public class Arm extends SubsystemBase {
       case APPROACHING_HOME:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         if (HelperFn.isWithinTolerance(
-          arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
-            state = ArmStates.HOME;
-          }
+            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
+            ArmConstants.HOME_SETPOINT,
+            tolerance)) {
+          state = ArmStates.HOME;
+        }
       case HOME:
-      if (!HelperFn.isWithinTolerance(
-        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
+        if (!HelperFn.isWithinTolerance(
+            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
+            ArmConstants.HOME_SETPOINT,
+            tolerance)) {
           state = ArmStates.APPROACHING_HOME;
         }
         break;
@@ -106,10 +107,11 @@ public class Arm extends SubsystemBase {
 
   public void setHome() {
     if (HelperFn.isWithinTolerance(
-      arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
-        state = ArmStates.HOME;
-      }
-    else{
+        arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
+        ArmConstants.HOME_SETPOINT,
+        tolerance)) {
+      state = ArmStates.HOME;
+    } else {
       state = ArmStates.APPROACHING_HOME;
     }
   }

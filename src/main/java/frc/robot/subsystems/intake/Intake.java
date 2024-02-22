@@ -2,7 +2,6 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -33,7 +32,6 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake", inputs);
     Logger.recordOutput("Intake/State", state);
 
-    
     // run the motors based on current state
     switch (state) {
       case STOPPED:
