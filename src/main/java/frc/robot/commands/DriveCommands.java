@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -65,6 +66,45 @@ public class DriveCommands {
                   omega * drive.getMaxAngularSpeedRadPerSec(),
                   drive.getRotation()));
         },
+        drive);
+  }
+  /**
+   * Snap to the target position, while maintaining joystick movement
+   *
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param target - pos to snap to
+   * @see <a href =
+   *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
+   *     Reference</a>
+   */
+  public static Command SnapToTarget(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
+    return Commands.run(
+        (() -> {
+          Transform2d difference = drive.getPose().minus(target);
+          double theta = Math.atan2(difference.getY(), difference.getX());
+          double currentAngle = drive.getRotation().getRadians();
+          double currentError = theta - currentAngle;
+          if (currentError > Math.PI) {
+            currentAngle += 2 * Math.PI;
+          } else if (currentError < -Math.PI) {
+            currentAngle -= 2 * Math.PI;
+          }
+          Logger.recordOutput("SnapController/TargetPose", target);
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  -xSupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  -ySupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  drive.snapController.calculate(currentAngle, theta)
+                      * drive.getMaxAngularSpeedRadPerSec(),
+                  drive.getRotation()));
+        }),
         drive);
   }
 }

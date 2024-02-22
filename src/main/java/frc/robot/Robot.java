@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -38,6 +39,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+
     // Record metadata
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -60,7 +62,13 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         // Running on a real robot, log to a USB stick ("/U/logs")
-        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        File usbDrive = new File("/U/");
+        // Only set up usb logging if the folder exists.
+        if (usbDrive.exists()) {
+          System.err.println("No USB found, not writing logs");
+          Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        }
+        usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -86,7 +94,9 @@ public class Robot extends LoggedRobot {
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
+
     robotContainer = new RobotContainer();
+    // end robotInit()
   }
 
   /** This function is called periodically during all modes. */
@@ -98,11 +108,14 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    robotContainer.updateSubsystems();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    robotContainer.stop();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -113,10 +126,11 @@ public class Robot extends LoggedRobot {
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
 
-    // schedule the autonomous command (example)
-    if (autonomousCommand != null) {
-      autonomousCommand.schedule();
+    if (autonomousCommand == null) {
+      System.err.println("No autonomous command set");
+      return;
     }
+    autonomousCommand.schedule();
   }
 
   /** This function is called periodically during autonomous. */
@@ -137,7 +151,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    robotContainer.updateUserInput();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override

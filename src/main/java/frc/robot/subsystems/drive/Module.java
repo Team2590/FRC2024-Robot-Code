@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -60,7 +61,7 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.currentMode) {
       case REAL:
-        driveFeedforward = new SimpleMotorFeedforward(0.19578, 0.11483);
+        driveFeedforward = new SimpleMotorFeedforward(0.16917, .12560);
         driveFeedback = new PIDController(0.1, 0.0, 0.0, 0.02);
         turnFeedback = new PIDController(7, 0.0, 0.0, 0.02);
       case REPLAY:
@@ -120,7 +121,7 @@ public class Module {
       if (speedSetpoint != null) {
         // Scale velocity based on turn error
         //
-        // When the error is 90°, the velocity setpoint should be 0. As the wheel turns
+        // When the error is 90, the velocity setpoint should be 0. As the wheel turns
         // towards the setpoint, its velocity should increase. This is achieved by
         // taking the component of the velocity in the direction of the setpoint.
         double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
@@ -159,6 +160,8 @@ public class Module {
 
     return optimizedState;
   }
+
+  public void zero_encoder() {}
 
   /** Runs the module with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {

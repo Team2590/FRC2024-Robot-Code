@@ -45,6 +45,11 @@ public class GyroIOPigeon2 implements GyroIO {
     }
   }
 
+  public void setGyro(double angle) {
+
+    pigeon.setYaw(angle);
+  }
+
   @Override
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = BaseStatusSignal.refreshAll(yaw, yawVelocity).equals(StatusCode.OK);

@@ -13,6 +13,15 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -22,11 +31,75 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+
   public static final boolean tuningMode = true;
-  public static final double CLIMBER_MAX_HEIGHT = 100;
-  public static final double CLIMBER_WHEEL_RADIUS = 1;
-  public static final double CLIMBER_GEAR_RATIO = 1;
+  public static final String canbus = "Takeover";
+
+  public final class FieldConstants {
+    public static final double FIELD_LENGTH_METERS = 16.54175;
+    public static final double FIELD_WIDTH_METERS = 8.0137;
+    public static final Pose2d FLIPPING_POSE =
+        new Pose2d(
+            new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS), new Rotation2d(Math.PI));
+  }
+
+  public final class VisionConstants {
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(17.003);
+    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
+    public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
+    public static final double CAMERA_ROLL = 0;
+    // downward pitch is positive
+    public static final double CAMERA_PITCH = Units.degreesToRadians(-1 * 27);
+    // counterclockwise yaw is positive
+    public static final double CAMERA_YAW = Units.degreesToRadians(-1 * 180);
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
+    public static final Transform3d RobotToCam =
+        new Transform3d(
+            -CAMERA_X_DISTANCE_FROM_CENTER_METERS,
+            CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
+            CAMERA_HEIGHT_METERS,
+            new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
+  }
+
+  public final class DrivetrainConstants {
+    // Fill in
+  }
+
+  public final class ArmConstants {
+    // Fill in
+    public static final int ARM = 45;
+  }
+
+  public final class ShooterConstants {
+    // Fill in
+    public static final int LEADER = 55;
+    public static final int FOLLOWER = 56;
+  }
+
+  public final class ConveyorConstants {
+    public static final int FEEDER_ID = 57;
+    public static final int DIVRETER_ID = 58;
+    public static final int INTAKE_PROX_ID = 0;
+    public static final int SHOOTER_PROX_ID = 1;
+    public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for
+    public static final double INTAKE_PROX_THRESHOLD = 0.55; // value was tested for
+
+    public static final double DIVERTER_GEAR_RATIO = 1;
+    public static final double FEEDER_GEAR_RATIO = 1;
+    public static final InvertedValue diverterDirection = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue feederDirection = InvertedValue.Clockwise_Positive;
+  }
+
+  public final class IntakeConstants {
+    // Fill in
+    public static final int INTAKE_ID = 14;
+  }
+
+  public final class ClimbConstants {
+    public static final double MAX_ROTATIONS = 0.0;
+  }
 
   public static enum Mode {
     /** Running on a real robot. */

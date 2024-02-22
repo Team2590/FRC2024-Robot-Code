@@ -16,8 +16,10 @@ package frc.robot.subsystems.drive;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,8 +31,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTunableNumber;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -40,18 +46,36 @@ public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
+  // Uncomment for Jynx
+  // static final double TRACK_WIDTH_X = Units.inchesToMeters(36);
+  // static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
 
   public static final Lock odometryLock = new ReentrantLock();
+  private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
   private final GyroIO gyroIO;
+
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+
+  public final PIDController snapController = new PIDController(2, 0.0, 0.0);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
   private Rotation2d lastGyroRotation = new Rotation2d();
+
+  public static LoggedTunableNumber snapControllermultiplier =
+      new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .44);
+  LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
+  LoggedTunableNumber snapControllerTolerance =
+      new LoggedTunableNumber("SnapController/tolerance", .1);
+
+  // public static Drive getInstance(){
+  //   return instance == null ? instance = new Drive() : instance;
+  // }
 
   public Drive(
       GyroIO gyroIO,
@@ -65,14 +89,22 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
+    snapController.setTolerance(.1);
+
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
-        this::getPose,
-        this::setPose,
+        RobotContainer.poseEstimator::getLatestPose,
+        RobotContainer.poseEstimator::resetPose,
+        // this::getPose,
+        // this::setPose,
         () -> kinematics.toChassisSpeeds(getModuleStates()),
         this::runVelocity,
         new HolonomicPathFollowerConfig(
-            MAX_LINEAR_SPEED, DRIVE_BASE_RADIUS, new ReplanningConfig()),
+            new PIDConstants(5, 0.0, 0),
+            new PIDConstants(5.0, 0.0, 0.0),
+            MAX_LINEAR_SPEED,
+            DRIVE_BASE_RADIUS,
+            new ReplanningConfig()),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -114,34 +146,58 @@ public class Drive extends SubsystemBase {
     }
 
     // Update odometry
-    int deltaCount =
+    int deltaCount1 =
         gyroInputs.connected ? gyroInputs.odometryYawPositions.length : Integer.MAX_VALUE;
     for (int i = 0; i < 4; i++) {
-      deltaCount = Math.min(deltaCount, modules[i].getPositionDeltas().length);
+      deltaCount1 = Math.min(deltaCount1, modules[i].getPositionDeltas().length);
     }
-    for (int deltaIndex = 0; deltaIndex < deltaCount; deltaIndex++) {
+    for (int deltaIndex1 = 0; deltaIndex1 < deltaCount1; deltaIndex1++) {
       // Read wheel deltas from each module
-      SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
+      SwerveModulePosition[] wheelDeltas1 = new SwerveModulePosition[4];
       for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
-        wheelDeltas[moduleIndex] = modules[moduleIndex].getPositionDeltas()[deltaIndex];
+        wheelDeltas1[moduleIndex] = modules[moduleIndex].getPositionDeltas()[deltaIndex1];
       }
 
       // The twist represents the motion of the robot since the last
       // sample in x, y, and theta based only on the modules, without
       // the gyro. The gyro is always disconnected in simulation.
-      var twist = kinematics.toTwist2d(wheelDeltas);
+      Twist2d twist1 = kinematics.toTwist2d(wheelDeltas1);
       if (gyroInputs.connected) {
         // If the gyro is connected, replace the theta component of the twist
         // with the change in angle since the last sample.
-        Rotation2d gyroRotation = gyroInputs.odometryYawPositions[deltaIndex];
-        twist = new Twist2d(twist.dx, twist.dy, gyroRotation.minus(lastGyroRotation).getRadians());
-        lastGyroRotation = gyroRotation;
+        // Rotation2d gyroRotation1 = gyroInputs.odometryYawPositions[deltaIndex1];
+        // twist1 =
+        //     new Twist2d(twist1.dx, twist1.dy,
+        // gyroRotation1.minus(lastGyroRotation).getRadians());
+        // lastGyroRotation = gyroRotation1;
       }
       // Apply the twist (change since last sample) to the current pose
-      pose = pose.exp(twist);
-    }
-  }
 
+      pose = pose.exp(twist1);
+    }
+
+    // Update odometry
+    // TODO: ANTHONY - For whatever reason, I cannot get the twsit1 above to work.
+    // Someone should work on that
+    SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
+    for (int i = 0; i < 4; i++) {
+      wheelDeltas[i] =
+          new SwerveModulePosition(
+              (modules[i].getPositionMeters() - lastModulePositionsMeters[i]),
+              modules[i].getAngle());
+      lastModulePositionsMeters[i] = modules[i].getPositionMeters();
+    }
+    var twist = kinematics.toTwist2d(wheelDeltas);
+    var gyroYaw = new Rotation2d(gyroInputs.yawPosition.getRadians());
+    if (gyroInputs.connected) {
+      twist = new Twist2d(twist.dx, twist.dy, gyroYaw.minus(lastGyroRotation).getRadians());
+    }
+    lastGyroRotation = gyroYaw;
+
+    // Delete the above and use original odometry code above and use twist1 -> twist
+    RobotContainer.poseEstimator.addDriveData(Timer.getFPGATimestamp(), twist);
+    updateTunableNumbers();
+  }
   /**
    * Runs the drive at the desired velocity.
    *
@@ -210,19 +266,21 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current odometry pose. */
-  @AutoLogOutput(key = "Odometry/Robot")
+  // @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
     return pose;
   }
 
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
-    return pose.getRotation();
+    // return pose.getRotation();
+    return RobotContainer.poseEstimator.getLatestPose().getRotation();
   }
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    this.pose = pose;
+    // this.pose = pose;
+    this.pose = RobotContainer.poseEstimator.getLatestPose();
   }
 
   /** Returns the maximum linear speed in meters per sec. */
@@ -247,5 +305,14 @@ public class Drive extends SubsystemBase {
 
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  private void updateTunableNumbers() {
+    if (snapControllerP.hasChanged(hashCode())
+        || snapControllerD.hasChanged(hashCode())
+        || snapControllerTolerance.hasChanged(hashCode())) {
+      snapController.setPID(snapControllerP.get(), 0.0, snapControllerD.get());
+      snapController.setTolerance(snapControllerTolerance.get());
+    }
   }
 }
