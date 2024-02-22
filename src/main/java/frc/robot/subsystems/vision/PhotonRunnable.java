@@ -272,7 +272,6 @@ public class PhotonRunnable implements Runnable {
    * @return
    */
   public double getDistanceToSpeaker(){
-    photonResults = photonCamera.getLatestResult();
     if(!photonResults.hasTargets()){return -1;}
     for( PhotonTrackedTarget target : photonResults.getTargets()){
       if(target.getFiducialId() == 4 && DriverStation.getAlliance().get() == Alliance.Red){
