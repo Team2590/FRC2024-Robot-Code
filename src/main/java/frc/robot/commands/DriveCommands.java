@@ -114,20 +114,25 @@ public class DriveCommands {
    * Translate in line to a grounded note. Use camera data to get relative not pos.
    * @param drive - drive instance
    * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
    * @param yError - lateral error from note; take directly from note camera
    * @return the command
    */
   public static Command translateToNote(
-    Drive drive, DoubleSupplier xSupplier, DoubleSupplier yError) {
+    Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yError) {
       return Commands.run(
         (() -> {
           drive.runVelocity(
             new ChassisSpeeds(
-              0,
+              // joystick magnitude
+              Math.hypot(xSupplier.getAsDouble(),ySupplier.getAsDouble())
+                * drive.getMaxLinearSpeedMetersPerSec()
+                * Drive.snapControllermultiplier.get(),
               noteController.calculate(yError.getAsDouble(), 0)
                 * drive.getMaxLinearSpeedMetersPerSec()
                 * Drive.snapControllermultiplier.get(),
-              0));
+              0
+            ));
         }),
         drive);
   }
