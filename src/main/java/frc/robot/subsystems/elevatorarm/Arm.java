@@ -3,7 +3,8 @@ package frc.robot.subsystems.elevatorarm;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.util.HelperFn;
+import frc.robot.util.HelperFn;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -103,7 +104,13 @@ public class Arm extends SubsystemBase {
   // }
 
   public void setHome() {
-    state = ArmStates.APPROACHING_HOME;
+    if (HelperFn.isWithinTolerance(
+      arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
+        state = ArmStates.HOME;
+      }
+    else{
+      state = ArmStates.APPROACHING_HOME;
+    }
   }
 
   public void setVertical() {
