@@ -16,8 +16,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
-import frc.robot.subsystems.user_input.UserInput;
-import frc.robot.subsystems.vision.PhotonRunnable;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -34,8 +32,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private UserInput input = UserInput.getInstance();
-  private PhotonRunnable vision;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -157,8 +153,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     robotContainer.updateUserInput();
-    // Larger/left Camera
-    vision.run();
   }
 
   /** This function is called once when test mode is enabled. */

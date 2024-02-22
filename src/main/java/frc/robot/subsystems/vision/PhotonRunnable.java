@@ -41,7 +41,7 @@ public class PhotonRunnable implements Runnable {
       new AtomicReference<EstimatedRobotPose>();
   public final ArrayList<TimestampedVisionUpdate> updates =
       new ArrayList<TimestampedVisionUpdate>();
-  private static double distanceToSpeaker;
+  private static double distanceToSpeaker = 0;
   private static Pose3d RobotPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
@@ -94,7 +94,6 @@ public class PhotonRunnable implements Runnable {
                           photonCamera.getLatestResult().getBestTarget().getPitch()));
           }
         }
-
           if (photonResults.targets.size() > 1
               || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
             photonPoseEstimator
@@ -111,17 +110,15 @@ public class PhotonRunnable implements Runnable {
                         atomicEstimatedRobotPose.set(estimatedRobotPose);
                         updates.add(getPoseAtTimestamp(timestamp));
                         RobotContainer.poseEstimator.addVisionData(updates);
-
                         updates.clear();
                       }
                     });
-            Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
-            double distance = distanceToTargetPose();
-            Logger.recordOutput("Odometry/Photon Distance to target", distance);
           }
         }
       }
     }
+    Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
+    Logger.recordOutput("Odometry/Vision Speaker Distance", distanceToSpeaker);
   }
 
   private static final double speakerHeight = Units.inchesToMeters(80.5);
