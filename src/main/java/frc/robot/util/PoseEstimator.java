@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.Logger;
 
+
 public class PoseEstimator {
   private static final double historyLengthSecs = 0.3;
   private final PhotonRunnable photonEstimator = new PhotonRunnable("FrontCamera", Constants.VisionConstants.RobotToCam);

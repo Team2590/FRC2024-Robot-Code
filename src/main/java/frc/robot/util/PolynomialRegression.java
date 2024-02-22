@@ -4,6 +4,7 @@ import Jama.Matrix;
 import Jama.QRDecomposition;
 
 // NOTE: This file is available at
+
 // http://algs4.cs.princeton.edu/14analysis/PolynomialRegression.java.html
 
 /**
