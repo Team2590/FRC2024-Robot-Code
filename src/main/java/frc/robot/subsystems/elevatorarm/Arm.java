@@ -11,7 +11,7 @@ public class Arm extends SubsystemBase {
   private ArmStates state;
   private double armSetpoint;
   private double tolerance = .01;
-  private boolean requestHome = false;
+  // private boolean requestHome = false;
   private boolean requestVertical = false;
   private DutyCycleOut power = new DutyCycleOut(0);
 
@@ -37,7 +37,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println("request home: " + requestHome);
+    // System.out.println("request home: " + requestHome);
     arm.updateTunableNumbers();
     arm.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
@@ -60,16 +60,16 @@ public class Arm extends SubsystemBase {
         }
         break;
       case AT_SETPOINT:
-        arm.setPosition(armSetpoint);
+        // arm.setPosition(armSetpoint);
         if (HelperFn.isWithinTolerance(
             arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
           state = ArmStates.AT_SETPOINT;
-          if (requestHome) {
-            state = ArmStates.HOME;
-            requestHome = false;
-          } else if (requestVertical) {
-            state = ArmStates.AMPTRAP;
-          }
+          // if (armSetpoint == .168) {
+          //   state = ArmStates.HOME;
+          // }
+          //  if (requestVertical) {
+          //   state = ArmStates.AMPTRAP;
+          // }
         } else {
           state = ArmStates.APPROACHINGSETPOINT;
         }
@@ -78,7 +78,6 @@ public class Arm extends SubsystemBase {
         requestVertical = false;
         break;
       case HOME:
-        requestHome = false;
         break;
     }
 
@@ -88,8 +87,11 @@ public class Arm extends SubsystemBase {
   /** Run open loop at the specified voltage. */
   public void setPosition(double setpoint) {
     armSetpoint = setpoint;
+    System.out.println(setpoint);
     if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
       state = ArmStates.APPROACHINGSETPOINT;
+    } else {
+      state = ArmStates.AT_SETPOINT;
     }
   }
 
@@ -98,7 +100,7 @@ public class Arm extends SubsystemBase {
   // }
 
   public void setHome() {
-    requestHome = true;
+    // requestHome = true;
     setPosition(.168);
   }
 
