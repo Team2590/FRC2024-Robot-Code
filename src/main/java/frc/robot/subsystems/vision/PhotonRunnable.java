@@ -267,7 +267,20 @@ public class PhotonRunnable implements Runnable {
         VecBuilder.fill(.001, .003, 1));
   }
 
+  /**
+   * Returns the distance to speaker based on alliance (meters).
+   * @return
+   */
   public double getDistanceToSpeaker(){
-    return distanceToSpeaker;
+    photonResults = photonCamera.getLatestResult();
+    if(!photonResults.hasTargets()){return -1;}
+    for( PhotonTrackedTarget target : photonResults.getTargets()){
+      if(target.getFiducialId() == 4 && DriverStation.getAlliance().get() == Alliance.Red){
+        return distanceToSpeaker = Math.hypot(tagPoses[4].getX() - RobotPose.getX(), tagPoses[4].getY() - RobotPose.getY());
+      } else if(target.getFiducialId() == 7 && DriverStation.getAlliance().get() == Alliance.Blue){
+        return distanceToSpeaker = Math.hypot(tagPoses[7].getX() - RobotPose.getX(), tagPoses[7].getY() - RobotPose.getY());
+      }
+    }
+    return -1;
   }
 }
