@@ -57,6 +57,7 @@ public class PhotonRunnable implements Runnable {
       photonPoseEstimator =
           new PhotonPoseEstimator(
               layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, cameraTransform3d);
+      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
     this.photonPoseEstimator = photonPoseEstimator;
   }
