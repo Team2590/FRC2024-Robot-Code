@@ -2,7 +2,7 @@ package frc.robot.subsystems.elevatorarm;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.util.HelperFn;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -63,7 +63,7 @@ public class Arm extends SubsystemBase {
         if (HelperFn.isWithinTolerance(
             arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
           state = ArmStates.AT_SETPOINT;
-          if (armSetpoint == Constants.ArmConstants.HOME_SETPOINT){
+          if (armSetpoint == ArmConstants.HOME_SETPOINT){
             state = ArmStates.HOME;
           }
         } else {
@@ -74,14 +74,14 @@ public class Arm extends SubsystemBase {
         requestVertical = false;
         break;
       case APPROACHING_HOME:
-        arm.setPosition(Constants.ArmConstants.HOME_SETPOINT);
+        arm.setPosition(ArmConstants.HOME_SETPOINT);
         if (HelperFn.isWithinTolerance(
-          arm.armCancoder.getAbsolutePosition().getValueAsDouble(), Constants.ArmConstants.HOME_SETPOINT, tolerance)){
+          arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
             state = ArmStates.HOME;
           }
       case HOME:
       if (!HelperFn.isWithinTolerance(
-        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), Constants.ArmConstants.HOME_SETPOINT, tolerance)){
+        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), ArmConstants.HOME_SETPOINT, tolerance)){
           state = ArmStates.APPROACHING_HOME;
         }
         break;
