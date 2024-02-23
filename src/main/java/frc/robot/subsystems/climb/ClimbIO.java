@@ -12,7 +12,7 @@ public interface ClimbIO {
 
   public void run(double speed);
 
-  public void stop(); 
+  public void stop();
 
   public double getRotationCount();
 

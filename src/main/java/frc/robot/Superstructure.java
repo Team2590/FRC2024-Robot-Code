@@ -11,7 +11,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.*;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -66,6 +65,7 @@ public class Superstructure {
     this.shooter = shooter;
     this.arm = arm;
     this.climb = climb;
+    climb.resetRotationCount();
   }
 
   /** Call all of the periodic methods of the subsystems */
@@ -87,6 +87,8 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
+        climb.setStopped();
+
         // arm.setStopped();
         break;
 
@@ -94,7 +96,7 @@ public class Superstructure {
         /*
          * TBD -- > Simmilar to IDLE state ?
          */
-
+        climb.resetRotationCount();
         break;
 
       case IDLE:
@@ -107,6 +109,7 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         arm.setHome();
+        climb.setStopped();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -205,7 +208,6 @@ public class Superstructure {
         break;
 
       case CLIMB:
-        arm.setHome();
         climb.run();
         break;
     }
@@ -270,5 +272,9 @@ public class Superstructure {
 
   public SuperstructureStates getState() {
     return systemState;
+  }
+
+  public void flipHooks() {
+    climb.flip();
   }
 }

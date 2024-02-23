@@ -20,7 +20,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -32,7 +31,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
 
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
 
   public static final boolean tuningMode = true;
   public static final String canbus = "Takeover";
@@ -99,8 +98,8 @@ public final class Constants {
   }
 
   public final class ClimbConstants {
-    // max rotations = (distance/2pi*wheelRadius) * gearRatio  
-    public static final double MAX_ROTATIONS = (Units.inchesToMeters(27)/(Math.PI*2))*24;
+    // max rotations = (distance/2pi*wheelRadius) * gearRatio
+    public static final double MAX_ROTATIONS = (Units.inchesToMeters(27) / (Math.PI * 2)) * 24;
   }
 
   public static enum Mode {

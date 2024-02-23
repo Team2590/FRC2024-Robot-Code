@@ -4,9 +4,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX left_motor = new TalonFX(1);
-  private final TalonFX right_motor = new TalonFX(0);
-
+  private final TalonFX left_motor = new TalonFX(24, "Takeover");
+  private final TalonFX right_motor = new TalonFX(25, "Takeover");
   public final double maxPosition = 5;
 
   public ClimbIOTalonFX() {
@@ -21,24 +20,9 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   public void run(double speed) {
-    // if (left_motor.getPosition().getValueAsDouble() > maxPosition) {
-    //   left_motor.stopMotor();
-    //   right_motor.stopMotor();
-    // } else {
-    // }
     left_motor.set(-speed);
-    right_motor.set(speed);
+    right_motor.set(-speed);
   }
-
-  // public void down() {
-  //   if (left_motor.getPosition().getValueAsDouble() < 0) {
-  //     left_motor.stopMotor();
-  //     right_motor.stopMotor();
-  //   } else {
-  //     left_motor.set(speed);
-  //     right_motor.set(-speed);
-  //   }
-  // }
 
   public void stop() {
     left_motor.stopMotor();

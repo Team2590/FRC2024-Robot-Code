@@ -164,6 +164,8 @@ public class RobotContainer {
       superstructure.armDown();
     } else if (input.leftJoystickButton(5)) {
       superstructure.climb();
+    } else if (input.leftJoystickButton(6)) {
+      superstructure.flipHooks();
     } else {
       superstructure.idle();
     }
