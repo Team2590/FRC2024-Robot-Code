@@ -213,11 +213,11 @@ public class Superstructure {
          */
         break;
     }
-    // Logger.recordOutput("Superstructure/State", systemState);
-    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {

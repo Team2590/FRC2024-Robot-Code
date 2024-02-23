@@ -42,7 +42,7 @@ public class PoseEstimator {
       q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
     }
     photonNotifier.setName("PhotonRunnable");
-    photonNotifier.startPeriodic(0.02);
+    // photonNotifier.startPeriodic(0.02); uncomment asap
   }
 
   /** Returns the latest robot pose based on drive and vision data. */
