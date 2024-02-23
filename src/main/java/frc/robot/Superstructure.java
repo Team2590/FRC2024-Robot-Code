@@ -54,6 +54,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 3000.0);
+  private final LoggedTunableNumber ampAngle = new LoggedTunableNumber("Arm/Amp Angle", -.2);
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
@@ -74,7 +75,7 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
-    Logger.recordOutput("hasnote", conveyor.hasNote());
+    // Logger.recordOutput("hasnote", conveyor.hasNote());
     Logger.recordOutput("Arm State", arm.getState());
     // System.out.println("armstate at beginning of superstr");
     switch (systemState) {
@@ -102,7 +103,8 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
-        arm.setHome();
+        // arm.setHome();
+        arm.setStopped();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -197,7 +199,10 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        conveyor.setDiverting();
+        arm.setPosition(Constants.ArmConstants.AMP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
         break;
 
       case CLIMB:
@@ -208,11 +213,11 @@ public class Superstructure {
          */
         break;
     }
-    Logger.recordOutput("Superstructure/State", systemState);
-    Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    // Logger.recordOutput("Superstructure/State", systemState);
+    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {

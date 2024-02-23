@@ -10,6 +10,7 @@ import static frc.robot.Constants.VisionConstants.CAMERA_YAW;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -82,14 +83,16 @@ public class PhotonRunnable implements Runnable {
       if (photonResults.hasTargets()) {
         if (photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
           for (PhotonTrackedTarget target : photonResults.getTargets()) {
-            if ((DriverStation.getAlliance().get() == Alliance.Red && target.getFiducialId() == 4)
-                || (DriverStation.getAlliance().get() == Alliance.Blue
-                    && target.getFiducialId() == 7)) {
+            if (DriverStation.getAlliance().isPresent()
+                && ((DriverStation.getAlliance().get() == Alliance.Red
+                        && target.getFiducialId() == 4)
+                    || (DriverStation.getAlliance().get() == Alliance.Blue
+                        && target.getFiducialId() == 7))) {
               distanceToSpeaker =
                   PhotonUtils.calculateDistanceToTargetMeters(
                       this.cameraTransform.getZ(),
                       tagHeights[photonResults.getBestTarget().getFiducialId()],
-                      this.cameraTransform.getRotation().getY(),
+                      -1 * this.cameraTransform.getRotation().getY(),
                       Units.degreesToRadians(
                           photonCamera.getLatestResult().getBestTarget().getPitch()));
             }
@@ -117,7 +120,8 @@ public class PhotonRunnable implements Runnable {
         }
       }
     }
-    Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
+    Pose2d twoDeePose = RobotPose.toPose2d();
+    Logger.recordOutput("Odometry/Photonvision", twoDeePose);
     Logger.recordOutput("Odometry/Vision Speaker Distance", distanceToSpeaker);
   }
 

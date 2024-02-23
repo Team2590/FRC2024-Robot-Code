@@ -46,7 +46,7 @@ public final class Constants {
   }
 
   public final class VisionConstants {
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(17.003);
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
     public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
     public static final double CAMERA_ROLL = 0;
@@ -71,6 +71,7 @@ public final class Constants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
     public static final int ARM = 45;
+    public static final double AMP_SETPOINT = -.22;
   }
 
   public final class ShooterConstants {
