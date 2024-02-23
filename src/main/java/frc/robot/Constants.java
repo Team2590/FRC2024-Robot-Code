@@ -46,12 +46,12 @@ public final class Constants {
   }
 
   public final class VisionConstants {
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(17.5);
-    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(12.5);
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
+    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
     public static final double CAMERA_ROLL = 0;
     // downward pitch is positive
-    public static final double CAMERA_PITCH = Units.degreesToRadians(-1 * 35);
+    public static final double CAMERA_PITCH = Units.degreesToRadians(-1 * 27);
     // counterclockwise yaw is positive
     public static final double CAMERA_YAW = Units.degreesToRadians(-1 * 180);
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;

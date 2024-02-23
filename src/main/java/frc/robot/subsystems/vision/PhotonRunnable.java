@@ -3,10 +3,6 @@ package frc.robot.subsystems.vision;
 import static frc.robot.Constants.FieldConstants.FIELD_LENGTH_METERS;
 import static frc.robot.Constants.FieldConstants.FIELD_WIDTH_METERS;
 import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
-import static frc.robot.Constants.VisionConstants.CAMERA_HEIGHT_METERS;
-import static frc.robot.Constants.VisionConstants.CAMERA_PITCH;
-import static frc.robot.Constants.VisionConstants.CAMERA_ROLL;
-import static frc.robot.Constants.VisionConstants.CAMERA_YAW;
 import static frc.robot.Constants.VisionConstants.RobotToCam;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -16,6 +12,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
 import frc.util.PoseEstimator.TimestampedVisionUpdate;
@@ -39,12 +37,14 @@ public class PhotonRunnable implements Runnable {
       new AtomicReference<EstimatedRobotPose>();
   public final ArrayList<TimestampedVisionUpdate> updates =
       new ArrayList<TimestampedVisionUpdate>();
-  private static double distanceToTag;
+  private static double distanceToSpeaker = 0;
   private static Pose3d RobotPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
   private static PhotonPipelineResult photonResults;
+  private Transform3d cameraTransform;
 
-  public PhotonRunnable() {
-    this.photonCamera = new PhotonCamera("1MegapixelCam");
+  public PhotonRunnable(String name, Transform3d cameraTransform3d) {
+    this.photonCamera = new PhotonCamera(name);
+    this.cameraTransform = cameraTransform3d;
     PhotonPoseEstimator photonPoseEstimator = null;
     var layout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     // PV estimates will always be blue, they'll get flipped by robot thread
@@ -52,7 +52,8 @@ public class PhotonRunnable implements Runnable {
     if (photonCamera != null) {
       photonPoseEstimator =
           new PhotonPoseEstimator(
-              layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, RobotToCam);
+              layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, cameraTransform3d);
+      photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
     this.photonPoseEstimator = photonPoseEstimator;
   }
@@ -78,17 +79,28 @@ public class PhotonRunnable implements Runnable {
       var timestamp = photonResults.getTimestampSeconds();
       if (photonResults.hasTargets()) {
         if (photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
-          distanceToTag =
-              PhotonUtils.calculateDistanceToTargetMeters(
-                  CAMERA_HEIGHT_METERS,
-                  tagHeights[photonResults.getBestTarget().getFiducialId()],
-                  CAMERA_PITCH,
-                  Units.degreesToRadians(
-                      photonCamera.getLatestResult().getBestTarget().getPitch()));
-          // System.out.println(distanceToTag);
-          // System.out.println("Without Pose: " + stringify(transformToTagWithoutPose()));
-          // System.out.println("With Pose: " + stringify(transformToTagWithPose()));
-
+          for (PhotonTrackedTarget target : photonResults.getTargets()) {
+            if ((DriverStation.getAlliance().get() == Alliance.Red && target.getFiducialId() == 4)
+                || (DriverStation.getAlliance().get() == Alliance.Blue
+                    && target.getFiducialId() == 7)) {
+              distanceToSpeaker =
+                  PhotonUtils.calculateDistanceToTargetMeters(
+                      this.cameraTransform.getZ(),
+                      tagHeights[photonResults.getBestTarget().getFiducialId()],
+                      this.cameraTransform.getRotation().getY(),
+                      Units.degreesToRadians(
+                          photonCamera.getLatestResult().getBestTarget().getPitch()));
+              Logger.recordOutput("Distance w/ 2D detection", distanceToSpeaker);
+              double distanceToSpeaker3d =
+                  Math.hypot(
+                      transformToTagWithoutPose().getX(), transformToTagWithoutPose().getY());
+              Logger.recordOutput("Distance w/ Transform3d", distanceToSpeaker3d);
+              double distanceToSpeakerPose =
+                  Math.hypot(
+                      transformToTagWithPose(target).getX(), transformToTagWithPose(target).getY());
+              Logger.recordOutput("Distance w/ Pose Estimation", distanceToSpeakerPose);
+            }
+          }
           if (photonResults.targets.size() > 1
               || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
             photonPoseEstimator
@@ -105,17 +117,15 @@ public class PhotonRunnable implements Runnable {
                         atomicEstimatedRobotPose.set(estimatedRobotPose);
                         updates.add(getPoseAtTimestamp(timestamp));
                         RobotContainer.poseEstimator.addVisionData(updates);
-
                         updates.clear();
                       }
                     });
-            Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
-            double distance = distanceToTargetPose();
-            Logger.recordOutput("Odometry/Photon Distance to target", distance);
           }
         }
       }
     }
+    Logger.recordOutput("Odometry/Photonvision", RobotPose.toPose2d());
+    Logger.recordOutput("Odometry/Vision Speaker Distance", distanceToSpeaker);
   }
 
   private static final double speakerHeight = Units.inchesToMeters(80.5);
@@ -179,13 +189,6 @@ public class PhotonRunnable implements Runnable {
     return RobotPose;
   }
 
-  // public Pose2d getRobotPose2d() {
-  //   return RobotPose.toPose2d();
-  // }
-
-  private static final Rotation3d camRotation =
-      new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW);
-
   public Transform3d transformToTagWithoutPose() {
     if (!photonResults.hasTargets()) {
       return null;
@@ -193,26 +196,7 @@ public class PhotonRunnable implements Runnable {
 
     PhotonTrackedTarget target = photonResults.getBestTarget();
     Transform3d initTrans = target.getBestCameraToTarget();
-    double yaw = CAMERA_YAW;
-    double pitch = CAMERA_PITCH * -1;
-
-    // Rotating about X-Z plane
-    double newX = initTrans.getX() * Math.cos(pitch) - initTrans.getZ() * Math.sin(pitch);
-    double newZ = initTrans.getX() * Math.sin(pitch) + initTrans.getZ() * Math.cos(pitch);
-
-    // Rotation about X-Y plane
-    double Y = initTrans.getY();
-    double newY = Y * Math.cos(yaw) - newX * Math.sin(yaw);
-    newX = Y * Math.sin(yaw) + newX * Math.cos(yaw);
-
-    Rotation3d tagRotation = initTrans.getRotation();
-    Rotation3d newRotation = tagRotation.minus(camRotation);
-
-    newX += RobotPose.getX();
-    newY += RobotPose.getY();
-    newZ += RobotPose.getZ();
-
-    return new Transform3d(newX, newY, newZ, newRotation);
+    return initTrans.plus(RobotToCam.inverse());
   }
 
   private static final Pose3d[] tagPoses = {
@@ -235,12 +219,12 @@ public class PhotonRunnable implements Runnable {
     new Pose3d(4.64, 3.71, tagHeights[16], new Rotation3d(0, 0, Math.toRadians(-120)))
   };
 
-  public Transform3d transformToTagWithPose() {
+  public Transform3d transformToTagWithPose(PhotonTrackedTarget target) {
     if (!photonResults.hasTargets()) {
       return null;
     }
 
-    return tagPoses[photonResults.getBestTarget().getFiducialId()].minus(RobotPose);
+    return tagPoses[target.getFiducialId()].minus(RobotPose);
   }
 
   /**
@@ -259,5 +243,14 @@ public class PhotonRunnable implements Runnable {
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
         VecBuilder.fill(.001, .003, 1));
+  }
+
+  /**
+   * Returns the distance to speaker based on alliance (meters).
+   *
+   * @return
+   */
+  public double getDistanceToSpeaker() {
+    return distanceToSpeaker;
   }
 }
