@@ -205,11 +205,7 @@ public class Superstructure {
         break;
 
       case CLIMB:
-        /*
-         * arm.setposition(HOME); -- > Stow the arm for climb
-         * set system state to IDLE before climbing action ? (TBD)
-         * climb.climb() -- > Sets climb to manual state
-         */
+        arm.setHome();
         climb.run();
         break;
     }
