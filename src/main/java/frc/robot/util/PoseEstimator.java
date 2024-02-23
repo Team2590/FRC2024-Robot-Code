@@ -27,7 +27,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class PoseEstimator {
   private static final double historyLengthSecs = 0.3;
-  private final PhotonRunnable photonEstimator = new PhotonRunnable("FrontCamera", Constants.VisionConstants.RobotToCam);
+  private final PhotonRunnable photonEstimator =
+      new PhotonRunnable("FrontCamera", Constants.VisionConstants.RobotToCam);
   private final Notifier photonNotifier = new Notifier(photonEstimator);
   private Pose2d basePose = new Pose2d();
   private Pose2d latestPose = new Pose2d();
@@ -41,7 +42,7 @@ public class PoseEstimator {
       q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
     }
     photonNotifier.setName("PhotonRunnable");
-    photonNotifier.startPeriodic(0.02);
+    // photonNotifier.startPeriodic(0.02);
   }
 
   /** Returns the latest robot pose based on drive and vision data. */
@@ -158,7 +159,6 @@ public class PoseEstimator {
       updateLock.unlock();
     }
     Logger.recordOutput("Odometry/RobotPosition", latestPose);
-    Logger.recordOutput("Odometry/PoseUpdateMapSize", updates.size());
   }
 
   /**

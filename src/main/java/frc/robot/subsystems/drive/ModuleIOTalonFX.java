@@ -25,7 +25,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Queue;
 
 /**
@@ -97,8 +96,6 @@ public class ModuleIOTalonFX implements ModuleIO {
           e.printStackTrace();
         }
         driveTalon = new TalonFX(13, "Takeover");
-        // driveTalon.setInverted(true);
-
         turnTalon = new TalonFX(11, "Takeover");
         cancoder = new CANcoder(12, "Takeover");
         absoluteEncoderOffset = new Rotation2d(0.069); // 0.069
@@ -107,8 +104,6 @@ public class ModuleIOTalonFX implements ModuleIO {
         break;
       case 1: // Front Right
         driveTalon = new TalonFX(23, "Takeover");
-        // driveTalon.setInverted(true);
-
         turnTalon = new TalonFX(21, "Takeover");
         cancoder = new CANcoder(22, "Takeover");
         absoluteEncoderOffset = new Rotation2d(-1.805); // -1.805
