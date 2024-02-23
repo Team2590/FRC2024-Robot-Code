@@ -69,6 +69,7 @@ public final class Constants {
 
   public final class ArmConstants {
     // Fill in
+    public static final double HOME_SETPOINT = 0.168;
     public static final int ARM = 45;
   }
 

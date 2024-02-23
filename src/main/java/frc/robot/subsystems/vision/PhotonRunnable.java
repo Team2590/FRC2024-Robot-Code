@@ -3,11 +3,9 @@ package frc.robot.subsystems.vision;
 import static frc.robot.Constants.FieldConstants.FIELD_LENGTH_METERS;
 import static frc.robot.Constants.FieldConstants.FIELD_WIDTH_METERS;
 import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
-import static frc.robot.Constants.VisionConstants.CAMERA_HEIGHT_METERS;
 import static frc.robot.Constants.VisionConstants.CAMERA_PITCH;
 import static frc.robot.Constants.VisionConstants.CAMERA_ROLL;
 import static frc.robot.Constants.VisionConstants.CAMERA_YAW;
-import static frc.robot.Constants.VisionConstants.RobotToCam;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -17,11 +15,10 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import org.littletonrobotics.junction.Logger;
@@ -84,8 +81,10 @@ public class PhotonRunnable implements Runnable {
       var timestamp = photonResults.getTimestampSeconds();
       if (photonResults.hasTargets()) {
         if (photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
-          for( PhotonTrackedTarget target : photonResults.getTargets()){
-            if ((DriverStation.getAlliance().get() == Alliance.Red && target.getFiducialId() == 4) || (DriverStation.getAlliance().get() == Alliance.Blue && target.getFiducialId() == 7 )){
+          for (PhotonTrackedTarget target : photonResults.getTargets()) {
+            if ((DriverStation.getAlliance().get() == Alliance.Red && target.getFiducialId() == 4)
+                || (DriverStation.getAlliance().get() == Alliance.Blue
+                    && target.getFiducialId() == 7)) {
               distanceToSpeaker =
                   PhotonUtils.calculateDistanceToTargetMeters(
                       this.cameraTransform.getZ(),
@@ -93,8 +92,8 @@ public class PhotonRunnable implements Runnable {
                       this.cameraTransform.getRotation().getY(),
                       Units.degreesToRadians(
                           photonCamera.getLatestResult().getBestTarget().getPitch()));
+            }
           }
-        }
           if (photonResults.targets.size() > 1
               || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
             photonPoseEstimator
@@ -267,9 +266,10 @@ public class PhotonRunnable implements Runnable {
 
   /**
    * Returns the distance to speaker based on alliance (meters).
+   *
    * @return
    */
-  public double getDistanceToSpeaker(){
+  public double getDistanceToSpeaker() {
     return distanceToSpeaker;
   }
 }
