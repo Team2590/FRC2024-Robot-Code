@@ -27,7 +27,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
-  private static final double GEAR_RATIO = 1.5;
+  private static final double GEAR_RATIO = (46/18);
 
   private final TalonFX leader = new TalonFX(Constants.ShooterConstants.LEADER, Constants.CANBUS);
   private final TalonFX follower =
