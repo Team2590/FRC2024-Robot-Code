@@ -3,9 +3,7 @@ package frc.robot.autos;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure;
-import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 
 /** A three piece auto routine that picks up notes 1, 4, and 2 */
@@ -26,7 +24,7 @@ public class ThreePieceAuto_1_4_2 extends SequentialCommandGroup {
         // Could we use snapping logic to lock on to target.
         // Shoot
         Commands.print("Shoot Note1"),
-        DriveCommands.SnapToTarget(drive, () -> 0.5, () -> 0.5, Targets.SPEAKER),
+        // DriveCommands.SnapToTarget(drive, () -> 0.5, () -> 0.5, Targets.SPEAKER),
         new InstantCommand(() -> superstructure.shoot(), superstructure.getShooter()));
 
     // paths.getFollowPathCommand("note1_note4"));
