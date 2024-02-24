@@ -11,7 +11,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import frc.robot.subsystems.conveyor.*;
+import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
@@ -169,11 +169,10 @@ public class Superstructure {
         break;
 
       case SHOOT:
-        Logger.recordOutput(
-            "Arm/DistanceSetpoint",
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker()));
-        arm.setPosition(
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker()));
+        double armDistanceSetPoint =
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
+        Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
+        arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
@@ -202,9 +201,10 @@ public class Superstructure {
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
         arm.setPosition(-.2);
-        if (arm.getState() == ArmStates.AT_SETPOINT) {}
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
 
-        conveyor.setDiverting();
         break;
 
       case CLIMB:
@@ -263,18 +263,33 @@ public class Superstructure {
   }
 
   public void armUp() {
-    // optimiazaiton, make these two duty cycles local variables so these aren't created each time
+    // optimization, make these two duty cycles local variables so these aren't created each time
     pwr = new DutyCycleOut(-0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
   }
 
   public void armDown() {
-
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
   }
 
   public SuperstructureStates getState() {
     return systemState;
+  }
+
+  public Arm getArm() {
+    return arm;
+  }
+
+  public Conveyor getConveyor() {
+    return conveyor;
+  }
+
+  public Intake getIntake() {
+    return intake;
+  }
+
+  public Flywheel getShooter() {
+    return shooter;
   }
 }
