@@ -111,7 +111,7 @@ public class DriveCommands {
   }
   
   /**
-   * Translate in line to a grounded note. Use camera data to get relative not pos.
+   * Translate in line to a grounded note. Use camera data to get relative note pose.
    * @param drive - drive instance
    * @param xSupplier - left joystick x value
    * @param ySupplier - left joystick y value
