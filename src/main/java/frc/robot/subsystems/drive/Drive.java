@@ -67,7 +67,7 @@ public class Drive extends SubsystemBase {
 
   public static LoggedTunableNumber snapControllermultiplier =
       new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
-  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .44);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
       new LoggedTunableNumber("SnapController/tolerance", .1);
