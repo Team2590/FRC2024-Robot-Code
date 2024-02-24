@@ -51,8 +51,7 @@ public class PoseEstimator {
   }
 
   public double distanceToSpeaker() {
-    return 2.9;
-    // return photonEstimator.getDistanceToSpeaker();
+    return photonEstimator.getDistanceToSpeaker();
   }
 
   /** Resets the odometry to a known pose. */
