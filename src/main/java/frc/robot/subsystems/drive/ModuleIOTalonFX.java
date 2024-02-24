@@ -90,7 +90,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     switch (index) {
       case 0: // Front Left
         try {
-          Thread.sleep(2000);
+          Thread.sleep(1000);
         } catch (InterruptedException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();

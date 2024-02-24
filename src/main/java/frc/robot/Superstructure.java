@@ -11,6 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -45,6 +47,8 @@ public class Superstructure {
     CLIMB
   }
 
+  private final TalonFX leader = new TalonFX(24, Constants.CANBUS);
+  private final TalonFX follower = new TalonFX(25, Constants.CANBUS);
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private final Conveyor conveyor;
   private final Intake intake;
@@ -54,7 +58,7 @@ public class Superstructure {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 3000.0);
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -66,7 +70,7 @@ public class Superstructure {
     this.arm = arm;
 
     final double[] distance = {
-      0.0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
+      0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
       4.2672, 4.572
     };
     final double[] armSetpoint = {
@@ -78,6 +82,7 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
+    Logger.recordOutput("Arm/RangeTOTarget", RobotContainer.poseEstimator.distanceToSpeaker());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -91,7 +96,7 @@ public class Superstructure {
         /*
          * TBD -- > Simmilar to IDLE state ?
          */
-
+        // C:\Users\Nemesis\Documents\2024\FRC2024-Robot-Code\src\main\java\frc\robot\autos\StartPathCommand.java
         break;
 
       case IDLE:
@@ -104,6 +109,8 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         arm.setHome();
+        leader.stopMotor();
+        follower.stopMotor();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -170,7 +177,8 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
+            armInterpolation.getValue(
+                RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
@@ -200,7 +208,7 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(-.2);
+        arm.setPosition(-.258);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
@@ -213,6 +221,8 @@ public class Superstructure {
          * set system state to IDLE before climbing action ? (TBD)
          * climb.climb() -- > Sets climb to manual state
          */
+        leader.set(.25);
+        follower.set(-.25);
         break;
     }
     // Logger.recordOutput("Superstructure/State", systemState);
