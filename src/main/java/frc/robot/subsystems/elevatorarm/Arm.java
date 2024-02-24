@@ -48,16 +48,14 @@ public class Arm extends SubsystemBase {
         break;
       case APPROACHINGSETPOINT:
         arm.setPosition(armSetpoint);
-        if (!HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+        if (!isArmAtSetPointPosition(armSetpoint)) {
           state = ArmStates.APPROACHINGSETPOINT;
         } else {
           state = ArmStates.AT_SETPOINT;
         }
         break;
       case AT_SETPOINT:
-        if (HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+        if (isArmAtSetPointPosition(armSetpoint)) {
           state = ArmStates.AT_SETPOINT;
           if (armSetpoint == ArmConstants.HOME_SETPOINT) {
             state = ArmStates.HOME;
@@ -70,21 +68,20 @@ public class Arm extends SubsystemBase {
         break;
       case APPROACHING_HOME:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
-        if (HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-            ArmConstants.HOME_SETPOINT,
-            tolerance)) {
+        if (isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
           state = ArmStates.HOME;
         }
       case HOME:
-        if (!HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-            ArmConstants.HOME_SETPOINT,
-            tolerance)) {
+        if (!isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
           state = ArmStates.APPROACHING_HOME;
         }
         break;
     }
+  }
+
+  private boolean isArmAtSetPointPosition(double setPoint) {
+    return HelperFn.isWithinTolerance(
+        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), setPoint, tolerance);
   }
 
   /** Run open loop at the specified voltage. */
@@ -102,10 +99,7 @@ public class Arm extends SubsystemBase {
   // }
 
   public void setHome() {
-    if (HelperFn.isWithinTolerance(
-        arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-        ArmConstants.HOME_SETPOINT,
-        tolerance)) {
+    if (isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
       state = ArmStates.HOME;
     } else {
       state = ArmStates.APPROACHING_HOME;
