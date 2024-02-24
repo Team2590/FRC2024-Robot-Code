@@ -70,11 +70,11 @@ public class Superstructure {
     this.arm = arm;
 
     final double[] distance = {
-      .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624, 4.2672,
-      4.572
+      0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
+      4.2672, 4.572
     };
     final double[] armSetpoint = {
-      .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+      .16, .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -96,7 +96,7 @@ public class Superstructure {
         /*
          * TBD -- > Simmilar to IDLE state ?
          */
-
+        // C:\Users\Nemesis\Documents\2024\FRC2024-Robot-Code\src\main\java\frc\robot\autos\StartPathCommand.java
         break;
 
       case IDLE:

@@ -12,10 +12,10 @@ public class ThreePieceAuto_1_4_2 extends SequentialCommandGroup {
   public ThreePieceAuto_1_4_2(PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     addRequirements(drive);
     addCommands(
-        new StartPathCommand(paths, "startB_note1"),
+        new StartPathCommand(paths, "startB_note1", superstructure),
         Commands.print("Picking up Note1 "),
         // Intake
-        new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
+        // new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
         // TODO: Need methods to wait for the robot
         // to get into the right state before executing actions?
         // Commands.waitUntil(superstructure.isReadyToShoot()),
