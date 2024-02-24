@@ -77,6 +77,7 @@ public class DriveCommands {
    * @param xSupplier - left joystick x value
    * @param ySupplier - left joystick y value
    * @param target - pos to snap to
+   * @author Ian Keller
    * @see <a href =
    *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
    *     Reference</a>
