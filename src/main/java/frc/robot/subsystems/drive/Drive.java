@@ -264,12 +264,6 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /** Returns the current odometry pose. */
-  @AutoLogOutput(key = "Odometry/Robot")
-  public Pose2d getPose() {
-    return pose;
-  }
-
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     // return pose.getRotation();

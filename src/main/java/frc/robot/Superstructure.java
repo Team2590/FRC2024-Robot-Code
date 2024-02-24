@@ -18,6 +18,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
+import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -54,6 +55,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 3000.0);
+  private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
@@ -62,21 +64,20 @@ public class Superstructure {
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
-  }
 
-  /** Call all of the periodic methods of the subsystems */
-  public void updateSubsystems() {
-    // intake.periodic();
-    // conveyor.periodic();
-    // shooter.periodic();
-    // arm.periodic();
+    final double[] distance = {
+      .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624, 4.2672,
+      4.572
+    };
+    final double[] armSetpoint = {
+      .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+    };
+
+    armInterpolation = new LookupTable(distance, armSetpoint);
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
-    Logger.recordOutput("hasnote", conveyor.hasNote());
-    Logger.recordOutput("Arm State", arm.getState());
-    // System.out.println("armstate at beginning of superstr");
     switch (systemState) {
       case DISABLED:
         // stop
@@ -168,8 +169,11 @@ public class Superstructure {
         break;
 
       case SHOOT:
-        arm.setPosition(armAngle.get());
-        // shooter.shoot(flywheelSpeedInput.get());
+        Logger.recordOutput(
+            "Arm/DistanceSetpoint",
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker()));
+        arm.setPosition(
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker()));
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
@@ -197,6 +201,9 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
+        arm.setPosition(-.2);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {}
+
         conveyor.setDiverting();
         break;
 
@@ -208,11 +215,11 @@ public class Superstructure {
          */
         break;
     }
-    Logger.recordOutput("Superstructure/State", systemState);
-    Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    // Logger.recordOutput("Superstructure/State", systemState);
+    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
