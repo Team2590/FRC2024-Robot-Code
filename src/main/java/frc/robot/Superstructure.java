@@ -235,4 +235,13 @@ public class Superstructure {
   public SuperstructureStates getState() {
     return systemState;
   }
+
+  public Flywheel getFlywheel() {
+    return shooter;
+  }
+
+  public void speedShooter() {
+
+    shooter.shoot(1500);
+  }
 }

@@ -1,18 +1,28 @@
 package frc.robot.autos;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PathPlannerPaths {
 
   private final Map<String, PathPlannerPath> paths;
+  private final List<PathPlannerPath> _paths;
 
   private PathPlannerPaths(Map<String, PathPlannerPath> paths) {
     this.paths = paths;
+    this._paths = null;
+  }
+
+  private PathPlannerPaths(List<PathPlannerPath> paths) {
+
+    this.paths = null;
+    this._paths = paths;
   }
 
   public static PathPlannerPaths create() {
@@ -21,7 +31,9 @@ public class PathPlannerPaths {
     // Add paths that will be used in Auto routines.
     addPath(paths, "startB_note1");
     addPath(paths, "note1_note4");
-
+    addPath(paths, "");
+    addPathViaAuto(paths, "B_note_1_n4.auto");
+    addPathViaAuto(paths, "B_note_2_n7.auto");
     return new PathPlannerPaths(paths);
   }
 
@@ -35,6 +47,11 @@ public class PathPlannerPaths {
   /** Returns the starting pose from the given path name. */
   public Pose2d getStartingPose(String pathName) {
     return getPath(pathName).getPreviewStartingHolonomicPose();
+  }
+
+  public static List<PathPlannerPath> get_path_group(String name) {
+
+    return PathPlannerAuto.getPathGroupFromAutoFile(name);
   }
 
   public void dispose() {
@@ -52,5 +69,15 @@ public class PathPlannerPaths {
   private static void addPath(Map<String, PathPlannerPath> paths, String pathName) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
     paths.put(pathName, path);
+  }
+
+  private static void addPathViaAuto(Map<String, PathPlannerPath> paths, String Auto_name) {
+    List<PathPlannerPath> p = PathPlannerAuto.getPathGroupFromAutoFile(Auto_name);
+    String name = Auto_name.replaceAll("\\.jpeg$", "");
+
+    for (int i = 0; i < p.size(); i++) {
+
+      paths.put(name + "_" + i, p.get(i));
+    }
   }
 }

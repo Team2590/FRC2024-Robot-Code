@@ -1,7 +1,9 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -181,14 +183,15 @@ public class RobotContainer {
    * Use this to register all of the commands with the AutoBuilder This should include all commands
    * used in the autos (except drive commands)
    */
-  private void registerAutoCommands() {
-    // NamedCommands.registerCommand(
-    //     "Run Flywheel",
-    //     Commands.startEnd(
-    //             () -> flywheel.runVelocity(flywheelSpeedInput.get()),
-    //             flywheel::setStopped,
-    //             flywheel)
-    //         .withTimeout(5.0));
+  public void registerAutoCommands() {
+
+    NamedCommands.registerCommand("intake", new InstantCommand(() -> superstructure.intake()));
+    NamedCommands.registerCommand(
+        "primeShoot", new InstantCommand(() -> superstructure.primeShooter()));
+    NamedCommands.registerCommand(
+        "prime Amp", new InstantCommand(() -> superstructure.primingAmp()));
+    NamedCommands.registerCommand("shoot", new InstantCommand(() -> superstructure.shoot()));
+    NamedCommands.registerCommand("homeState", new InstantCommand(() -> superstructure.idle()));
   }
   // private void populateAutoChooser() {
   //   // Set up feedforward characterization
