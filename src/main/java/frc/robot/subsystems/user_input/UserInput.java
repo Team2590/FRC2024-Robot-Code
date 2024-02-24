@@ -1,10 +1,10 @@
 package frc.robot.subsystems.user_input;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import frc.util.BandedJoystick;
-import frc.util.Smoother;
+import frc.robot.util.BandedJoystick;
+import frc.robot.util.Smoother;
 
 /**
  * Handles input from 2 joysticks and an xbox controller.
@@ -63,6 +63,10 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return leftJoystick.getRawButtonPressed(button);
   }
 
+  public boolean leftJoystickButtonReleased(int button) {
+    return leftJoystick.getRawButtonReleased(button);
+  }
+
   public int leftJoystickPOV() {
     return leftJoystick.getPOV();
   }
@@ -91,6 +95,10 @@ public class UserInput extends SubsystemBase implements RobotMap {
 
   public boolean rightJoystickButtonPressed(int button) {
     return rightJoystick.getRawButtonPressed(button);
+  }
+
+  public boolean rightJoystickButtonReleased(int button) {
+    return rightJoystick.getRawButtonReleased(button);
   }
 
   public int rightJoystickPOV() {
@@ -150,7 +158,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
   public boolean controllerBButtonReleased() {
     return operatorController.getBButtonReleased();
   }
-  
+
   public boolean controllerXButton() {
     return operatorController.getXButton();
   }
@@ -209,34 +217,5 @@ public class UserInput extends SubsystemBase implements RobotMap {
 
   public int controllerPOV() {
     return operatorController.getPOV();
-  }
-
-  public boolean rightJoystickButtonReleased(int button) {
-    return rightJoystick.getRawButtonReleased(button);
-  }
-
-  // OPERATOR CONTROLLER
-  public boolean XbuttonPressed() {
-    return operatorController.getXButtonPressed();
-  }
-
-  public boolean YbuttonPressed() {
-    return operatorController.getYButtonPressed();
-  }
-
-  public boolean BbuttonPressed() {
-    return operatorController.getBButtonPressed();
-  }
-
-  public boolean AbuttonPressed() {
-    return operatorController.getAButtonPressed();
-  }
-
-  public boolean controllerLeftTriggerPressed() {
-    return operatorController.getLeftBumperPressed();
-  }
-
-  public boolean controllerRightTriggerPressed() {
-    return operatorController.getRightBumperPressed();
   }
 }
