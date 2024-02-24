@@ -99,7 +99,7 @@ public final class Constants {
 
   public final class ClimbConstants {
     // max rotations = (distance/2pi*wheelRadius) * gearRatio
-    public static final double MAX_ROTATIONS = (Units.inchesToMeters(27) / (Math.PI * 2)) * 24;
+    public static final double MAX_ROTATIONS = -150;
   }
 
   public static enum Mode {
