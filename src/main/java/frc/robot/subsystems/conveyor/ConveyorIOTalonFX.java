@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.Constants;
 import frc.robot.Constants.ConveyorConstants;
-import frc.robot.util.LoggedTunableNumber;
 
 /**
  * IO class for a real conveyor subsystem
@@ -18,9 +17,9 @@ import frc.robot.util.LoggedTunableNumber;
 public class ConveyorIOTalonFX implements ConveyorIO {
   // motors + sensors
   private final TalonFX feederMotor =
-      new TalonFX(Constants.ConveyorConstants.FEEDER_ID, Constants.canbus);
+      new TalonFX(Constants.ConveyorConstants.FEEDER_ID, Constants.CANBUS);
   private final TalonFX diverterMotor =
-      new TalonFX(ConveyorConstants.DIVRETER_ID, Constants.canbus);
+      new TalonFX(ConveyorConstants.DIVRETER_ID, Constants.CANBUS);
   private final AnalogInput intakeProx = new AnalogInput(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInput shooterProx = new AnalogInput(ConveyorConstants.SHOOTER_PROX_ID);
 
@@ -31,12 +30,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   private final StatusSignal<Double> diverterVelocity = diverterMotor.getVelocity();
   private final StatusSignal<Double> diverterAppliedVolts = diverterMotor.getMotorVoltage();
   private final StatusSignal<Double> diverterCurrent = diverterMotor.getStatorCurrent();
-  private LoggedTunableNumber intakeProxThreshold =
-      new LoggedTunableNumber(
-          "Conveyor/IntakeProxThreshold", ConveyorConstants.INTAKE_PROX_THRESHOLD);
-  private LoggedTunableNumber shooterProxThreshold =
-      new LoggedTunableNumber(
-          "Conveyor/ShooterProxThreshold", ConveyorConstants.SHOOTER_PROX_THRESHOLD);
 
   public ConveyorIOTalonFX() {
     var config = new TalonFXConfiguration();
@@ -107,7 +100,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
    * @return if something is detected
    */
   private boolean detectedIntakeSide() {
-    return intakeProx.getVoltage() > intakeProxThreshold.get();
+    return intakeProx.getVoltage() > ConveyorConstants.INTAKE_PROX_THRESHOLD;
   }
 
   /**
@@ -116,7 +109,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
    * @return if something is detected
    */
   private boolean detectedShooterSide() {
-    return shooterProx.getVoltage() > shooterProxThreshold.get();
+    return shooterProx.getVoltage() > ConveyorConstants.SHOOTER_PROX_THRESHOLD;
   }
 
   /**

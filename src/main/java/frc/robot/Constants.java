@@ -20,7 +20,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -32,10 +31,9 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
 
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
-
+  public static final Mode currentMode = Mode.REAL;
   public static final boolean tuningMode = true;
-  public static final String canbus = "Takeover";
+  public static final String CANBUS = "Takeover";
 
   public final class FieldConstants {
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -43,6 +41,12 @@ public final class Constants {
     public static final Pose2d FLIPPING_POSE =
         new Pose2d(
             new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS), new Rotation2d(Math.PI));
+
+    public static enum Targets {
+      SPEAKER,
+      AMP,
+      STAGE
+    }
   }
 
   public final class VisionConstants {
@@ -71,6 +75,9 @@ public final class Constants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
     public static final int ARM = 45;
+    public static final int ARM_CANCODER_ID = 44;
+    public static final double ARM_GEAR_RATIO = 266.67;
+    public static final double MAG_OFFSET = -0.144;
   }
 
   public final class ShooterConstants {

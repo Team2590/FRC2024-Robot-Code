@@ -1,7 +1,6 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -9,7 +8,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  LoggedTunableNumber power = new LoggedTunableNumber("Intake/PowerPercent", 1.0);
+  private double power = 1.0;
   private final IntakeIO io;
   private IntakeStates state;
 
@@ -38,10 +37,10 @@ public class Intake extends SubsystemBase {
         io.stop();
         break;
       case INTAKE:
-        io.setPower(power.get());
+        io.setPower(power);
         break;
       case OUTTAKE:
-        io.setPower(-power.get());
+        io.setPower(-power);
         break;
       case MANUAL:
         // io.runPower(manualPower);

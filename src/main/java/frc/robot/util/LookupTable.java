@@ -36,16 +36,6 @@ public class LookupTable {
     double slopeSpeed = deltaSpeed / (keys[upperIndex] - keys[lowerIndex]);
     double ret = slopeSpeed * (distance - keys[lowerIndex]) + values[lowerIndex];
 
-    // System.out.println("returning this speed: " + ret);
     return ret;
   }
 }
-
-/***
- * easter egg
- * .._____/\__/\_/\
- * _/ (o)......... \___/|
- * \vv| / / /....... __ |
- * \ ________________/ \|
- *
- */

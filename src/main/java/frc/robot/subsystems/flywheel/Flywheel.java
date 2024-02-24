@@ -23,8 +23,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Flywheel extends SubsystemBase {
-  LoggedTunableNumber flywheelP = new LoggedTunableNumber("Flywheel/kP", 0);
-  LoggedTunableNumber flywheelD = new LoggedTunableNumber("Flywheel/kD", 0);
   LoggedTunableNumber tolerance = new LoggedTunableNumber("Flywheel/toleranceRPM", 100);
   private final FlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
@@ -68,7 +66,6 @@ public class Flywheel extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    updateTunableNumbers();
     Logger.processInputs("Flywheel", inputs);
     Logger.recordOutput("Flywheel/CurrentState", state);
 
@@ -139,12 +136,6 @@ public class Flywheel extends SubsystemBase {
   /** Returns the current velocity in radians per second. */
   public double getCharacterizationVelocity() {
     return inputs.velocityRadPerSec;
-  }
-
-  public void updateTunableNumbers() {
-    if (flywheelP.hasChanged(hashCode()) || flywheelD.hasChanged(hashCode())) {
-      io.configurePID(flywheelP.get(), 0, flywheelD.get());
-    }
   }
 
   public ShooterStates getState() {

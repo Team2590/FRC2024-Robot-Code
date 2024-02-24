@@ -1,10 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.autos.AutoRoutines;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
 import frc.robot.subsystems.conveyor.ConveyorIOSim;
@@ -25,7 +24,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.util.PoseEstimator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,9 +43,7 @@ public class RobotContainer {
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-
-  private Command snapDrive;
+  // private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -102,7 +98,7 @@ public class RobotContainer {
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm);
     // Set up auto routines
-    autoChooser = AutoRoutines.buildChooser(drive, superstructure);
+    // autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -128,16 +124,6 @@ public class RobotContainer {
   }
 
   public void updateUserInput() {
-    // joystick inputs galore!
-    // if (input.leftJoystickTriggerPressed()) {
-    //   snapDrive =
-    //       DriveCommands.SnapToTarget(
-    //           drive, () -> input.leftJoystickY(), () -> input.leftJoystickX(), new Pose2d());
-    //   CommandScheduler.getInstance().schedule(snapDrive);
-    // } else if (input.leftJoystickButtonReleased(1)) {
-    //   CommandScheduler.getInstance().cancel(snapDrive);
-    // }
-
     /*
      * Driver input w/ superstructure
      */
@@ -146,6 +132,14 @@ public class RobotContainer {
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(2)) {
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.SPEAKER)
+                  .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
@@ -167,9 +161,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
+  // public Command getAutonomousCommand() {
+  //   return autoChooser.get();
+  // }
   /**
    * Use this branch to build the commands from the autos that you want to run, and add the commands
    * to the AutoChooser.
@@ -177,10 +171,10 @@ public class RobotContainer {
   private void populateAutoChooser() {
 
     // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Drive FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
     // autoChooser.addOption(
     //     "Flywheel FF Characterization",
     //     new FeedForwardCharacterization(
