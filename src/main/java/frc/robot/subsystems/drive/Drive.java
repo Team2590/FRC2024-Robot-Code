@@ -60,6 +60,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   public final PIDController snapController = new PIDController(2, 0.0, 0.0);
+  public final PIDController noteController = new PIDController(0.0, 0.0, 0.0);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
@@ -67,10 +68,17 @@ public class Drive extends SubsystemBase {
 
   public static LoggedTunableNumber snapControllermultiplier =
       new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
-  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
+  public static LoggedTunableNumber noteControllermultiplier =
+      new LoggedTunableNumber("NoteController/MaxSpeedRatio", 6);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .44);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
       new LoggedTunableNumber("SnapController/tolerance", .1);
+
+  LoggedTunableNumber noteControllerP = new LoggedTunableNumber("NoteController/kP", .44);
+  LoggedTunableNumber noteControllerD = new LoggedTunableNumber("NoteController/kD", .00001);
+  LoggedTunableNumber noteControllerTolerance =
+      new LoggedTunableNumber("NoteController/tolerance", .1);
 
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;
@@ -89,6 +97,7 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
 
     snapController.setTolerance(.1);
+    noteController.setTolerance(0.1);
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
@@ -306,6 +315,12 @@ public class Drive extends SubsystemBase {
         || snapControllerTolerance.hasChanged(hashCode())) {
       snapController.setPID(snapControllerP.get(), 0.0, snapControllerD.get());
       snapController.setTolerance(snapControllerTolerance.get());
+    }
+    if (noteControllerP.hasChanged(hashCode())
+        || noteControllerD.hasChanged(hashCode())
+        || noteControllerTolerance.hasChanged(hashCode())) {
+      noteController.setPID(noteControllerP.get(), 0.0, noteControllerD.get());
+      noteController.setTolerance(noteControllerTolerance.get());
     }
   }
 }
