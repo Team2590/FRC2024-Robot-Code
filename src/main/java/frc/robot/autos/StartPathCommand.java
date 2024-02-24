@@ -20,7 +20,6 @@ public class StartPathCommand extends SequentialCommandGroup {
         new InstantCommand(() -> RobotContainer.poseEstimator.resetPose(startingPose)),
         // Start up the intake system and follow path to first position in parallel.
         Commands.parallel(
-            // TODO: command to start the start the intake system.
             Commands.print("Starting up Intake .... "),
             // Move to note1 from starting position B (speaker)
             paths.getFollowPathCommand(startingPath)));
