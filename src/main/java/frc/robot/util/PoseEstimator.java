@@ -42,12 +42,16 @@ public class PoseEstimator {
       q.set(i, 0, stateStdDevs.get(i, 0) * stateStdDevs.get(i, 0));
     }
     photonNotifier.setName("PhotonRunnable");
-    // photonNotifier.startPeriodic(0.02);
+    photonNotifier.startPeriodic(0.02);
   }
 
   /** Returns the latest robot pose based on drive and vision data. */
   public Pose2d getLatestPose() {
     return latestPose;
+  }
+
+  public double distanceToSpeaker() {
+    return photonEstimator.getDistanceToSpeaker();
   }
 
   /** Resets the odometry to a known pose. */

@@ -4,7 +4,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.HelperFn;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
@@ -12,8 +11,6 @@ public class Arm extends SubsystemBase {
   private ArmStates state;
   private double armSetpoint;
   private double tolerance = .01;
-  // private boolean requestHome = false;
-  private boolean requestVertical = false;
   private DutyCycleOut power = new DutyCycleOut(0);
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
@@ -51,16 +48,14 @@ public class Arm extends SubsystemBase {
         break;
       case APPROACHINGSETPOINT:
         arm.setPosition(armSetpoint);
-        if (!HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+        if (!isArmAtSetPointPosition(armSetpoint)) {
           state = ArmStates.APPROACHINGSETPOINT;
         } else {
           state = ArmStates.AT_SETPOINT;
         }
         break;
       case AT_SETPOINT:
-        if (HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(), armSetpoint, tolerance)) {
+        if (isArmAtSetPointPosition(armSetpoint)) {
           state = ArmStates.AT_SETPOINT;
           if (armSetpoint == ArmConstants.HOME_SETPOINT) {
             state = ArmStates.HOME;
@@ -70,25 +65,23 @@ public class Arm extends SubsystemBase {
         }
         break;
       case AMPTRAP:
-        requestVertical = false;
         break;
       case APPROACHING_HOME:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
-        if (HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-            ArmConstants.HOME_SETPOINT,
-            tolerance)) {
+        if (isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
           state = ArmStates.HOME;
         }
       case HOME:
-        if (!HelperFn.isWithinTolerance(
-            arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-            ArmConstants.HOME_SETPOINT,
-            tolerance)) {
+        if (!isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
           state = ArmStates.APPROACHING_HOME;
         }
         break;
     }
+  }
+
+  private boolean isArmAtSetPointPosition(double setPoint) {
+    return HelperFn.isWithinTolerance(
+        arm.armCancoder.getAbsolutePosition().getValueAsDouble(), setPoint, tolerance);
   }
 
   /** Run open loop at the specified voltage. */
@@ -106,27 +99,11 @@ public class Arm extends SubsystemBase {
   // }
 
   public void setHome() {
-    if (HelperFn.isWithinTolerance(
-        arm.armCancoder.getAbsolutePosition().getValueAsDouble(),
-        ArmConstants.HOME_SETPOINT,
-        tolerance)) {
+    if (isArmAtSetPointPosition(ArmConstants.HOME_SETPOINT)) {
       state = ArmStates.HOME;
     } else {
       state = ArmStates.APPROACHING_HOME;
     }
-  }
-
-  public void setVertical() {
-    requestVertical = true;
-    setPosition(-2.0);
-  }
-
-  public void motionmagicintake() {
-    state = ArmStates.HOME;
-  }
-
-  public void motionmagicamp() {
-    state = ArmStates.AMPTRAP;
   }
 
   public void resetarm() {
@@ -144,27 +121,12 @@ public class Arm extends SubsystemBase {
     arm.setPower(power);
   }
 
-  /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {}
-
   /** Stops the flywheel. */
   public void setStopped() {
     state = ArmStates.STOPPED;
   }
 
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  public double getVelocityRPM() {
-    return 0.0;
-  }
-
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return 0.0;
-  }
-
   public ArmStates getState() {
-    // return state;
     return state;
   }
 }

@@ -1,7 +1,6 @@
 package frc.robot.subsystems.conveyor;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -16,10 +15,9 @@ public class Conveyor extends SubsystemBase {
 
   // TODO: update constants once we get the robot
   // tunable constants
-  private LoggedTunableNumber conveyorSpeed =
-      new LoggedTunableNumber("Conveyor/ConveyorSpeed", 0.25);
-  private LoggedTunableNumber diverterSpeed =
-      new LoggedTunableNumber("Conveyor/DiverterSpeed", 0.75);
+
+  private double conveyorSpeed = .25;
+  private double diverterSpeed = .25;
 
   // conveyor states
   public enum ConveyorStates {
@@ -54,23 +52,22 @@ public class Conveyor extends SubsystemBase {
         if (inputs.hasNote) {
           io.stop();
         } else {
-          io.runPower(conveyorSpeed.get());
+          io.runPower(conveyorSpeed);
         }
         break;
       case OUTTAKE:
-        io.runPower(-conveyorSpeed.get());
+        io.runPower(-conveyorSpeed);
         break;
       case DIVERT:
-        io.runPower(-conveyorSpeed.get(), diverterSpeed.get());
+        io.runPower(-conveyorSpeed, diverterSpeed);
         break;
       case SHOOT:
-        io.runPower(conveyorSpeed.get());
+        io.runPower(conveyorSpeed);
         break;
       case MANUAL:
         io.runPower(manualPower);
         break;
       default:
-        System.out.println("Reached conveyor default case");
         break;
     }
   }
@@ -146,10 +143,3 @@ public class Conveyor extends SubsystemBase {
     return inputs.hasNote;
   }
 }
-
-/**
- * _____ _____ < `/ | > ( | _ _ | | |_) | |_) | | | \ | | | | | ______.______%_| |__________ _____
- * _/ \| | | A B H I K R A Y < |_____.-._________ ____/|___________| | 2019-2023 | | your code | |
- * was useful | | once | | _ < |__/ | / `--. | %| |% |/.%%| -< @%%% `\%`@| v |@@%@%% .%%%@@@|% |
- * % @@@%%@%%%% _.%%%%%%@@@@@@%%_/%\_%@@%%@@@@@@@%%%%%%
- */

@@ -29,9 +29,9 @@ import frc.robot.Constants;
 public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = 1.5;
 
-  private final TalonFX leader = new TalonFX(Constants.ShooterConstants.LEADER, Constants.canbus);
+  private final TalonFX leader = new TalonFX(Constants.ShooterConstants.LEADER, Constants.CANBUS);
   private final TalonFX follower =
-      new TalonFX(Constants.ShooterConstants.FOLLOWER, Constants.canbus);
+      new TalonFX(Constants.ShooterConstants.FOLLOWER, Constants.CANBUS);
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();

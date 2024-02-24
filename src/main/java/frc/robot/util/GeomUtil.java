@@ -140,4 +140,11 @@ public class GeomUtil {
   public static Translation2d translation3dTo2dXZ(Translation3d translation) {
     return new Translation2d(translation.getX(), translation.getZ());
   }
+
+  public static Pose2d triangleCenter(Pose2d a, Pose2d b, Pose2d c) {
+    return new Pose2d(
+        (a.getX() + b.getX() + c.getX()) / 3,
+        (a.getY() + b.getY() + c.getY()) / 3,
+        new Rotation2d());
+  }
 }

@@ -19,9 +19,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.AprilTag;
+import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -75,35 +81,72 @@ public class DriveCommands {
    * @param xSupplier - left joystick x value
    * @param ySupplier - left joystick y value
    * @param target - pos to snap to
+   * @return the command
    * @see <a href =
    *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
    *     Reference</a>
    */
   public static Command SnapToTarget(
-      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      FieldConstants.Targets target) {
     return Commands.run(
         (() -> {
-          Transform2d difference = drive.getPose().minus(target);
+          // get target pose
+          Pose2d targetPose;
+          switch (target) {
+            case SPEAKER:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? AprilTag.getTagPose(4)
+                      : AprilTag.getTagPose(7);
+              break;
+            case AMP:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? AprilTag.getTagPose(5)
+                      : AprilTag.getTagPose(6);
+              break;
+            case STAGE:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? GeomUtil.triangleCenter(
+                          AprilTag.getTagPose(11), AprilTag.getTagPose(12), AprilTag.getTagPose(13))
+                      : GeomUtil.triangleCenter(
+                          AprilTag.getTagPose(14),
+                          AprilTag.getTagPose(15),
+                          AprilTag.getTagPose(16));
+              break;
+            default:
+              targetPose = new Pose2d();
+              break;
+          }
+          // find angle
+          Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
           double theta = Math.atan2(difference.getY(), difference.getX());
-          double currentAngle = drive.getRotation().getRadians();
+          double currentAngle =
+              RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
           double currentError = theta - currentAngle;
           if (currentError > Math.PI) {
             currentAngle += 2 * Math.PI;
           } else if (currentError < -Math.PI) {
             currentAngle -= 2 * Math.PI;
           }
-          Logger.recordOutput("SnapController/TargetPose", target);
+          Logger.recordOutput("SnapController/Target", target);
+          Logger.recordOutput("SnapController/TargetPose", targetPose);
+          // run the motors
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
-                  -xSupplier.getAsDouble()
+                  xSupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.snapControllermultiplier.get(),
-                  -ySupplier.getAsDouble()
+                  ySupplier.getAsDouble()
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.snapControllermultiplier.get(),
                   drive.snapController.calculate(currentAngle, theta)
                       * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
+                  RobotContainer.poseEstimator.getLatestPose().getRotation()));
         }),
         drive);
   }

@@ -17,15 +17,14 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.LookupTable;
 
 /**
  * @author Vidur Janapureddy
  */
 public class ArmIOTalonFX implements ArmIO {
 
-  TalonFX arm = new TalonFX(Constants.ArmConstants.ARM, Constants.canbus);
-  CANcoder armCancoder = new CANcoder(44, "Takeover");
+  TalonFX arm = new TalonFX(Constants.ArmConstants.ARM, Constants.CANBUS);
+  CANcoder armCancoder = new CANcoder(Constants.ArmConstants.ARM_CANCODER_ID, Constants.CANBUS);
   LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 16);
   LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", 0);
   LoggedTunableNumber kD = new LoggedTunableNumber("Arm/kD", 0);
@@ -42,40 +41,10 @@ public class ArmIOTalonFX implements ArmIO {
   TalonFXConfiguration cfg;
   MotionMagicConfigs mm;
   MotionMagicDutyCycle mmv;
-  DutyCycleOut mrequest3 = new DutyCycleOut(-0.3);
-  DutyCycleOut mrequest4 = new DutyCycleOut(0.3);
-  DutyCycleOut mrequest5 = new DutyCycleOut(0);
-  double[] distances =
-      new double[] {
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0
-      };
-  double[] setpoints =
-      new double[] {
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0
-      };
-  private LookupTable setpointcalculator = new LookupTable(distances, setpoints);
   private final StatusSignal<Double> armpos = armCancoder.getPosition();
   private final StatusSignal<Double> armabspos = armCancoder.getAbsolutePosition();
 
   public ArmIOTalonFX() {
-    /* configurations for the arm encoder */
-
-    mmv = new MotionMagicDutyCycle(-0.1);
-
     /* configurations for the arm motor */
     cfg = new TalonFXConfiguration();
     // cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -97,11 +66,11 @@ public class ArmIOTalonFX implements ArmIO {
     slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
     FeedbackConfigs fdb = cfg.Feedback;
-    fdb.RotorToSensorRatio = 266.67;
+    fdb.RotorToSensorRatio = Constants.ArmConstants.ARM_GEAR_RATIO;
     fdb.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    fdb.FeedbackRemoteSensorID = 44;
+    fdb.FeedbackRemoteSensorID = Constants.ArmConstants.ARM_CANCODER_ID;
     MagnetSensorConfigs mag = new MagnetSensorConfigs();
-    mag.MagnetOffset = -0.144;
+    mag.MagnetOffset = Constants.ArmConstants.MAG_OFFSET;
     CANcoderConfiguration can = new CANcoderConfiguration();
     can.withMagnetSensor(mag);
     armCancoder.getConfigurator().apply(can);
@@ -172,14 +141,6 @@ public class ArmIOTalonFX implements ArmIO {
       mmv.FeedForward = ff.get();
     }
   }
-
-  // public void setPowerup() {
-  //   arm.setControl(mrequest3);
-  // }
-
-  // public void setPowerdown() {
-  //   arm.setControl(mrequest4);
-  // }
 
   public void setPower(DutyCycleOut power) {
     arm.setControl(power);

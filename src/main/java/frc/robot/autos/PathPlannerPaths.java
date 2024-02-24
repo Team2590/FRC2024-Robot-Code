@@ -1,11 +1,13 @@
 package frc.robot.autos;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 
 public class PathPlannerPaths {
 
@@ -20,7 +22,7 @@ public class PathPlannerPaths {
 
     // Add paths that will be used in Auto routines.
     addPath(paths, "startB_note1");
-    addPath(paths, "note1_note4");
+    // addPath(paths, "note1_note4");
 
     return new PathPlannerPaths(paths);
   }
