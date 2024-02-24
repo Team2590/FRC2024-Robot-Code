@@ -21,7 +21,7 @@ public class Climb extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    if (state == States.FLIPPING && io.getRotationCount() < 2) {
+    if (state == States.FLIPPING && io.getRotationCount() < -2) {
       io.stop();
       state = States.DEFAULT;
     }
