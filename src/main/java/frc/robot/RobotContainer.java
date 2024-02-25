@@ -106,8 +106,8 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -input.leftJoystickY(),
-            () -> -input.leftJoystickX(),
+            () -> input.leftJoystickY(),
+            () -> input.leftJoystickX(),
             () -> input.rightJoystickX()));
   }
 
@@ -135,8 +135,8 @@ public class RobotContainer {
           .schedule(
               DriveCommands.SnapToTarget(
                       drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
+                      () -> input.leftJoystickY(),
+                      () -> input.leftJoystickX(),
                       Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
