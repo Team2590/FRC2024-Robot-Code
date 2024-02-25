@@ -179,7 +179,7 @@ public class Superstructure {
             armInterpolation.getValue(
                 RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armAngle.get());
+        arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
