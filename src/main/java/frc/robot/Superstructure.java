@@ -22,6 +22,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.ArmConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,6 +45,7 @@ public class Superstructure {
     SHOOT,
     PRIMING_AMP,
     SCORE_AMP,
+    SCORE_TRAP,
     CLIMB
   }
 
@@ -90,7 +92,6 @@ public class Superstructure {
         shooter.setStopped();
         // arm.setStopped();
         break;
-
       case RESET:
         /*
          * TBD -- > Simmilar to IDLE state ?
@@ -207,13 +208,18 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(-.258);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
 
         break;
-
+      case SCORE_TRAP:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
+        break;
       case CLIMB:
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb

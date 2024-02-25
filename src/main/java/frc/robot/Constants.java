@@ -74,6 +74,8 @@ public final class Constants {
   public final class ArmConstants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
+    public static final double AMP_SETPOINT = -0.2;
+    public static final double TRAP_SETPOINT = -0.258;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
