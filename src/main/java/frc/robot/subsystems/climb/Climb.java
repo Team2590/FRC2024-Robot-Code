@@ -7,13 +7,6 @@ public class Climb extends SubsystemBase {
   private ClimbIO io;
   private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
 
-  private enum States {
-    DEFAULT,
-    FLIPPING
-  }
-
-  private States state;
-
   public Climb(ClimbIO io) {
     this.io = io;
   }
@@ -21,24 +14,23 @@ public class Climb extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    if (state == States.FLIPPING && io.getRotationCount() < -2) {
-      io.stop();
-      state = States.DEFAULT;
-    }
   }
 
   public void run() {
     if (io.getRotationCount() < ClimbConstants.MAX_ROTATIONS) {
       io.stop();
     } else {
-      io.run(0.15);
+      io.setVoltage(2);
     }
-    io.run(0.15);
+    io.setVoltage(2);
   }
 
   public void flip() {
-    io.run(0.15);
-    state = States.FLIPPING;
+    if (io.getRotationCount() < -11) {
+      io.stop();
+    } else {
+      io.setVoltage(2);
+    }
   }
 
   public void resetRotationCount() {

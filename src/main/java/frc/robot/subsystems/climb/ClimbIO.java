@@ -12,6 +12,8 @@ public interface ClimbIO {
 
   public void run(double speed);
 
+  public void setVoltage(double voltage);
+
   public void stop();
 
   public double getRotationCount();
