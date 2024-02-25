@@ -147,6 +147,8 @@ public class RobotContainer {
       System.out.println("Gyro is reset");
     } else if (input.leftJoystickButton(2)) {
       superstructure.armUp();
+    } else if (input.leftJoystickButton(8)) {
+      superstructure.toggleManualArm();
     } else if (input.leftJoystickButton(3)) {
       superstructure.armDown();
     } else if (input.rightJoystickButton(6)) {
