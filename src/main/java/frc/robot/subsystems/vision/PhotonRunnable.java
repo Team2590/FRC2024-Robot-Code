@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
 import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
@@ -84,7 +85,8 @@ public class PhotonRunnable implements Runnable {
               Logger.recordOutput(
                   "Odometry/DistanceToTarget",
                   distanceBetweenPoses(
-                      RobotContainer.getLatestPose().toPose2d(), AprilTag.getTagPose(target.getFiducialId())));
+                      RobotContainer.poseEstimator.getLatestPose(),
+                      AprilTag.getTagPose(target.getFiducialId())));
             }
           }
           if (photonResults.targets.size() > 1
