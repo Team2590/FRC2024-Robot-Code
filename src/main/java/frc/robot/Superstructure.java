@@ -13,6 +13,7 @@ package frc.robot;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -44,7 +45,8 @@ public class Superstructure {
     SHOOT,
     PRIMING_AMP,
     SCORE_AMP,
-    CLIMB
+    CLIMB,
+    FLIPPING
   }
 
   private final TalonFX leader = new TalonFX(24, Constants.CANBUS);
@@ -54,6 +56,7 @@ public class Superstructure {
   private final Intake intake;
   private final Flywheel shooter;
   private final Arm arm;
+  private final Climb climb;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
@@ -62,12 +65,14 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
+  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
+    this.climb = climb;
+    climb.resetRotationCount();
 
     final double[] distance = {
       0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
@@ -221,9 +226,10 @@ public class Superstructure {
          * set system state to IDLE before climbing action ? (TBD)
          * climb.climb() -- > Sets climb to manual state
          */
-        leader.set(.25);
-        follower.set(-.25);
+        climb.run();
         break;
+      case FLIPPING: 
+        climb.flip();
     }
     // Logger.recordOutput("Superstructure/State", systemState);
     // Logger.recordOutput("Superstructure/ArmState", arm.getState());
@@ -281,6 +287,10 @@ public class Superstructure {
   public void armDown() {
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public void flip() {
+    systemState = SuperstructureStates.FLIPPING;
   }
 
   public SuperstructureStates getState() {
