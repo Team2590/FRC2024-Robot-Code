@@ -11,7 +11,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +21,6 @@ import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -72,21 +70,17 @@ public class PhotonRunnable implements Runnable {
         if (photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
           for (PhotonTrackedTarget target : photonResults.getTargets()) {
             if (DriverStation.getAlliance().isPresent()
-                && ((DriverStation.getAlliance().get() == Alliance.Red
+                    && (DriverStation.getAlliance().get() == Alliance.Red
                         && target.getFiducialId() == 4)
-                    || (DriverStation.getAlliance().get() == Alliance.Blue
-                        && target.getFiducialId() == 7))) {
+                || (DriverStation.getAlliance().get() == Alliance.Blue
+                    && target.getFiducialId() == 7)) {
               distanceToSpeaker =
                   PhotonUtils.calculateDistanceToTargetMeters(
                       this.cameraTransform.getZ(),
-                      AprilTag.tagHeights[target.getFiducialId()],
-                      -1 * this.cameraTransform.getRotation().getY(),
-                      Units.degreesToRadians(target.getPitch()));
-              Logger.recordOutput(
-                  "Odometry/DistanceToTarget",
-                  distanceBetweenPoses(
-                      RobotContainer.poseEstimator.getLatestPose(),
-                      AprilTag.getTagPose(target.getFiducialId())));
+                      AprilTag.tagHeights[photonResults.getBestTarget().getFiducialId()],
+                      this.cameraTransform.getRotation().getY(),
+                      Units.degreesToRadians(
+                          photonCamera.getLatestResult().getBestTarget().getPitch()));
             }
           }
           if (photonResults.targets.size() > 1
@@ -122,11 +116,6 @@ public class PhotonRunnable implements Runnable {
     return RobotPose.toPose2d();
   }
 
-  public double distanceBetweenPoses(Pose2d a, Pose2d b) {
-    Transform2d difference = a.minus(b);
-    return Math.hypot(difference.getX(), difference.getY());
-  }
-
   /**
    * Gets the latest robot pose. Calling this will only return the pose once. If it returns a
    * non-null value, it is a new estimate that hasn't been returned before. This pose will always be
@@ -142,7 +131,7 @@ public class PhotonRunnable implements Runnable {
     return new TimestampedVisionUpdate(
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
-        VecBuilder.fill(.001, .003, .005));
+        VecBuilder.fill(.001, .003, 1));
   }
 
   /**
