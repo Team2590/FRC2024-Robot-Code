@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
