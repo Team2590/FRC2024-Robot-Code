@@ -16,14 +16,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotState;
-
 import frc.robot.RobotContainer;
 import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
-
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -57,13 +54,12 @@ public class PhotonRunnable implements Runnable {
     // PV estimates will always be blue, they'll get flipped by robot thread
     layout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
 
-
     if (photonCamera == null) {
       photonPoseEstimator = null;
     } else {
-      photonPoseEstimator = new PhotonPoseEstimator(
-        layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, cameraTransform3d
-      );
+      photonPoseEstimator =
+          new PhotonPoseEstimator(
+              layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, cameraTransform3d);
       photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
   }
@@ -75,54 +71,50 @@ public class PhotonRunnable implements Runnable {
 
     photonResults = photonCamera.getLatestResult();
     var timestamp = photonResults.getTimestampSeconds();
-  
-    if (!photonResults.hasTargets() || photonResults.targets.get(0).getPoseAmbiguity() >= APRILTAG_AMBIGUITY_THRESHOLD) return;
+
+    if (!photonResults.hasTargets()
+        || photonResults.targets.get(0).getPoseAmbiguity() >= APRILTAG_AMBIGUITY_THRESHOLD) return;
 
     for (PhotonTrackedTarget target : photonResults.getTargets()) {
-      if (
-        !(DriverStation.getAlliance().isPresent()
-        && ((DriverStation.getAlliance().get() == Alliance.Red
-        && target.getFiducialId() == 4)
-        || (DriverStation.getAlliance().get() == Alliance.Blue
-        && target.getFiducialId() == 7)))
-      ) continue;
+      if (!(DriverStation.getAlliance().isPresent()
+          && ((DriverStation.getAlliance().get() == Alliance.Red && target.getFiducialId() == 4)
+              || (DriverStation.getAlliance().get() == Alliance.Blue
+                  && target.getFiducialId() == 7)))) continue;
 
-      distanceToSpeaker = PhotonUtils.calculateDistanceToTargetMeters(
-        this.cameraTransform.getZ(),
-        AprilTag.tagHeights[target.getFiducialId()],
-        -this.cameraTransform.getRotation().getY(),
-        Units.degreesToRadians(target.getPitch())
-      );
+      distanceToSpeaker =
+          PhotonUtils.calculateDistanceToTargetMeters(
+              this.cameraTransform.getZ(),
+              AprilTag.tagHeights[target.getFiducialId()],
+              -this.cameraTransform.getRotation().getY(),
+              Units.degreesToRadians(target.getPitch()));
 
       Logger.recordOutput(
-        "Odometry/DistanceToTarget",
-        distanceBetweenPoses(
-          RobotContainer.poseEstimator.getLatestPose(),
-          AprilTag.getTagPose(target.getFiducialId())
-        )
-      );
+          "Odometry/DistanceToTarget",
+          distanceBetweenPoses(
+              RobotContainer.poseEstimator.getLatestPose(),
+              AprilTag.getTagPose(target.getFiducialId())));
     }
 
-    if (!(photonResults.targets.size() > 1 || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) return;
+    if (!(photonResults.targets.size() > 1
+        || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD)) return;
 
-    photonPoseEstimator.update(photonResults).ifPresent(
-      estimatedRobotPose -> {
-        robotPose = estimatedRobotPose.estimatedPose;
-        final var estimatedPose = estimatedRobotPose.estimatedPose;
-        // Make sure the measurement is on the field
-        if (
-          estimatedPose.getX() <= 0.0
-          || estimatedPose.getX() > FIELD_LENGTH_METERS
-          || estimatedPose.getY() <= 0.0
-          || estimatedPose.getY() > FIELD_WIDTH_METERS
-        ) return;
+    photonPoseEstimator
+        .update(photonResults)
+        .ifPresent(
+            estimatedRobotPose -> {
+              robotPose = estimatedRobotPose.estimatedPose;
+              final var estimatedPose = estimatedRobotPose.estimatedPose;
+              // Make sure the measurement is on the field
+              if (estimatedPose.getX() <= 0.0
+                  || estimatedPose.getX() > FIELD_LENGTH_METERS
+                  || estimatedPose.getY() <= 0.0
+                  || estimatedPose.getY() > FIELD_WIDTH_METERS) return;
 
-        atomicEstimatedRobotPose.set(estimatedRobotPose);
-        updates.add(getPoseAtTimestamp(timestamp));
-        RobotContainer.poseEstimator.addVisionData(updates);
-        updates.clear();
-      }
-    );
+              atomicEstimatedRobotPose.set(estimatedRobotPose);
+              updates.add(getPoseAtTimestamp(timestamp));
+              RobotContainer.poseEstimator.addVisionData(updates);
+              updates.clear();
+            });
   }
 
   public Pose3d getRobotPose3d() {
@@ -150,10 +142,9 @@ public class PhotonRunnable implements Runnable {
 
   public TimestampedVisionUpdate getPoseAtTimestamp(double timestamp) {
     return new TimestampedVisionUpdate(
-      timestamp,
-      grabLatestEstimatedPose().estimatedPose.toPose2d(),
-      VecBuilder.fill(.001, .003, .005)
-    );
+        timestamp,
+        grabLatestEstimatedPose().estimatedPose.toPose2d(),
+        VecBuilder.fill(.001, .003, .005));
   }
 
   /**
@@ -164,5 +155,4 @@ public class PhotonRunnable implements Runnable {
   public double getDistanceToSpeaker() {
     return distanceToSpeaker;
   }
-
 }
