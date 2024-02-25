@@ -1,13 +1,12 @@
 package frc.robot.autos;
 
-import com.pathplanner.lib.util.GeometryUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
+import frc.robot.util.GeomUtil;
 
 /**
  * Performs all the initialization needed and executes the first path.
@@ -19,19 +18,16 @@ public class StartPathCommand extends SequentialCommandGroup {
   public StartPathCommand(
       PathPlannerPaths paths, String startingPath, Superstructure superstructure) {
     Pose2d startingPose = paths.getStartingPose(startingPath);
-    Pose2d translated_pose =
-        DriverStation.getAlliance().isPresent()
-                && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
-            ? startingPose
-            : GeometryUtil.flipFieldPose(startingPose);
+    Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
     addCommands(
         // Initialize the starting pose based on the start path.
-        new InstantCommand(() -> RobotContainer.poseEstimator.resetPose(translated_pose)),
+        new InstantCommand(() -> RobotContainer.poseEstimator.resetPose(translatedPose)),
         // Start up the intake system and follow path to first position in parallel.
         Commands.parallel(
             Commands.print("Starting up Intake .... "),
+            // Starting Running the shooter
+            new InstantCommand(() -> superstructure.primeShooter(), superstructure.getShooter()),
             new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
-            // Move to note1 from starting position B (speaker)
             paths.getFollowPathCommand(startingPath)));
   }
 }

@@ -10,8 +10,11 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -21,7 +24,6 @@ import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -147,21 +149,15 @@ public class Superstructure {
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
-        // case PRIMING_SHOOTER:
-        //   /*
-        //    * PRIMING_SHOOTER (On Button Press)
-        //    * Run flywheel at desired velocity
-        //    * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
-        //    * state
-        //    */
-        //   // arm.setposition(SPEAKER) --> Dynamic(Vision)
-        //   shooter.shoot(1000); // Run shooter at set velocity (**Need to find**)
-        //   if (shooter.getState() == ShooterStates.AT_SETPOINT
-        //   // && arm.getState() == ArmStates.AT_SETPOINT {
-        //   ) {
-        //     systemState = SuperstructureStates.PRIMED_SHOOTER;
-        //   }
-        //   break;
+      case PRIMING_SHOOTER:
+          /*
+           * PRIMING_SHOOTER (For Auto Routines)
+           * Run flywheel at desired velocity. Useful in auto routines.
+           */
+          shooter.shoot(flywheelSpeedInput.get());
+          // Don't need any transition here, we want to stay in this state
+          // until SHOOT is called.
+          break;
 
       case PRIMED_SHOOTER:
         /*
@@ -261,9 +257,7 @@ public class Superstructure {
    * shooting.
    */
   public boolean isShooting() {
-    return systemState == SuperstructureStates.PRIMING_SHOOTER
-        || systemState == SuperstructureStates.PRIMED_SHOOTER
-        || systemState == SuperstructureStates.SHOOT;
+    return systemState == SuperstructureStates.SHOOT;
   }
 
   public void primingAmp() {
