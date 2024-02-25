@@ -124,7 +124,8 @@ public class DriveCommands {
           }
           // find angle
           Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-          double theta = Math.atan2(difference.getY(), difference.getX());
+          double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+          double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
           double currentAngle =
               RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
           double currentError = theta - currentAngle;

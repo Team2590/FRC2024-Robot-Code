@@ -141,7 +141,7 @@ public class PhotonRunnable implements Runnable {
     return new TimestampedVisionUpdate(
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
-        VecBuilder.fill(.001, .003, 1 * Math.pow(10, 6)));
+        VecBuilder.fill(.001, .003, .005));
   }
 
   /**
