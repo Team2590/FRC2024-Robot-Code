@@ -68,6 +68,8 @@ public final class Constants {
   }
 
   public final class DrivetrainConstants {
+    public static final double SLOW_MODE_CONSTANT = 20.0;
+    public static boolean SLOW_MODE = false;
     // Fill in
   }
 

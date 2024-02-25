@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
@@ -33,7 +34,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-
+  private static double linearMagnitude;
   private DriveCommands() {}
 
   /**
@@ -47,9 +48,16 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Apply deadband
-          double linearMagnitude =
+          if(DrivetrainConstants.SLOW_MODE == true){
+              linearMagnitude =
               MathUtil.applyDeadband(
                   Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
+          }
+          else{
+             double linearMagnitude =
+              MathUtil.applyDeadband(
+                  Math.hypot(xSupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT, ySupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT), DEADBAND);
+          }
           Rotation2d linearDirection =
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);

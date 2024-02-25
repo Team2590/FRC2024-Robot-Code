@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
@@ -151,7 +152,11 @@ public class RobotContainer {
       superstructure.armDown();
     } else if (input.rightJoystickButton(6)) {
       superstructure.climb();
-    } else {
+    } else if (input.rightJoystickButton(9)) {
+      DrivetrainConstants.SLOW_MODE = !DrivetrainConstants.SLOW_MODE;
+      System.out.println("you are toggling slowmode");
+    }
+     else {
       superstructure.idle();
     }
   }
