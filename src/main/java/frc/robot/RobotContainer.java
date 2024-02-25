@@ -133,11 +133,11 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(2)) {
       CommandScheduler.getInstance()
           .schedule(
-              DriveCommands.SnapToTarget(
+              DriveCommands.turnToNote(
                       drive,
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
+                      PhotonNote.target::getYaw)
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
