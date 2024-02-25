@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import com.pathplanner.lib.util.GeometryUtil;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,7 +31,7 @@ public class StartPathCommand extends SequentialCommandGroup {
         // Start up the intake system and follow path to first position in parallel.
         Commands.parallel(
             Commands.print("Starting up Intake .... "),
-            new InstantCommand(() -> superstructure.intake()),
+            new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
             // Move to note1 from starting position B (speaker)
             paths.getFollowPathCommand(startingPath)));
   }
