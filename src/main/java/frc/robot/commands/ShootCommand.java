@@ -12,14 +12,20 @@ import frc.robot.Superstructure;
  */
 public class ShootCommand extends Command {
 
-  private static final double SECONDS_TO_WAIT = 1;
+  private static final double DEFAULT_SECONDS_TO_WAIT = 0.5;
 
   private final Timer timer = new Timer();
+  private final double timeToWait;
   private final Superstructure superstructure;
 
-  public ShootCommand(Superstructure superstructure) {
+  public ShootCommand(Superstructure superstructure, double timeToWait) {
     this.superstructure = superstructure;
+    this.timeToWait = timeToWait;
     addRequirements(superstructure.getShooter());
+  }
+
+  public ShootCommand(Superstructure superstructure) {
+    this(superstructure, DEFAULT_SECONDS_TO_WAIT);
   }
 
   @Override
@@ -35,7 +41,7 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (!superstructure.isShooting()) && (timer.hasElapsed(SECONDS_TO_WAIT));
+    return (!superstructure.isShooting()) && (timer.hasElapsed(timeToWait));
   }
 
   @Override
