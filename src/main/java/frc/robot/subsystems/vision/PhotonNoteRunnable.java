@@ -6,9 +6,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class PhotonNote {
+public class PhotonNoteRunnable implements Runnable {
   private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
-  private static PhotonCamera NoteCam;
+  private static PhotonCamera NoteCam = new PhotonCamera(instance, "NoteCam");
   private static PhotonPipelineResult result;
   private static PhotonTrackedTarget target;
   private static double camHeight = VisionConstants.NOTE_CAMERA_HEIGHT_METERS;
@@ -18,17 +18,10 @@ public class PhotonNote {
   private static double noteXOffset = 0;
   private static double noteYOffset = 0;
 
-  /** Initializes photonvision on the note camera */
-  public static void init() {
-    NoteCam = new PhotonCamera(instance, "NoteCam");
-    result = NoteCam.getLatestResult();
-    target = result.getBestTarget();
-  }
-
   /** Updates results on the note detection camera. */
-  public static void run() {
+  @Override
+  public void run() {
     result = NoteCam.getLatestResult();
-
     if (result.hasTargets()) {
       target = result.getBestTarget();
       noteXOffset = camHeight / (Math.tan(camPitch - Math.toRadians(target.getPitch())));

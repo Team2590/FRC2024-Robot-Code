@@ -51,7 +51,7 @@ public final class Constants {
 
   public final class VisionConstants {
     // april tag camera
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(17.003);
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
     public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
     public static final double CAMERA_ROLL = 0;
@@ -68,10 +68,10 @@ public final class Constants {
             new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
 
     // note camera
-    public static final double NOTE_CAMERA_HEIGHT_METERS = Units.inchesToMeters(12.75);
-    public static final double NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(15);
+    public static final double NOTE_CAMERA_HEIGHT_METERS = Units.inchesToMeters(13.155);
+    public static final double NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(14.886);
     public static final double NOTE_CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
-    public static final double NOTE_CAMERA_PITCH = Units.degreesToRadians(53);
+    public static final double NOTE_CAMERA_PITCH = Units.degreesToRadians(35);
   }
 
   public final class DrivetrainConstants {
