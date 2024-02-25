@@ -28,7 +28,7 @@ public class Climb extends SubsystemBase {
     if (io.getRotationCount() < -11) {
       io.stop();
     } else {
-      io.setVoltage(2);
+      run();
     }
   }
 
