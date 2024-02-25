@@ -49,8 +49,6 @@ public class Superstructure {
     CLIMB
   }
 
-  private final TalonFX leader = new TalonFX(24, Constants.CANBUS);
-  private final TalonFX follower = new TalonFX(25, Constants.CANBUS);
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private final Conveyor conveyor;
   private final Intake intake;
@@ -109,8 +107,6 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         arm.setHome();
-        leader.stopMotor();
-        follower.stopMotor();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -226,15 +222,13 @@ public class Superstructure {
          * set system state to IDLE before climbing action ? (TBD)
          * climb.climb() -- > Sets climb to manual state
          */
-        leader.set(.25);
-        follower.set(-.25);
         break;
     }
-    // Logger.recordOutput("Superstructure/State", systemState);
-    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
