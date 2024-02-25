@@ -105,6 +105,12 @@ public final class Constants {
     public static final int INTAKE_ID = 14;
   }
 
+  public final class LEDConstants {
+    public static final int LED_PORT = 9;//the pwm port which the leds are plugged into
+    public static final int BUFFER_LENGTH = 100;//the number of lights on the strip
+    public static final int FLASH_INTERVAL = 1;//the interval of flashing
+    public static final double REFRESH_RATE = 0.02;
+  }
   public static enum Mode {
     /** Running on a real robot. */
     REAL,

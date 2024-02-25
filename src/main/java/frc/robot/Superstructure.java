@@ -17,6 +17,7 @@ import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
@@ -50,6 +51,7 @@ public class Superstructure {
   private final Intake intake;
   private final Flywheel shooter;
   private final Arm arm;
+  private final NemesisLED led;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
@@ -58,12 +60,13 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm) {
+  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
+    this.led = led;
 
     final double[] distance = {
       .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624, 4.2672,
@@ -84,15 +87,7 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
-        // arm.setStopped();
-        break;
-
-      case RESET:
-        /*
-         * TBD -- > Simmilar to IDLE state ?
-         */
-
-        break;
+        led.solid(0, 0, 255);
 
       case IDLE:
         /*
@@ -103,6 +98,7 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
+        led.solid(255, 255, 0);
         arm.setHome();
         break;
       case MANUAL_ARM:
@@ -119,10 +115,13 @@ public class Superstructure {
         // if (arm.getState() == ArmStates.HOME) {
         intake.setIntake();
         conveyor.setIntaking();
+        led.solid(154, 205, 50);
+
         // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
+          led.solid(138, 43, 226);
         }
         break;
 
@@ -136,6 +135,7 @@ public class Superstructure {
         arm.setHome();
         intake.setOutake();
         conveyor.setOuttaking();
+        led.solid(255, 165, 0);
         break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
@@ -173,6 +173,7 @@ public class Superstructure {
             armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
+        led.solid(150, 75, 0);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
@@ -201,6 +202,7 @@ public class Superstructure {
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
         arm.setPosition(-.2);
+        led.solid(255, 165, 0);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
@@ -208,6 +210,7 @@ public class Superstructure {
         break;
 
       case CLIMB:
+      led.solid(255, 0, 255);
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
          * set system state to IDLE before climbing action ? (TBD)

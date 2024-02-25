@@ -24,6 +24,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.util.PoseEstimator;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -41,6 +42,7 @@ public class RobotContainer {
   private final Conveyor conveyor;
   private final Arm arm;
   private final Intake intake;
+  private final NemesisLED led;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -51,6 +53,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     input = UserInput.getInstance();
+    led = new NemesisLED(9, 100);
     switch (Constants.currentMode) {
       case REAL:
         drive =
@@ -99,7 +102,7 @@ public class RobotContainer {
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake, flywheel, arm);
+    superstructure = new Superstructure(conveyor, intake, flywheel, arm, led);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
