@@ -1,32 +1,18 @@
 package frc.robot.autos;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Command;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PathPlannerPaths {
 
   private final Map<String, PathPlannerPath> paths;
-  private final List<PathPlannerPath> _paths;
 
   private PathPlannerPaths(Map<String, PathPlannerPath> paths) {
     this.paths = paths;
-    this._paths = null;
-  }
-
-  private PathPlannerPaths(List<PathPlannerPath> paths) {
-
-    this.paths = null;
-    this._paths = paths;
   }
 
   public static PathPlannerPaths create() {
@@ -51,11 +37,6 @@ public class PathPlannerPaths {
     return getPath(pathName).getPreviewStartingHolonomicPose();
   }
 
-  public static List<PathPlannerPath> get_path_group(String name) {
-
-    return PathPlannerAuto.getPathGroupFromAutoFile(name);
-  }
-
   public void dispose() {
     paths.clear();
   }
@@ -72,14 +53,4 @@ public class PathPlannerPaths {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
     paths.put(pathName, path);
   }
-
-  // private static void addPathViaAuto(Map<String, PathPlannerPath> paths, String Auto_name) {
-  //   List<PathPlannerPath> p = PathPlannerAuto.getPathGroupFromAutoFile(Auto_name);
-  //   String name = Auto_name.replaceAll("\\.jpeg$", "");
-
-  //   for (int i = 0; i < p.size(); i++) {
-
-  //     paths.put(name + "_" + i, p.get(i));
-  //   }
-  // }
 }

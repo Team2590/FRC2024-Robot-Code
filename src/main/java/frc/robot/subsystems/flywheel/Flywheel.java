@@ -141,8 +141,4 @@ public class Flywheel extends SubsystemBase {
   public ShooterStates getState() {
     return state;
   }
-
-  public ShooterStates getState() {
-    return state;
-  }
 }

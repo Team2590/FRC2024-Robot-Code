@@ -11,11 +11,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -25,6 +21,18 @@ import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
+import org.littletonrobotics.junction.Logger;
+
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and button mappings) should be declared here.
+ */
+public class Superstructure {
+  // TBD: declare variables to add subsystems into
+  public static enum SuperstructureStates {
+    DISABLED,
     RESET,
     IDLE,
     INTAKE,
@@ -215,14 +223,6 @@ import frc.robot.util.LookupTable;
          */
         leader.set(.25);
         follower.set(-.25);
-        break;
-
-      case CLIMB:
-        /*
-         * arm.setposition(HOME); -- > Stow the arm for climb
-         * set system state to IDLE before climbing action ? (TBD)
-         * climb.climb() -- > Sets climb to manual state
-         */
         break;
     }
     // Logger.recordOutput("Superstructure/State", systemState);

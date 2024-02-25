@@ -1,8 +1,7 @@
 package frc.robot.subsystems.conveyor;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Nemesis Conveyor for 2024
