@@ -41,7 +41,8 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (!superstructure.isShooting()) && (timer.hasElapsed(timeToWait));
+    return (!superstructure.isShooting()) || (timer.hasElapsed(timeToWait));
+    // TODO create a condition to figure out when shooting is done- conveyor, !hasnote
   }
 
   @Override

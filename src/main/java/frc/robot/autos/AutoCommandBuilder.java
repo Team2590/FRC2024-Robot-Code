@@ -53,9 +53,11 @@ public class AutoCommandBuilder {
     if (snapToSpeaker) {
       // commands.addCommands(DriveCommands.SnapToTarget(drive, 0, 0, Targets.SPEAKER));
     }
-    commands.addCommands(new ShootCommand(superstructure));
+    commands.addCommands(new ShootCommand(superstructure, 1.5));
     return this;
   }
+
+  // TODO Add a method to keep the shooter primed while moving.
 
   public SequentialCommandGroup build() {
     return commands;

@@ -24,6 +24,7 @@ public class AutoRoutines {
   private static Command oneNoteAuto(
       PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     return new AutoCommandBuilder(paths, drive, superstructure)
+        .shoot(false)
         .startPath("startB_note1")
         .shoot(false)
         .build();

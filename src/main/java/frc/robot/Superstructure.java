@@ -180,6 +180,7 @@ public class Superstructure {
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
+
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
@@ -219,11 +220,11 @@ public class Superstructure {
         follower.set(-.25);
         break;
     }
-    // Logger.recordOutput("Superstructure/State", systemState);
-    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
@@ -239,7 +240,8 @@ public class Superstructure {
   }
 
   public void primeShooter() {
-    systemState = SuperstructureStates.PRIMING_SHOOTER;
+    // systemState = SuperstructureStates.PRIMING_SHOOTER;
+    shooter.shoot(flywheelSpeedInput.get());
   }
 
   public void hasNote() {
