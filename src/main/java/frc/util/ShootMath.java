@@ -110,6 +110,10 @@ public interface ShootMath {
         return new ShootState(pv, pv_theta, pv_phi);
     }
 
+    public static ShootState calc2DConstantVelocity() {
+        return null;
+    }
+
     /**
      * Solves for the roots of a general quartic. DOES NOT WORK
      * https://www.desmos.com/calculator/gamythajrx
