@@ -13,6 +13,8 @@
 
 package frc.robot.subsystems.drive;
 
+import java.util.Queue;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -23,9 +25,9 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import java.util.Queue;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
@@ -90,7 +92,7 @@ public class ModuleIOTalonFX implements ModuleIO {
     switch (index) {
       case 0: // Front Left
         try {
-          Thread.sleep(1000);
+          Thread.sleep(2000);
         } catch (InterruptedException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -103,6 +105,13 @@ public class ModuleIOTalonFX implements ModuleIO {
         // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
         break;
       case 1: // Front Right
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
         driveTalon = new TalonFX(23, "Takeover");
         turnTalon = new TalonFX(21, "Takeover");
         cancoder = new CANcoder(22, "Takeover");

@@ -1,6 +1,10 @@
 package frc.robot.autos;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.GeometryUtil;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.GeometryUtil;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -32,6 +36,6 @@ public class StartPathCommand extends SequentialCommandGroup {
             Commands.print("Starting up Intake .... "),
             new InstantCommand(() -> superstructure.intake()),
             // Move to note1 from starting position B (speaker)
-            paths.getFollowPathCommand(startingPath)));
+            AutoBuilder.followPath(startingPath)));
   }
 }

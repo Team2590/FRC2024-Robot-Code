@@ -3,8 +3,7 @@ package frc.robot.subsystems.elevatorarm;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.util.HelperFn;
-import org.littletonrobotics.junction.Logger;
+
 
 public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
