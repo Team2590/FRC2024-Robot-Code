@@ -256,6 +256,16 @@ public class Superstructure {
     systemState = SuperstructureStates.SHOOT;
   }
 
+  /**
+   * Returns true if we are in the process of shooting i.e either priming up to shooting or
+   * shooting.
+   */
+  public boolean isShooting() {
+    return systemState == SuperstructureStates.PRIMING_SHOOTER
+        || systemState == SuperstructureStates.PRIMED_SHOOTER
+        || systemState == SuperstructureStates.SHOOT;
+  }
+
   public void primingAmp() {
     systemState = SuperstructureStates.PRIMING_AMP;
   }

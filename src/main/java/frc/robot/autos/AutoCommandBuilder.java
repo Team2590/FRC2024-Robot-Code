@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Superstructure;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
 
 public class AutoCommandBuilder {
@@ -31,11 +32,13 @@ public class AutoCommandBuilder {
 
   public AutoCommandBuilder followPath(String pathName) {
     if (!startPathSpecified) {
-      throw new IllegalStateException("Need to specify a startPath() before followPath()");
+      // If the first path wasn't specified, make this the first path.
+      startPath(pathName);
+    } else {
+      commands.addCommands(
+          Commands.print("Running FollowPathCommand for " + pathName),
+          paths.getFollowPathCommand(pathName));
     }
-    commands.addCommands(
-        Commands.print("Running FollowPathCommand for " + pathName),
-        paths.getFollowPathCommand(pathName));
     return this;
   }
 
@@ -50,9 +53,7 @@ public class AutoCommandBuilder {
     if (snapToSpeaker) {
       // commands.addCommands(DriveCommands.SnapToTarget(drive, 0, 0, Targets.SPEAKER));
     }
-    commands.addCommands(
-        Commands.print("Running Shoot command"),
-        new InstantCommand(() -> superstructure.shoot(), superstructure.getShooter()));
+    commands.addCommands(new ShootCommand(superstructure));
     return this;
   }
 
