@@ -3,7 +3,9 @@ package frc.robot.autos;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
 
@@ -51,9 +53,12 @@ public class AutoCommandBuilder {
 
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
     if (snapToSpeaker) {
-      // commands.addCommands(DriveCommands.SnapToTarget(drive, 0, 0, Targets.SPEAKER));
+      commands.addCommands(
+          Commands.race(
+              DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
+              Commands.waitSeconds(2.0)));
     }
-    commands.addCommands(new ShootCommand(superstructure, 1.5));
+    commands.addCommands(new ShootCommand(superstructure, 2.0));
     return this;
   }
 

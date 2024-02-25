@@ -12,7 +12,6 @@ package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -70,11 +69,10 @@ public class Superstructure {
     this.arm = arm;
 
     final double[] distance = {
-      0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
-      4.2672, 4.572
+      0, .9144, 1.301, 1.574, 1.8, 2.034, 2.242, 2.5, 2.687, 3.024, 3.318, 3.64, 3.883
     };
     final double[] armSetpoint = {
-      .16, .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+      .16, .16, .16, .148, .13, .12, .11, .1, .092, .083, .077, .073, .07
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -171,8 +169,7 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
