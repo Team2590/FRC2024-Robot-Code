@@ -58,6 +58,7 @@ public class PoseEstimator {
   public void resetPose(Pose2d pose) {
     updateLock.lock();
     try {
+
       basePose = pose;
       updates.clear();
     } finally {

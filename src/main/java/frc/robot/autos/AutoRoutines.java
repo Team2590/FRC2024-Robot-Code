@@ -13,7 +13,7 @@ public class AutoRoutines {
 
     PathPlannerPaths paths = PathPlannerPaths.create();
     // Register all the auto routines here
-    autoChooser.addDefaultOption(
+    autoChooser.addOption(
         "ThreePieceAuto_1_4_2", new ThreePieceAuto_1_4_2(paths, drive, superstructure));
 
     // dispose of the paths, unused paths with be garbage collected.
