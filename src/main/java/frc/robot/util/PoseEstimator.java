@@ -11,6 +11,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -145,10 +146,12 @@ public class PoseEstimator {
     // This can be called from multiple threads, for example a thread that is
     // adding vision data and another adding drive data. The lock prevent
     updateLock.lock();
+    System.out.println(Timer.getFPGATimestamp());
     try {
       // Clear old data and update base pose
       while (updates.size() > 1
           && updates.firstKey() < Timer.getFPGATimestamp() - historyLengthSecs) {
+
         var update = updates.pollFirstEntry();
         basePose = update.getValue().apply(basePose, q);
       }
@@ -228,5 +231,10 @@ public class PoseEstimator {
   /** Resets the odometry to a known pose. */
   public void setPose(Pose2d pose) {
     this.latestPose = pose;
+  }
+
+  public double distanceBetweenPoses(Pose2d a, Pose2d b) {
+    Transform2d difference = a.minus(b);
+    return Math.hypot(difference.getX(), difference.getY());
   }
 }

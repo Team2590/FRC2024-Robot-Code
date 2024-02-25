@@ -96,8 +96,9 @@ public class PhotonRunnable implements Runnable {
                     estimatedRobotPose -> {
                       RobotPose = estimatedRobotPose.estimatedPose;
                       var estimatedPose = estimatedRobotPose.estimatedPose;
-                      System.out.println("odomtry/PhotonPoseX " + estimatedPose.getX());
-                      System.out.println("odomtry/PhotonPoseY " + estimatedPose.getY());
+                      // System.out.println("Odometry/PhotonPoseX " + estimatedPose.getX());
+                      // System.out.println("Odometry/PhotonPoseY " + estimatedPose.getY());
+                      // System.out.println("Odometry/Timestamp " + timestamp);
                       // Make sure the measurement is on the field
                       if (estimatedPose.getX() > 0.0
                           && estimatedPose.getX() <= FIELD_LENGTH_METERS
@@ -143,7 +144,7 @@ public class PhotonRunnable implements Runnable {
     return new TimestampedVisionUpdate(
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
-        VecBuilder.fill(.001, .003, 1 * Math.pow(10, 6)));
+        VecBuilder.fill(.001, .003, 1));
   }
 
   /**
