@@ -11,8 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -22,7 +22,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
-import frc.robot.Constants.ArmConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

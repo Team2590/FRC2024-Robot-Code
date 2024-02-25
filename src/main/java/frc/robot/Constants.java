@@ -69,7 +69,8 @@ public final class Constants {
 
     // note camera
     public static final double NOTE_CAMERA_HEIGHT_METERS = Units.inchesToMeters(13.155);
-    public static final double NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(14.886);
+    public static final double NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS =
+        Units.inchesToMeters(14.886);
     public static final double NOTE_CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
     public static final double NOTE_CAMERA_PITCH = Units.degreesToRadians(35);
   }

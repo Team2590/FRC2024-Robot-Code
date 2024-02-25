@@ -101,7 +101,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         absoluteEncoderOffset = new Rotation2d(-2.979); // 0.069
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
-        break;
+                break;
       case 1: // Front Right
         driveTalon = new TalonFX(23, "Takeover");
         turnTalon = new TalonFX(21, "Takeover");
@@ -109,7 +109,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         absoluteEncoderOffset = new Rotation2d(-0.927); // -1.805
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-.928 + Math.PI); // 2.778
-        break;
+                break;
       case 2: // Back RIGHT
         driveTalon = new TalonFX(33, "Takeover");
         turnTalon = new TalonFX(31, "Takeover");
@@ -117,7 +117,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         absoluteEncoderOffset = new Rotation2d(-1.68); // 0.604
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(1.474 + Math.PI); // -2.551
-        break;
+                break;
       case 3: // Back LEFT
         driveTalon = new TalonFX(43, "Takeover");
         turnTalon = new TalonFX(41, "Takeover");
@@ -125,7 +125,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         absoluteEncoderOffset = new Rotation2d(0.313); // 1.977
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-2.686 + Math.PI); // -1/717
-        break;
+                break;
       default:
         throw new RuntimeException("Invalid module index");
     }

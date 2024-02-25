@@ -1,12 +1,9 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -31,6 +28,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,7 +51,6 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -142,11 +139,11 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(2)) {
       CommandScheduler.getInstance()
           .schedule(
-              DriveCommands.SnapToTarget(
+              DriveCommands.translateToNote(
                       drive,
-                      () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
+                      () -> -input.leftJoystickY(),
+                      () -> noteDetection.getYOffset())
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
@@ -180,14 +177,14 @@ public class RobotContainer {
    * to the AutoChooser.
    */
   private void populateAutoChooser() {
-  // Set up feedforward characterization
-  autoChooser.addOption(
-      "Drive FF Characterization",
-      new FeedForwardCharacterization(
-          drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-  autoChooser.addOption(
-      "Flywheel FF Characterization",
-      new FeedForwardCharacterization(
-          flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    // Set up feedforward characterization
+    autoChooser.addOption(
+        "Drive FF Characterization",
+        new FeedForwardCharacterization(
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    autoChooser.addOption(
+        "Flywheel FF Characterization",
+        new FeedForwardCharacterization(
+            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
   }
 }
