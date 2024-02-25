@@ -190,9 +190,7 @@ public class DriveCommands {
         () -> {
           drive.runVelocity(
               new ChassisSpeeds(
-                  joystickX.getAsDouble(),
-                  joystickY.getAsDouble(),
-                  Math.signum(yaw.getAsDouble()) / 10));
+                  joystickX.getAsDouble(), joystickY.getAsDouble(), -yaw.getAsDouble() / 20));
         },
         drive);
   }
