@@ -180,6 +180,10 @@ public class RobotContainer {
       superstructure.primingAmp();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
+    }  else if (input.leftJoystickButton(4)) {
+      superstructure.armUp();
+    } else if (input.leftJoystickButton(3)) {
+      superstructure.armDown();
     } else {
       superstructure.idle();
     }

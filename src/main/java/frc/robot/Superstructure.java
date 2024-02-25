@@ -58,6 +58,7 @@ public class Superstructure {
   private final Arm arm;
   private final Climb climb;
   public boolean readyToShoot = false;
+  private boolean manualMode = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
@@ -114,7 +115,11 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
-        arm.setHome();
+        if (manualMode == true) {
+          arm.setStopped();
+        } else {
+          arm.setHome();
+        }
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -126,7 +131,10 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        
+
+        if (manualMode == false) {
+          arm.setHome();
+        }
         // if (arm.getState() == ArmStates.HOME) {
         if (arm.getState() == ArmStates.HOME){
           intake.setIntake();
@@ -153,7 +161,9 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        arm.setHome();
+        if (manualMode == false) {
+          arm.setHome();
+        }
         intake.setOutake();
         conveyor.setOuttaking();
         break;
@@ -184,15 +194,23 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
-        Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint + offset.get());
+          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
+          Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
+          if (!manualMode){
+            arm.setPosition(
+            armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
-
+        }
+        else{
+          shooter.shoot(flywheelSpeedInput.get());
+          if (shooter.getState() == ShooterStates.AT_SETPOINT) {
+            conveyor.setShooting();
+          }
+        }
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
@@ -202,12 +220,21 @@ public class Superstructure {
         // }
         break;
       case SUBWOOFER_SHOT:
-        arm.setPosition(ArmConstants.HOME_SETPOINT);
-        shooter.shoot(flywheelSpeedInput.get());
-        if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
-          conveyor.setShooting();
+        if (!manualMode){
+          arm.setPosition(ArmConstants.HOME_SETPOINT);
+          shooter.shoot(flywheelSpeedInput.get());
+          if (arm.getState() == ArmStates.AT_SETPOINT
+              && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            conveyor.setShooting();
+          }
         }
+        else{
+          shooter.shoot(flywheelSpeedInput.get());
+          if (shooter.getState() == ShooterStates.AT_SETPOINT) {
+            conveyor.setShooting();
+          }
+        }
+        
         break;
 
       case PRIMING_AMP:
@@ -224,18 +251,27 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(ArmConstants.AMP_SETPOINT);
+        if(manualMode == false){
+          arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
-
+        }
+        else{
+          conveyor.setDiverting();
+        }
         break;
       case SCORE_TRAP:
+      if (!manualMode){
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
-        break;
+      }
+      else{
+        conveyor.setDiverting();
+      }
+      break;
       case ARM_CLIMB:
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
         break;
@@ -259,6 +295,10 @@ public class Superstructure {
         "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
   }
 
+  public void toggleManualArm() {
+    manualMode = !manualMode;
+    // System.out.println("Arm is now in manual mode");
+  }
   public void stop() {
     systemState = SuperstructureStates.DISABLED;
   }
