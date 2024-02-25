@@ -163,6 +163,8 @@ public class PoseEstimator {
       // so the lock gets released even if there is an exception.
       updateLock.unlock();
     }
+    System.out.println("Odometry/PoseestimatorPositionX " + latestPose.getX());
+    System.out.println("Odometry/PoseestimatorPositionY " + latestPose.getY());
     Logger.recordOutput("Odometry/RobotPosition", latestPose);
   }
 

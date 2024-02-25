@@ -96,6 +96,8 @@ public class PhotonRunnable implements Runnable {
                     estimatedRobotPose -> {
                       RobotPose = estimatedRobotPose.estimatedPose;
                       var estimatedPose = estimatedRobotPose.estimatedPose;
+                      System.out.println("odomtry/PhotonPoseX " + estimatedPose.getX());
+                      System.out.println("odomtry/PhotonPoseY " + estimatedPose.getY());
                       // Make sure the measurement is on the field
                       if (estimatedPose.getX() > 0.0
                           && estimatedPose.getX() <= FIELD_LENGTH_METERS
