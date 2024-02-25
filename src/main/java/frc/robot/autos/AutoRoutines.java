@@ -27,6 +27,8 @@ public class AutoRoutines {
         .shoot(false)
         .startPath("startB_note1")
         .shoot(false)
+        .startPath("n2-n3")
+        .shoot(true)
         .build();
   }
 }
