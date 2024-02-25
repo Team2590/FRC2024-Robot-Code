@@ -60,7 +60,8 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, NemesisLED led) {
+  public Superstructure(
+      Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
@@ -210,7 +211,7 @@ public class Superstructure {
         break;
 
       case CLIMB:
-      led.solid(255, 0, 255);
+        led.solid(255, 0, 255);
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
          * set system state to IDLE before climbing action ? (TBD)
