@@ -16,6 +16,14 @@ public interface ShootMath {
      */
     public static record ShootState(double velocity, double yaw, double pitch) {};
 
+    public static record Vector(double x, double y, double z) {
+
+        public double magnitude() {
+            return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        }
+
+    };
+
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
      * https://www.desmos.com/3d/b8ff2f55bd
@@ -115,7 +123,7 @@ public interface ShootMath {
     }
 
     /**
-     * Solves for the roots of a general quartic. DOES NOT WORK
+     * Solves for the roots of a general quartic. **DOES NOT WORK**
      * https://www.desmos.com/calculator/gamythajrx
      * @param a - x^4
      * @param b - x^3
@@ -150,6 +158,102 @@ public interface ShootMath {
             -a3 / 4 - R / 2 + E / 2,
             -a3 / 4 - R / 2 - E / 2
         };
+    }
+
+    /**
+     * Checks if a projectile will hit a triangle.
+     * @param rvx - initial x velocity relative to target
+     * @param rvy - initial y velocity relative to target
+     * @param rvz - initial z velocity relative to target
+     * @param g - constant of gravity
+     * @param pv - shooting velocity
+     * @param pv_theta - shooter yaw
+     * @param pv_phi - shooter pitch
+     * @param T0x - triangle's first point's x coordinate
+     * @param T0y - triangle's first point's y coordinate
+     * @param T0z - triangle's first point's z coordinate
+     * @param T1x - triangle's second point's x coordinate
+     * @param T1y - triangle's second point's y coordinate
+     * @param T1z - triangle's second point's z coordinate
+     * @param T2x - triangle's third point's x coordinate
+     * @param T2y - triangle's third point's y coordinate
+     * @param T2z - triangle's third point's z coordinate
+     * @return Whether the projectile will hit the triangle.
+     */
+    public static boolean willHit(
+        double rvx, double rvy, double rvz,
+        double g,
+        double pv, double pv_theta, double pv_phi,
+        double T0x, double T0y, double T0z,
+        double T1x, double T1y, double T1z,
+        double T2x, double T2y, double T2z
+    ) {
+        final var N = cross(
+            T1x - T0x, T1y - T0y, T1z - T0z,
+            T2x - T1x, T2y - T1y, T2z - T1z
+        );
+        final var A = N.z * g;
+        final var X = rvx * pv * Math.cos(pv_phi) * Math.cos(pv_theta);
+        final var Y = rvy * pv * Math.cos(pv_phi) * Math.sin(pv_theta);
+        final var Z = rvz * pv * Math.sin(pv_phi);
+        final var B = dot(N.x, N.y, N.z, X, Y, Z);
+        final var tf = (B + Math.sqrt(B * B - 2 * A * dot(N.x, N.y, N.z, T0x, T0y, T0z))) / A;
+        final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
+        final var plane = cross(T1x - T0x, T1y - T0y, T1z - T0z, T2x - T0x, T2y - T0y, T2z - T0z).magnitude();
+        final var triangle1 = cross(P.x - T0x, P.y - T0y, P.z - T0z, P.x - T1x, P.y - T1y, P.z - T1z).magnitude();
+        final var triangle2 = cross(P.x - T1x, P.y - T1y, P.z - T1z, P.x - T2x, P.y - T2y, P.z - T2z).magnitude();
+        final var triangle3 = cross(P.x - T2x, P.y - T2y, P.z - T2z, P.x - T0x, P.y - T0y, P.z - T0z).magnitude();
+        return equals(plane, triangle1 + triangle2 + triangle3);
+    }
+
+    public double tolerance = 0.0001;
+
+    /**
+     * Checks if two scalars are within a certain range.
+     * @param a - first scalar
+     * @param b - second scalar
+     * @return If the two scalars are "close enough."
+     */
+    public static boolean equals(double a, double b) {
+        return Math.abs(a - b) < tolerance;
+    }
+
+    /**
+     * The vector dot product.
+     * @param ax - first point's x coordinate
+     * @param ay - first point's y coordinate
+     * @param az - first point's z coordinate
+     * @param bx - second point's x coordinate
+     * @param by - second point's y coordinate
+     * @param bz - second point's z coordinate
+     * @return The dot product of the two vectors.
+     */
+    public static double dot(
+        double ax, double ay, double az,
+        double bx, double by, double bz
+    ) {
+        return ax * bx + ay * by + az * bz;
+    };
+
+    /**
+     * The vector cross product.
+     * @param ax - first point's x coordinate
+     * @param ay - first point's y coordinate
+     * @param az - first point's z coordinate
+     * @param bx - second point's x coordinate
+     * @param by - second point's y coordinate
+     * @param bz - second point's z coordinate
+     * @return The cross product of the two vectors.
+     */
+    public static Vector cross(
+        double ax, double ay, double az,
+        double bx, double by, double bz
+    ) {
+        return new Vector(
+            ay * bz - az * by,
+            az * bx - ax * bz,
+            ax * by - ay * bx
+        );
     }
 
     public static void main(String[] args) {
