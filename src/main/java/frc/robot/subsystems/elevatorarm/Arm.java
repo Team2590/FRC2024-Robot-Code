@@ -10,7 +10,7 @@ public class Arm extends SubsystemBase {
   private ArmIOTalonFX arm = new ArmIOTalonFX();
   private ArmStates state;
   private double armSetpoint;
-  private double tolerance = .01;
+  private double tolerance = .005;
   private DutyCycleOut power = new DutyCycleOut(0);
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();

@@ -56,7 +56,7 @@ public class Superstructure {
   private final Arm arm;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
-  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
+  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
@@ -180,7 +180,7 @@ public class Superstructure {
             armInterpolation.getValue(
                 RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint);
+        arm.setPosition(armAngle.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
