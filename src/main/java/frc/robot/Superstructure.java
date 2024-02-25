@@ -113,9 +113,11 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
-        arm.setHome();
+        // arm.setHome();
+        arm.setStopped();
         leader.stopMotor();
         follower.stopMotor();
+        climb.setStopped();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -213,10 +215,10 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(-.258);
-        if (arm.getState() == ArmStates.AT_SETPOINT) {
-          conveyor.setDiverting();
-        }
+        // arm.setPosition(-.258);
+        // if (arm.getState() == ArmStates.AT_SETPOINT) {
+        conveyor.setDiverting();
+        // }
 
         break;
 
@@ -228,7 +230,7 @@ public class Superstructure {
          */
         climb.run();
         break;
-      case FLIPPING: 
+      case FLIPPING:
         climb.flip();
     }
     // Logger.recordOutput("Superstructure/State", systemState);

@@ -1,17 +1,24 @@
 package frc.robot.subsystems.climb;
 
-import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX left_motor = new TalonFX(24, "Takeover");
-  private final TalonFX right_motor = new TalonFX(25, "Takeover");
+  private final TalonFX leader = new TalonFX(24, "Takeover");
+  private final TalonFX follower = new TalonFX(25, "Takeover");
 
   public ClimbIOTalonFX() {
-    left_motor.setNeutralMode(NeutralModeValue.Brake);
-    right_motor.setNeutralMode(NeutralModeValue.Brake);
-    right_motor.setControl(new Follower(left_motor.getDeviceID(), true));
+    var config = new TalonFXConfiguration();
+    config.CurrentLimits.StatorCurrentLimit = 30.0;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    leader.getConfigurator().apply(config);
+    follower.getConfigurator().apply(config);
+    // follower.setControl(new Follower(leader.getDeviceID(), true));
   }
 
   @Override
@@ -21,26 +28,27 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   @Override
   public void run(double speed) {
-    left_motor.set(-speed);
-    right_motor.set(-speed);
+    leader.set(-speed);
+    follower.set(-speed);
   }
 
   @Override
-  public void setVoltage(double voltage) { 
-    left_motor.setVoltage(-voltage);
+  public void setVoltage(double voltage) {
+    leader.setControl(new VoltageOut(voltage));
+    follower.setControl(new VoltageOut(-voltage));
   }
 
   public void stop() {
-    left_motor.stopMotor();
-    // right_motor.stopMotor();
+    leader.stopMotor();
+    follower.stopMotor();
   }
 
   public double getRotationCount() {
-    return left_motor.getPosition().getValueAsDouble();
+    return leader.getPosition().getValueAsDouble();
   }
 
   public void resetRotationCount() {
-    left_motor.setPosition(0);
-    right_motor.setPosition(0);
+    leader.setPosition(0);
+    follower.setPosition(0);
   }
 }

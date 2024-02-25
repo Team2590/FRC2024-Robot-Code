@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ClimbConstants;
 
 public class Climb extends SubsystemBase {
   private ClimbIO io;
@@ -17,11 +16,11 @@ public class Climb extends SubsystemBase {
   }
 
   public void run() {
-    if (io.getRotationCount() < ClimbConstants.MAX_ROTATIONS) {
-      io.stop();
-    } else {
-      io.setVoltage(2);
-    }
+    // if (io.getRotationCount() < ClimbConstants.MAX_ROTATIONS) {
+    //   io.stop();
+    // } else {
+    //   io.setVoltage(2);
+    // }
     io.setVoltage(2);
   }
 
