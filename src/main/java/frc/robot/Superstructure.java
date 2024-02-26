@@ -142,21 +142,15 @@ public class Superstructure {
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
-        // case PRIMING_SHOOTER:
-        //   /*
-        //    * PRIMING_SHOOTER (On Button Press)
-        //    * Run flywheel at desired velocity
-        //    * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
-        //    * state
-        //    */
-        //   // arm.setposition(SPEAKER) --> Dynamic(Vision)
-        //   shooter.shoot(1000); // Run shooter at set velocity (**Need to find**)
-        //   if (shooter.getState() == ShooterStates.AT_SETPOINT
-        //   // && arm.getState() == ArmStates.AT_SETPOINT {
-        //   ) {
-        //     systemState = SuperstructureStates.PRIMED_SHOOTER;
-        //   }
-        //   break;
+      case PRIMING_SHOOTER:
+        /*
+         * PRIMING_SHOOTER (For Auto Routines)
+         * Run flywheel at desired velocity. Useful in auto routines.
+         */
+        shooter.shoot(flywheelSpeedInput.get());
+        // Don't need any transition here, we want to stay in this state
+        // until SHOOT is called.
+        break;
 
       case PRIMED_SHOOTER:
         /*
@@ -172,8 +166,7 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
@@ -181,6 +174,7 @@ public class Superstructure {
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
+
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
@@ -243,7 +237,8 @@ public class Superstructure {
   }
 
   public void primeShooter() {
-    systemState = SuperstructureStates.PRIMING_SHOOTER;
+    // systemState = SuperstructureStates.PRIMING_SHOOTER;
+    shooter.shoot(flywheelSpeedInput.get());
   }
 
   public void hasNote() {
@@ -252,6 +247,14 @@ public class Superstructure {
 
   public void shoot() {
     systemState = SuperstructureStates.SHOOT;
+  }
+
+  /**
+   * Returns true if we are in the process of shooting i.e either priming up to shooting or
+   * shooting.
+   */
+  public boolean isShooting() {
+    return systemState == SuperstructureStates.SHOOT;
   }
 
   public void primingAmp() {
