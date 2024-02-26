@@ -183,4 +183,15 @@ public class DriveCommands {
         }),
         drive);
   }
+
+  public static Command turnToNote(
+      Drive drive, DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier yaw) {
+    return Commands.run(
+        () -> {
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  joystickX.getAsDouble(), joystickY.getAsDouble(), -yaw.getAsDouble() / 20));
+        },
+        drive);
+  }
 }

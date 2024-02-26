@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,7 +31,6 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -146,6 +147,15 @@ public class RobotContainer {
                       () -> -input.leftJoystickX(),
                       Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
+      // Example Use below
+      // CommandScheduler.getInstance()
+      //     .schedule(
+      //         DriveCommands.turnToNote(
+      //                 drive,
+      //                 () -> -input.leftJoystickY(),
+      //                 () -> -input.leftJoystickX(),
+      //                 PhotonNoteRunnable.target::getYaw)
+      //             .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
