@@ -5,10 +5,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
-import frc.robot.Constants;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ClimbConstants;
 
 public class ClimbIOTalonFX implements ClimbIO {
@@ -40,13 +36,15 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   @Override
   public void setVoltage(double voltage) {
-    if (Math.abs(Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower))) > ClimbConstants.TOLERANCE){
-       follower.setControl(new VoltageOut(-voltage));
-    }
-    else if(Math.abs(Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader))) > ClimbConstants.TOLERANCE){
+    if (Math.abs(Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower)))
+        > ClimbConstants.TOLERANCE) {
+      follower.setControl(new VoltageOut(-voltage));
+      leader.setControl(new VoltageOut(voltage / 2));
+    } else if (Math.abs(Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader)))
+        > ClimbConstants.TOLERANCE) {
       leader.setControl(new VoltageOut(voltage));
-    }
-    else{
+      follower.setControl(new VoltageOut(-voltage / 2));
+    } else {
       leader.setControl(new VoltageOut(voltage));
       follower.setControl(new VoltageOut(-voltage));
     }
@@ -61,9 +59,10 @@ public class ClimbIOTalonFX implements ClimbIO {
     return leader.getPosition().getValueAsDouble();
   }
 
-  private double getRotationCount(TalonFX motor){
+  private double getRotationCount(TalonFX motor) {
     return motor.getPosition().getValueAsDouble();
   }
+
   public void resetRotationCount() {
     leader.setPosition(0);
     follower.setPosition(0);
