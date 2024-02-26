@@ -11,7 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -43,11 +44,10 @@ public class Superstructure {
     SHOOT,
     PRIMING_AMP,
     SCORE_AMP,
+    SCORE_TRAP,
     CLIMB
   }
 
-  private final TalonFX leader = new TalonFX(24, Constants.CANBUS);
-  private final TalonFX follower = new TalonFX(25, Constants.CANBUS);
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private final Conveyor conveyor;
   private final Intake intake;
@@ -55,7 +55,7 @@ public class Superstructure {
   private final Arm arm;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
-  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
+  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
@@ -89,7 +89,6 @@ public class Superstructure {
         shooter.setStopped();
         // arm.setStopped();
         break;
-
       case RESET:
         /*
          * TBD -- > Simmilar to IDLE state ?
@@ -107,8 +106,6 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         arm.setHome();
-        leader.stopMotor();
-        follower.stopMotor();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -200,21 +197,24 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(-.258);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
 
         break;
-
+      case SCORE_TRAP:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
+        break;
       case CLIMB:
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
          * set system state to IDLE before climbing action ? (TBD)
          * climb.climb() -- > Sets climb to manual state
          */
-        leader.set(.25);
-        follower.set(-.25);
         break;
     }
     Logger.recordOutput("Superstructure/State", systemState);

@@ -1,11 +1,15 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
 import frc.robot.subsystems.conveyor.ConveyorIOSim;
@@ -25,8 +29,8 @@ import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
+import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,6 +51,8 @@ public class RobotContainer {
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
+  private final Notifier noteNotifier = new Notifier(noteDetection);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -65,6 +71,8 @@ public class RobotContainer {
         conveyor = new Conveyor(new ConveyorIOTalonFX());
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
+        noteNotifier.setName("PhotonNoteRunnable");
+        noteNotifier.startPeriodic(0.02);
         break;
 
       case SIM:
@@ -139,6 +147,15 @@ public class RobotContainer {
                       () -> -input.leftJoystickX(),
                       Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
+      // Example Use below
+      // CommandScheduler.getInstance()
+      //     .schedule(
+      //         DriveCommands.turnToNote(
+      //                 drive,
+      //                 () -> -input.leftJoystickY(),
+      //                 () -> -input.leftJoystickX(),
+      //                 PhotonNoteRunnable.target::getYaw)
+      //             .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
@@ -149,7 +166,6 @@ public class RobotContainer {
       superstructure.armUp();
     } else if (input.leftJoystickButton(3)) {
       superstructure.armDown();
-
     } else if (input.rightJoystickButton(6)) {
       superstructure.climb();
     } else {
@@ -173,13 +189,13 @@ public class RobotContainer {
    */
   private void populateAutoChooser() {
     // Set up feedforward characterization
-    // autoChooser.addOption(
-    //     "Drive FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    // autoChooser.addOption(
-    //     "Flywheel FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    autoChooser.addOption(
+        "Drive FF Characterization",
+        new FeedForwardCharacterization(
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    autoChooser.addOption(
+        "Flywheel FF Characterization",
+        new FeedForwardCharacterization(
+            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
   }
 }
