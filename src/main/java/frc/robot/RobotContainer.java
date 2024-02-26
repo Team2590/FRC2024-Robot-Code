@@ -139,7 +139,7 @@ public class RobotContainer {
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(2)) {
-        CommandScheduler.getInstance()
+      CommandScheduler.getInstance()
           .schedule(
               DriveCommands.SnapToTarget(
                       drive,
