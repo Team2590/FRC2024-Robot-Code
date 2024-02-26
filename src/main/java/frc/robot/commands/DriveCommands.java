@@ -35,6 +35,7 @@ import org.littletonrobotics.junction.Logger;
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
   private static double linearMagnitude;
+
   private DriveCommands() {}
 
   /**
@@ -48,15 +49,17 @@ public class DriveCommands {
     return Commands.run(
         () -> {
           // Apply deadband
-          if(DrivetrainConstants.SLOW_MODE == true){
-              linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          }
-          else{
-             double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT, ySupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT), DEADBAND);
+          if (DrivetrainConstants.SLOW_MODE == false) {
+            linearMagnitude =
+                MathUtil.applyDeadband(
+                    Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
+          } else {
+            linearMagnitude =
+                MathUtil.applyDeadband(
+                    Math.hypot(
+                        xSupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT,
+                        ySupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT),
+                    DEADBAND);
           }
           Rotation2d linearDirection =
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());

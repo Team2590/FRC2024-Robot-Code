@@ -152,11 +152,10 @@ public class RobotContainer {
       superstructure.armDown();
     } else if (input.rightJoystickButton(6)) {
       superstructure.climb();
-    } else if (input.rightJoystickButton(9)) {
+    } else if (input.rightJoystickButton(7)) {
       DrivetrainConstants.SLOW_MODE = !DrivetrainConstants.SLOW_MODE;
       System.out.println("you are toggling slowmode");
-    }
-     else {
+    } else {
       superstructure.idle();
     }
   }

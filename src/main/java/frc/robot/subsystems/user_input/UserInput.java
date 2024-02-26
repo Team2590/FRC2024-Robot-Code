@@ -3,11 +3,10 @@ package frc.robot.subsystems.user_input;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.RobotMap;
-import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.util.BandedJoystick;
 import frc.robot.util.NemesisSubsystem;
 import frc.robot.util.Smoother;
-import frc.robot.Constants;
+
 /**
  * Handles input from 2 joysticks and a button panel. The button panel is numbered 1 to 18, numbered
  * as if reading English.
@@ -27,7 +26,7 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
 
   private final BandedJoystick leftJoystick;
   private final BandedJoystick rightJoystick;
-  private final Smoother.Wrapper  leftXInput;
+  private final Smoother.Wrapper leftXInput;
   private final Smoother.Wrapper leftYInput;
   private final Smoother.Wrapper rightXInput;
   private final Joystick operatorPanel;
@@ -42,7 +41,6 @@ public class UserInput extends NemesisSubsystem implements RobotMap {
     rightXInput = Smoother.wrap(1, rightJoystick::getXBanded);
     operatorPanel = new Joystick(3);
     operatorController = new XboxController(2);
-    
   }
 
   public void update() {
