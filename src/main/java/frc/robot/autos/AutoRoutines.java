@@ -13,11 +13,22 @@ public class AutoRoutines {
 
     PathPlannerPaths paths = PathPlannerPaths.create();
     // Register all the auto routines here
-    autoChooser.addOption(
-        "ThreePieceAuto_1_4_2", new ThreePieceAuto_1_4_2(paths, drive, superstructure));
+    autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
     return autoChooser;
+  }
+
+  /** Creates a single note auto. */
+  private static Command oneNoteAuto(
+      PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
+    return new AutoCommandBuilder(paths, drive, superstructure)
+        .shoot(false)
+        .startPath("startB_note1")
+        .shoot(false)
+        .startPath("n2-n3")
+        .shoot(true)
+        .build();
   }
 }
