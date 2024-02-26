@@ -59,7 +59,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
-  public final PIDController snapController = new PIDController(2, 0.0, 0.0);
+  public final PIDController snapController = new PIDController(.34, 0.0, 0.0);
   public final PIDController noteController = new PIDController(.44, 0.0, .00001);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
@@ -70,7 +70,7 @@ public class Drive extends SubsystemBase {
       new LoggedTunableNumber("SnapController/MaxSpeedRatio [0,1]", .5);
   public static LoggedTunableNumber noteControllermultiplier =
       new LoggedTunableNumber("NoteController/MaxSpeedRatio", 6);
-  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .44);
+  LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
       new LoggedTunableNumber("SnapController/tolerance", .1);
