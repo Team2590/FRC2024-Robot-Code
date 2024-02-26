@@ -10,7 +10,7 @@ public class PhotonNoteRunnable implements Runnable {
   private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
   private static PhotonCamera NoteCam = new PhotonCamera(instance, "NoteCam");
   private static PhotonPipelineResult result;
-  private static PhotonTrackedTarget target;
+  public static PhotonTrackedTarget target;
   private static double camHeight = VisionConstants.NOTE_CAMERA_HEIGHT_METERS;
   private static double camPitch = VisionConstants.NOTE_CAMERA_PITCH;
   private static double camXOffset = VisionConstants.NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS;

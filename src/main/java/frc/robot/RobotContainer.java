@@ -6,6 +6,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants.Targets;
+import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -107,8 +109,8 @@ public class RobotContainer {
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm);
     // Set up auto routines
-    // autoChooser = AutoRoutines.buildChooser(drive, superstructure);
-    // populateAutoChooser();
+    autoChooser = AutoRoutines.buildChooser(drive, superstructure);
+    populateAutoChooser();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -137,14 +139,23 @@ public class RobotContainer {
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(2)) {
-      CommandScheduler.getInstance()
+        CommandScheduler.getInstance()
           .schedule(
-              DriveCommands.turnToNote(
+              DriveCommands.SnapToTarget(
                       drive,
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
-                      PhotonNote.target::getYaw)
+                      Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
+      // Example Use below
+      // CommandScheduler.getInstance()
+      //     .schedule(
+      //         DriveCommands.turnToNote(
+      //                 drive,
+      //                 () -> -input.leftJoystickY(),
+      //                 () -> -input.leftJoystickX(),
+      //                 PhotonNoteRunnable.target::getYaw)
+      //             .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
@@ -168,9 +179,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  // public Command getAutonomousCommand() {
-  //   return autoChooser.get();
-  // }
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
+  }
 
   /**
    * Use this branch to build the commands from the autos that you want to run, and add the commands
