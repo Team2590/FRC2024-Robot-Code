@@ -60,7 +60,7 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
   public final PIDController snapController = new PIDController(2, 0.0, 0.0);
-  public final PIDController noteController = new PIDController(0.0, 0.0, 0.0);
+  public final PIDController noteController = new PIDController(.44, 0.0, .00001);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
@@ -97,7 +97,7 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
 
     snapController.setTolerance(.1);
-    noteController.setTolerance(0.1);
+    noteController.setTolerance(noteControllerTolerance.get());
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
