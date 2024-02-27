@@ -36,6 +36,16 @@ public class DriveCommands {
 
   private DriveCommands() {}
 
+
+  /**
+   * Maps an input from -1 to 1 to an output from -1 to 1.
+   * @param x - [-1, 1]
+   * @return - [-1, 1]
+   */
+  private static double scale(double x) {
+    return Math.copySign(x * x, x);
+  }
+
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -46,31 +56,31 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          final var omega = scale(MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND));
 
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
+          final var x = xSupplier.getAsDouble();
+          final var y = ySupplier.getAsDouble();
 
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
+          final var magnitude = Math.hypot(x, y);
 
-          // Convert to field relative speeds & send command
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
+          if (magnitude < DEADBAND) {
+            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+              0, 0,
+              omega * Drive.MAX_ANGULAR_SPEED,
+              drive.getRotation()
+            ));
+            return;
+          }
+
+          final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
+          final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
+          final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
+
+          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+            newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
+            omega * Drive.MAX_ANGULAR_SPEED,
+            drive.getRotation()
+          ));
         },
         drive);
   }
