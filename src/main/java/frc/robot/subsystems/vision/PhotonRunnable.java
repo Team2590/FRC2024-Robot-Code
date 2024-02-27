@@ -77,7 +77,6 @@ public class PhotonRunnable implements Runnable {
                   distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(),
                       AprilTag.getTagPose(target.getFiducialId()));
-              // Logger.recordOutput("Odometry/DistanceToTarget", distanceToTarget);
             }
           }
           if (photonResults.targets.size() > 1
