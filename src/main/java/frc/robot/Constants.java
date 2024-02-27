@@ -118,6 +118,12 @@ public final class Constants {
     public static final int INTAKE_ID = 14;
   }
 
+  public final class ClimbConstants {
+    // max rotations = (distance/2pi*wheelRadius) * gearRatio
+    public static final double MAX_ROTATIONS = -150;
+    public static final int TOLERANCE = 5;
+  }
+
   public static enum Mode {
     /** Running on a real robot. */
     REAL,

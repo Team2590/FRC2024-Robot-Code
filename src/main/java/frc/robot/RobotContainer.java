@@ -1,18 +1,16 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.FieldConstants.Targets;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
 import frc.robot.subsystems.conveyor.ConveyorIOSim;
@@ -34,6 +32,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,6 +47,7 @@ public class RobotContainer {
   private final Conveyor conveyor;
   private final Arm arm;
   private final Intake intake;
+  private final Climb climb;
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -74,6 +74,7 @@ public class RobotContainer {
         conveyor = new Conveyor(new ConveyorIOTalonFX());
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
         noteNotifier.setName("PhotonNoteRunnable");
         noteNotifier.startPeriodic(0.02);
         break;
@@ -92,6 +93,7 @@ public class RobotContainer {
         conveyor = new Conveyor(new ConveyorIOSim());
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
         break;
 
       default:
@@ -106,11 +108,12 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIO() {});
         conveyor = new Conveyor(new ConveyorIO() {});
         intake = new Intake(new IntakeIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake, flywheel, arm);
+    superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
