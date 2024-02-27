@@ -114,7 +114,7 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
-        arm.setHome();
+        if (conveyor.canMove()) { arm.setHome(); }
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -186,7 +186,7 @@ public class Superstructure {
         double armDistanceSetPoint =
             armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint + offset.get());
+        if (conveyor.canMove()) { arm.setPosition(armDistanceSetPoint + offset.get()); }
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {

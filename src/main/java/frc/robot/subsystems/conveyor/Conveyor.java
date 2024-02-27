@@ -142,4 +142,13 @@ public class Conveyor extends SubsystemBase {
   public boolean hasNote() {
     return inputs.hasNote;
   }
+
+  /**
+   * Uses the two prox sensors to determine if the arm can be moved
+   * <p>The arm can be moved iff both prox sensors detect a note or neither of them do
+   * @return if the arm can be moved
+   */
+  public boolean canMove() {
+    return inputs.detectedIntakeSide == inputs.detectedShooterSide;
+  }
 }
