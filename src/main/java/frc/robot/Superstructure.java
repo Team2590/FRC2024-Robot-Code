@@ -11,7 +11,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -69,10 +68,12 @@ public class Superstructure {
     this.arm = arm;
 
     final double[] distance = {
-      0, .9144, 1.301, 1.574, 1.8, 2.034, 2.242, 2.5, 2.687, 3.024, 3.318, 3.64, 3.883
+      0, 1.398, 1.41, 1.421, 1.573, 1.722, 1.887, 2.042, 2.210, 2.398, 2.530, 2.745, 2.881, 3.048,
+      3.088, 3.133, 3.298, 3.3539, 3.3681, 3.3806, 3.3900, 3.5000, 3.7000, 3.9000, 4.1000
     };
     final double[] armSetpoint = {
-      .16, .16, .16, .148, .13, .12, .11, .1, .092, .083, .077, .073, .07
+      .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
+      .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -80,7 +81,6 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
-    Logger.recordOutput("Arm/RangeTOTarget", RobotContainer.poseEstimator.distanceToSpeaker());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -166,9 +166,9 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armAngle.get());
+        arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
