@@ -20,7 +20,6 @@ public class ClimbIOTalonFX implements ClimbIO {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
-    // follower.setControl(new Follower(leader.getDeviceID(), true));
   }
 
   @Override

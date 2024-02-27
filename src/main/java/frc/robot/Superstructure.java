@@ -11,10 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.util.Units;
-import frc.robot.subsystems.climb.Climb;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -112,8 +110,6 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
-        // arm.setHome();
-        arm.setStopped();
         climb.setStopped();
         arm.setHome();
         break;

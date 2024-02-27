@@ -16,11 +16,6 @@ public class Climb extends SubsystemBase {
   }
 
   public void run() {
-    // if (io.getRotationCount() < ClimbConstants.MAX_ROTATIONS) {
-    //   io.stop();
-    // } else {
-    //   io.setVoltage(2);
-    // }
     io.setVoltage(2);
   }
 
