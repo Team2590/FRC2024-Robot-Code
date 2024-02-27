@@ -152,9 +152,9 @@ public class RobotContainer {
 
     } else if (input.rightJoystickButton(6)) {
       superstructure.climb();
-    } else {
-      superstructure.idle();
-    }
+    } else if (input.rightJoystickButton(4)) {
+      superstructure.subwooferShot();
+    } else superstructure.idle();
   }
 
   // --------AUTO CHOOSER FUNCTIONS------------
