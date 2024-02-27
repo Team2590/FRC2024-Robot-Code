@@ -191,7 +191,7 @@ public class Superstructure {
         // }
         break;
       case SUBWOOFER_SHOT:
-        arm.setHome();
+        arm.setPosition(0.168);
         shooter.shoot(flywheelSpeedInput.get());
 
         break;
@@ -239,8 +239,9 @@ public class Superstructure {
   }
 
   public void subwooferShot() {
-    systemState= SuperstructureStates.SUBWOOFER_SHOT;
+    systemState = SuperstructureStates.SUBWOOFER_SHOT;
   }
+
   public void stop() {
     systemState = SuperstructureStates.DISABLED;
   }
