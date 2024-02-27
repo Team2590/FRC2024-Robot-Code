@@ -155,6 +155,7 @@ public class RobotContainer {
                       PhotonNoteRunnable.target::getYaw)
                   .until(() -> input.rightJoystickButton(10)));
     } else if (input.rightJoystickButton(2)) {
+    if(input.leftJoystickTrigger()){
       CommandScheduler.getInstance()
           .schedule(
               DriveCommands.SnapToTarget(
@@ -164,25 +165,78 @@ public class RobotContainer {
                       Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
-    } else if (input.rightJoystickButton(3)) {
-      superstructure.scoreAmp();
-    } else if (input.rightJoystickButton(5)) {
-      drive.zeroGyro();
-      System.out.println("Gyro is reset");
-    } else if (input.leftJoystickButton(2)) {
-      superstructure.armUp();
-    } else if (input.leftJoystickButton(3)) {
-      superstructure.armDown();
-    } else if (input.rightJoystickButton(6)) {
+    }
+    else if(input.rightJoystickTrigger()){
+      superstructure.intake();
+    }
+    else if (input.rightJoystickButton(3)){
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.SPEAKER)
+                  .until(() -> input.rightJoystickButton(2)));
+    }
+    else if (input.rightJoystickButton(11)){
+      //manual arm w climb DOESNT WORK
       superstructure.climb();
     } else if (input.rightJoystickButton(7)) {
       DrivetrainConstants.SLOW_MODE = !DrivetrainConstants.SLOW_MODE;
       System.out.println("you are toggling slowmode");
-    } else {
+    } 
+    else if (input.leftJoystickPOV() == 270 || input.leftJoystickPOV() == -90){
+      //safe shot
+    }
+    else if (input.rightJoystickPOV() == 270 || input.rightJoystickPOV() == -90){
+      //spit
+    }
+    else{
       superstructure.idle();
     }
-  }
 
+    //TBD OPERATOR BUTTONS
+
+    // if (input.leftJoystickTrigger()) {
+    //   superstructure.intake();
+    // } else if (input.rightJoystickTrigger()) {
+    //   superstructure.outtake();
+    // } else if (input.rightJoystickButton(2)) {
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           DriveCommands.SnapToTarget(
+    //                   drive,
+    //                   () -> -input.leftJoystickY(),
+    //                   () -> -input.leftJoystickX(),
+    //                   Targets.SPEAKER)
+    //               .until(() -> input.rightJoystickButton(2)));
+    //   // Example Use below
+    //   // CommandScheduler.getInstance()
+    //   //     .schedule(
+    //   //         DriveCommands.turnToNote(
+    //   //                 drive,
+    //   //                 () -> -input.leftJoystickY(),
+    //   //                 () -> -input.leftJoystickX(),
+    //   //                 PhotonNoteRunnable.target::getYaw)
+    //   //             .until(() -> input.rightJoystickButton(2)));
+    //   superstructure.shoot();
+    // } else if (input.rightJoystickButton(3)) {
+    //   superstructure.scoreAmp();
+    // } else if (input.rightJoystickButton(5)) {
+    //   drive.zeroGyro();
+    //   System.out.println("Gyro is reset");
+    // } else if (input.leftJoystickButton(2)) {
+    //   superstructure.armUp();
+    // } else if (input.leftJoystickButton(3)) {
+    //   superstructure.armDown();
+    // } else if (input.rightJoystickButton(6)) {
+    //   superstructure.climb();
+    // } else {
+    //   superstructure.idle();
+    // }
+  }
+  }
   // --------AUTO CHOOSER FUNCTIONS------------
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
