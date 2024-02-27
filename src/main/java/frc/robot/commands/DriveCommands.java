@@ -29,11 +29,9 @@ import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class DriveCommands {
-  private static final double DEADBAND = 0.1;
+public interface DriveCommands {
 
-  private DriveCommands() {}
-
+  public static final double DEADBAND = 0.1;
 
   /**
    * Maps an input from -1 to 1 to an output from -1 to 1.
