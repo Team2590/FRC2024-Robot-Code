@@ -5,10 +5,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
-<<<<<<< HEAD
-import java.util.HashMap;
-import java.util.Map;
-=======
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
->>>>>>> d6ef7e7fbe9930c513bb4b6506943b83fb904072
 
 public class PathPlannerPaths {
 
