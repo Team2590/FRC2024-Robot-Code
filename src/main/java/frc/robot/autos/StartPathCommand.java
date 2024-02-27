@@ -18,10 +18,13 @@ public class StartPathCommand extends SequentialCommandGroup {
   public StartPathCommand(
       PathPlannerPaths paths, String startingPath, Superstructure superstructure) {
     Pose2d startingPose = paths.getStartingPose(startingPath);
-    Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
     addCommands(
         // Initialize the starting pose based on the start path.
-        new InstantCommand(() -> RobotContainer.poseEstimator.resetPose(translatedPose)),
+        new InstantCommand(
+            () -> {
+              Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
+              RobotContainer.poseEstimator.resetPose(translatedPose);
+            }),
         // Start up the intake system and follow path to first position in parallel.
         Commands.parallel(
             Commands.print("Starting up Intake .... "),
