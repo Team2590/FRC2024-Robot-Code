@@ -1,5 +1,19 @@
 package frc.util;
 
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.drive.Drive;
+
 /**
  * @author Elan Ronen
  * 
@@ -8,6 +22,65 @@ package frc.util;
  * TODO: find inequality to check if a target is "within reach"
  */
 public interface ShootMath {
+
+    public static Command shoot(
+        Drive drive,
+        DoubleSupplier joystickX, DoubleSupplier joystickY
+    ) {
+        return Commands.run(
+            () -> {
+                // Apply deadband
+                double linearMagnitude = MathUtil.applyDeadband(
+                    Math.hypot(joystickX.getAsDouble(), joystickY.getAsDouble()), 0.1
+                );
+                Rotation2d linearDirection = new Rotation2d(joystickX.getAsDouble(), joystickY.getAsDouble());
+
+                // Square values
+                linearMagnitude = linearMagnitude * linearMagnitude;
+
+                // Calcaulate new linear velocity
+                Translation2d linearVelocity = new Translation2d(linearMagnitude, linearDirection);
+
+                // Convert to field relative speeds & send command
+                drive.runVelocity(
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                        MathUtil.applyDeadband(joystickX.getAsDouble(), 0.1) * Drive.MAX_LINEAR_SPEED,
+                        MathUtil.applyDeadband(joystickY.getAsDouble(), 0.1) * Drive.MAX_LINEAR_SPEED,
+                        omega * drive.getMaxAngularSpeedRadPerSec(), // MINE
+                        drive.getRotation()));
+            },
+            drive
+        );
+    }
+
+    public static Command SnapToTarget(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
+    return Commands.run(
+        (() -> {
+          Transform2d difference = drive.getPose().minus(target);
+          double theta = Math.atan2(difference.getY(), difference.getX());
+          double currentAngle = drive.getRotation().getRadians();
+          double currentError = theta - currentAngle;
+          if (currentError > Math.PI) {
+            currentAngle += 2 * Math.PI;
+          } else if (currentError < -Math.PI) {
+            currentAngle -= 2 * Math.PI;
+          }
+          Logger.recordOutput("SnapController/TargetPose", target);
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  -xSupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  -ySupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  drive.snapController.calculate(currentAngle, theta)
+                      * drive.getMaxAngularSpeedRadPerSec(),
+                  drive.getRotation()));
+        }),
+        drive);
+  }
 
     /**
      * Represents the state of the shooter.
@@ -123,44 +196,6 @@ public interface ShootMath {
     }
 
     /**
-     * Solves for the roots of a general quartic. **DOES NOT WORK**
-     * https://www.desmos.com/calculator/gamythajrx
-     * @param a - x^4
-     * @param b - x^3
-     * @param c - x^2
-     * @param d - x^1
-     * @param e - x^0
-     * @return The four roots.
-     */
-    public static double[] solveQuartic(double a, double b, double c, double d, double e) {
-        final var a3 = b / a;
-        final var a2 = c / a;
-        final var a1 = d / a;
-        final var a0 = e / a;
-
-        final var Q3 = (3 * (a1 * a3 - 4 * a0) - Math.pow(a2, 2)) / 9;
-        final var R3 = -9 * a2 * (a1 * a3 - 4 * a0) - 27 * (4 * a2 * a0 - Math.pow(a1, 2) - Math.pow(a3, 2) * a0) + 2 * Math.pow(a2, 3);
-        final var y1 = 2 * Math.sqrt(-Q3) * Math.cos(Math.acos(R3 / Math.sqrt(-Math.pow(Q3, 3))) / 3) + a2 / 3;
-
-        final var R = Math.sqrt(Math.pow(a3, 2) / 4 - a2 + y1);
-        final var D = R == 0 ?
-            Math.sqrt(3 * Math.pow(a3, 2) / 4 - 2 * a2 + 2 * Math.sqrt(Math.pow(y1, 2) - 4 * a0)) :
-            Math.sqrt(3 * Math.pow(a3, 2) / 4 - Math.pow(R, 2) - 2 * a2 + (4 * a3 * a2 - 8 * a1 - Math.pow(a3, 3)) / (4 * R))
-        ;
-        final var E = R == 0 ?
-            Math.sqrt(3 * Math.pow(a3, 2) / 4 - 2 * a2 - 2 * Math.sqrt(Math.pow(y1, 2) - 4 * a0)) :
-            Math.sqrt(3 * Math.pow(a3, 2) / 4 - Math.pow(R, 2) - 2 * a2 - (4 * a3 * a2 - 8 * a1 - Math.pow(a3, 3)) / (4 * R))
-        ;
-
-        return new double[] {
-            -a3 / 4 + R / 2 + D / 2,
-            -a3 / 4 + R / 2 - D / 2,
-            -a3 / 4 - R / 2 + E / 2,
-            -a3 / 4 - R / 2 - E / 2
-        };
-    }
-
-    /**
      * Checks if a projectile will hit a triangle.
      * @param rvx - initial x velocity relative to target
      * @param rvy - initial y velocity relative to target
@@ -199,23 +234,11 @@ public interface ShootMath {
         final var B = dot(N.x, N.y, N.z, X, Y, Z);
         final var tf = (B + Math.sqrt(B * B - 2 * A * dot(N.x, N.y, N.z, T0x, T0y, T0z))) / A;
         final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
-        final var plane = cross(T1x - T0x, T1y - T0y, T1z - T0z, T2x - T0x, T2y - T0y, T2z - T0z).magnitude();
+        final var triangle0 = cross(T1x - T0x, T1y - T0y, T1z - T0z, T2x - T0x, T2y - T0y, T2z - T0z).magnitude();
         final var triangle1 = cross(P.x - T0x, P.y - T0y, P.z - T0z, P.x - T1x, P.y - T1y, P.z - T1z).magnitude();
         final var triangle2 = cross(P.x - T1x, P.y - T1y, P.z - T1z, P.x - T2x, P.y - T2y, P.z - T2z).magnitude();
         final var triangle3 = cross(P.x - T2x, P.y - T2y, P.z - T2z, P.x - T0x, P.y - T0y, P.z - T0z).magnitude();
-        return equals(plane, triangle1 + triangle2 + triangle3);
-    }
-
-    public double tolerance = 0.0001;
-
-    /**
-     * Checks if two scalars are within a certain range.
-     * @param a - first scalar
-     * @param b - second scalar
-     * @return If the two scalars are "close enough."
-     */
-    public static boolean equals(double a, double b) {
-        return Math.abs(a - b) < tolerance;
+        return MathUtil.isNear(triangle0, triangle1 + triangle2 + triangle3, 0.0001);
     }
 
     /**
