@@ -82,6 +82,7 @@ public class DriveCommands {
    * @param ySupplier - left joystick y value
    * @param target - pos to snap to
    * @return the command
+   * @author Ian Keller
    * @see <a href =
    *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
    *     Reference</a>
@@ -124,7 +125,8 @@ public class DriveCommands {
           }
           // find angle
           Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-          double theta = Math.atan2(difference.getY(), difference.getX());
+          double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+          double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
           double currentAngle =
               RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
           double currentError = theta - currentAngle;
@@ -148,6 +150,48 @@ public class DriveCommands {
                       * drive.getMaxAngularSpeedRadPerSec(),
                   RobotContainer.poseEstimator.getLatestPose().getRotation()));
         }),
+        drive);
+  }
+
+  /**
+   * Translate in line to a grounded note. Use camera data to get relative note pose.
+   *
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param yError - lateral error from note; take directly from note camera
+   * @return the command
+   */
+  public static Command translateToNote(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yError) {
+    return Commands.run(
+        (() -> {
+          Logger.recordOutput(
+              "Drive/NoteController/PID Output",
+              drive.noteController.calculate(-yError.getAsDouble(), 0)
+                  * drive.getMaxLinearSpeedMetersPerSec());
+          Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  // joystick magnitude
+                  -Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                      * drive.getMaxLinearSpeedMetersPerSec(),
+                  drive.noteController.calculate(-yError.getAsDouble(), 0)
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.noteControllermultiplier.get(),
+                  0));
+        }),
+        drive);
+  }
+
+  public static Command turnToNote(
+      Drive drive, DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier yaw) {
+    return Commands.run(
+        () -> {
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  joystickX.getAsDouble(), joystickY.getAsDouble(), -yaw.getAsDouble() / 20));
+        },
         drive);
   }
 }

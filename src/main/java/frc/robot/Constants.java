@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -31,7 +32,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
 
@@ -50,7 +51,8 @@ public final class Constants {
   }
 
   public final class VisionConstants {
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(17.003);
+    // april tag camera
+    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
     public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
     public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
     public static final double CAMERA_ROLL = 0;
@@ -65,6 +67,13 @@ public final class Constants {
             CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
             CAMERA_HEIGHT_METERS,
             new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
+
+    // note camera
+    public static final double NOTE_CAMERA_HEIGHT_METERS = Units.inchesToMeters(13.155);
+    public static final double NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS =
+        Units.inchesToMeters(14.886);
+    public static final double NOTE_CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
+    public static final double NOTE_CAMERA_PITCH = Units.degreesToRadians(35);
   }
 
   public final class DrivetrainConstants {
@@ -74,10 +83,12 @@ public final class Constants {
   public final class ArmConstants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
+    public static final double AMP_SETPOINT = -0.2;
+    public static final double TRAP_SETPOINT = -0.258;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
-    public static final double MAG_OFFSET = -0.144;
+    public static final double MAG_OFFSET = -.156;
   }
 
   public final class ShooterConstants {
@@ -105,11 +116,10 @@ public final class Constants {
     public static final int INTAKE_ID = 14;
   }
 
-  public final class LEDConstants {
-    public static final int LED_PORT = 9; // the pwm port which the leds are plugged into
-    public static final int BUFFER_LENGTH = 100; // the number of lights on the strip
-    public static final int FLASH_INTERVAL = 1; // the interval of flashing
-    public static final double REFRESH_RATE = 0.02;
+  public final class ClimbConstants {
+    // max rotations = (distance/2pi*wheelRadius) * gearRatio
+    public static final double MAX_ROTATIONS = -150;
+    public static final int TOLERANCE = 5;
   }
 
   public static enum Mode {

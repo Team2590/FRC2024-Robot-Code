@@ -11,6 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -43,7 +45,9 @@ public class Superstructure {
     SHOOT,
     PRIMING_AMP,
     SCORE_AMP,
-    CLIMB
+    CLIMB,
+    FLIPPING,
+    SCORE_TRAP
   }
 
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
@@ -51,30 +55,33 @@ public class Superstructure {
   private final Intake intake;
   private final Flywheel shooter;
   private final Arm arm;
+  private final Climb climb;
   private final NemesisLED led;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
-  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
+  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 3000.0);
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(
-      Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, NemesisLED led) {
+  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
+    this.climb = climb;
     this.led = led;
+    climb.resetRotationCount();
 
     final double[] distance = {
-      .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624, 4.2672,
-      4.572
+      0, 1.398, 1.41, 1.421, 1.573, 1.722, 1.887, 2.042, 2.210, 2.398, 2.530, 2.745, 2.881, 3.048,
+      3.088, 3.133, 3.298, 3.3539, 3.3681, 3.3806, 3.3900, 3.5000, 3.7000, 3.9000, 4.1000
     };
     final double[] armSetpoint = {
-      .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+      .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
+      .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -88,7 +95,14 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
-        led.solid(0, 0, 255);
+        // arm.setStopped();
+        break;
+      case RESET:
+        /*
+         * TBD -- > Simmilar to IDLE state ?
+         */
+        // C:\Users\Nemesis\Documents\2024\FRC2024-Robot-Code\src\main\java\frc\robot\autos\StartPathCommand.java
+        break;
 
       case IDLE:
         /*
@@ -99,7 +113,7 @@ public class Superstructure {
         shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
-        led.solid(255, 255, 0);
+        climb.setStopped();
         arm.setHome();
         break;
       case MANUAL_ARM:
@@ -116,13 +130,10 @@ public class Superstructure {
         // if (arm.getState() == ArmStates.HOME) {
         intake.setIntake();
         conveyor.setIntaking();
-        led.solid(154, 205, 50);
-
         // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
-          led.solid(138, 43, 226);
         }
         break;
 
@@ -136,26 +147,19 @@ public class Superstructure {
         arm.setHome();
         intake.setOutake();
         conveyor.setOuttaking();
-        led.solid(255, 165, 0);
         break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
-        // case PRIMING_SHOOTER:
-        //   /*
-        //    * PRIMING_SHOOTER (On Button Press)
-        //    * Run flywheel at desired velocity
-        //    * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
-        //    * state
-        //    */
-        //   // arm.setposition(SPEAKER) --> Dynamic(Vision)
-        //   shooter.shoot(1000); // Run shooter at set velocity (**Need to find**)
-        //   if (shooter.getState() == ShooterStates.AT_SETPOINT
-        //   // && arm.getState() == ArmStates.AT_SETPOINT {
-        //   ) {
-        //     systemState = SuperstructureStates.PRIMED_SHOOTER;
-        //   }
-        //   break;
+      case PRIMING_SHOOTER:
+        /*
+         * PRIMING_SHOOTER (For Auto Routines)
+         * Run flywheel at desired velocity. Useful in auto routines.
+         */
+        shooter.shoot(flywheelSpeedInput.get());
+        // Don't need any transition here, we want to stay in this state
+        // until SHOOT is called.
+        break;
 
       case PRIMED_SHOOTER:
         /*
@@ -171,15 +175,15 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToSpeaker());
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
-        led.solid(150, 75, 0);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
+
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
@@ -202,28 +206,34 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(-.2);
-        led.solid(255, 165, 0);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
 
         break;
-
+      case SCORE_TRAP:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
+        break;
       case CLIMB:
-        led.solid(255, 0, 255);
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
          * set system state to IDLE before climbing action ? (TBD)
          * climb.climb() -- > Sets climb to manual state
          */
+        climb.run();
         break;
+      case FLIPPING:
+        climb.flip();
     }
-    // Logger.recordOutput("Superstructure/State", systemState);
-    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
@@ -239,7 +249,8 @@ public class Superstructure {
   }
 
   public void primeShooter() {
-    systemState = SuperstructureStates.PRIMING_SHOOTER;
+    // systemState = SuperstructureStates.PRIMING_SHOOTER;
+    shooter.shoot(flywheelSpeedInput.get());
   }
 
   public void hasNote() {
@@ -248,6 +259,14 @@ public class Superstructure {
 
   public void shoot() {
     systemState = SuperstructureStates.SHOOT;
+  }
+
+  /**
+   * Returns true if we are in the process of shooting i.e either priming up to shooting or
+   * shooting.
+   */
+  public boolean isShooting() {
+    return systemState == SuperstructureStates.SHOOT;
   }
 
   public void primingAmp() {
@@ -275,6 +294,10 @@ public class Superstructure {
   public void armDown() {
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public void flip() {
+    systemState = SuperstructureStates.FLIPPING;
   }
 
   public SuperstructureStates getState() {

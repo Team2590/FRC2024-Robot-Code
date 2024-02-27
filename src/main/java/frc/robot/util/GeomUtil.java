@@ -6,6 +6,7 @@
 
 package frc.robot.util;
 
+import com.pathplanner.lib.util.GeometryUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /** Geometry utilities for working with translations, rotations, transforms, and poses. */
 public class GeomUtil {
@@ -146,5 +148,16 @@ public class GeomUtil {
         (a.getX() + b.getX() + c.getX()) / 3,
         (a.getY() + b.getY() + c.getY()) / 3,
         new Rotation2d());
+  }
+
+  /**
+   * Flips the pose using <code>GeometryUtil.flipFieldPose</code> if we are the RED alliance,
+   * otherwise returns the original pose.
+   */
+  public static Pose2d flipPoseBasedOnAlliance(Pose2d pose2d) {
+    return DriverStation.getAlliance().isPresent()
+            && (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue)
+        ? pose2d
+        : GeometryUtil.flipFieldPose(pose2d);
   }
 }
