@@ -47,7 +47,14 @@ public class DriveCommands {
   }
 
   /**
-   * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   * Field relative drive command using two joysticks
+   * (controlling linear and angular velocities).
+   * Desmos: https://www.desmos.com/calculator/cswpncuxr2
+   * @param drive - the drive subsystem
+   * @param xSupplier - function to supply x values [-1, 1]
+   * @param ySupplier - function to supply y values [-1, 1]
+   * @param omegaSupplier - function to supply omega (angular) values [-1, 1]
+   * @return the drive command
    */
   public static Command joystickDrive(
       Drive drive,
@@ -82,8 +89,10 @@ public class DriveCommands {
             drive.getRotation()
           ));
         },
-        drive);
+        drive
+    );
   }
+
   /**
    * Snap to the target position, while maintaining joystick movement
    *
