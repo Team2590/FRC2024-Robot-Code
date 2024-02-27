@@ -13,21 +13,17 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.RobotContainer;
 import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -41,6 +37,7 @@ public class PhotonRunnable implements Runnable {
   public final ArrayList<TimestampedVisionUpdate> updates =
       new ArrayList<TimestampedVisionUpdate>();
   private static double distanceToSpeaker = 0;
+  private static double distanceToTarget = 0;
   private static Pose3d RobotPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
@@ -65,7 +62,7 @@ public class PhotonRunnable implements Runnable {
   @Override
   public void run() {
     // Get AprilTag data
-    if (photonPoseEstimator != null && photonCamera != null && !RobotState.isAutonomous()) {
+    if (photonPoseEstimator != null && photonCamera != null) {
       photonResults = photonCamera.getLatestResult();
       var timestamp = photonResults.getTimestampSeconds();
       if (photonResults.hasTargets()) {
@@ -76,16 +73,10 @@ public class PhotonRunnable implements Runnable {
                         && target.getFiducialId() == 4)
                     || (DriverStation.getAlliance().get() == Alliance.Blue
                         && target.getFiducialId() == 7))) {
-              distanceToSpeaker =
-                  PhotonUtils.calculateDistanceToTargetMeters(
-                      this.cameraTransform.getZ(),
-                      AprilTag.tagHeights[target.getFiducialId()],
-                      -1 * this.cameraTransform.getRotation().getY(),
-                      Units.degreesToRadians(target.getPitch()));
-              Logger.recordOutput(
-                  "Odometry/DistanceToTarget",
+              distanceToTarget =
                   distanceBetweenPoses(
-                      RobotPose.toPose2d(), AprilTag.getTagPose(target.getFiducialId())));
+                      RobotContainer.poseEstimator.getLatestPose(),
+                      AprilTag.getTagPose(target.getFiducialId()));
             }
           }
           if (photonResults.targets.size() > 1
@@ -119,6 +110,10 @@ public class PhotonRunnable implements Runnable {
 
   public Pose2d getRobotPose2d() {
     return RobotPose.toPose2d();
+  }
+
+  public double getDistanceToTarget() {
+    return distanceToTarget;
   }
 
   public double distanceBetweenPoses(Pose2d a, Pose2d b) {

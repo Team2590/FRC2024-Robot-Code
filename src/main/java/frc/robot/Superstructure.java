@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -46,11 +47,10 @@ public class Superstructure {
     PRIMING_AMP,
     SCORE_AMP,
     CLIMB,
-    FLIPPING
+    FLIPPING,
+    SCORE_TRAP
   }
 
-  private final TalonFX leader = new TalonFX(24, Constants.CANBUS);
-  private final TalonFX follower = new TalonFX(25, Constants.CANBUS);
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private final Conveyor conveyor;
   private final Intake intake;
@@ -59,7 +59,7 @@ public class Superstructure {
   private final Climb climb;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
-  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", 0);
+  private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
@@ -75,11 +75,12 @@ public class Superstructure {
     climb.resetRotationCount();
 
     final double[] distance = {
-      0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
-      4.2672, 4.572
+      0, 1.398, 1.41, 1.421, 1.573, 1.722, 1.887, 2.042, 2.210, 2.398, 2.530, 2.745, 2.881, 3.048,
+      3.088, 3.133, 3.298, 3.3539, 3.3681, 3.3806, 3.3900, 3.5000, 3.7000, 3.9000, 4.1000
     };
     final double[] armSetpoint = {
-      .16, .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+      .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
+      .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -87,7 +88,6 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
-    Logger.recordOutput("Arm/RangeTOTarget", RobotContainer.poseEstimator.distanceToSpeaker());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -96,7 +96,6 @@ public class Superstructure {
         shooter.setStopped();
         // arm.setStopped();
         break;
-
       case RESET:
         /*
          * TBD -- > Simmilar to IDLE state ?
@@ -115,9 +114,8 @@ public class Superstructure {
         conveyor.setStopped();
         // arm.setHome();
         arm.setStopped();
-        leader.stopMotor();
-        follower.stopMotor();
         climb.setStopped();
+        arm.setHome();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -154,21 +152,15 @@ public class Superstructure {
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
         break;
-        // case PRIMING_SHOOTER:
-        //   /*
-        //    * PRIMING_SHOOTER (On Button Press)
-        //    * Run flywheel at desired velocity
-        //    * If arm is at setpoint && flywheel is at speed, transition to PRIMED_SHOOTER
-        //    * state
-        //    */
-        //   // arm.setposition(SPEAKER) --> Dynamic(Vision)
-        //   shooter.shoot(1000); // Run shooter at set velocity (**Need to find**)
-        //   if (shooter.getState() == ShooterStates.AT_SETPOINT
-        //   // && arm.getState() == ArmStates.AT_SETPOINT {
-        //   ) {
-        //     systemState = SuperstructureStates.PRIMED_SHOOTER;
-        //   }
-        //   break;
+      case PRIMING_SHOOTER:
+        /*
+         * PRIMING_SHOOTER (For Auto Routines)
+         * Run flywheel at desired velocity. Useful in auto routines.
+         */
+        shooter.shoot(flywheelSpeedInput.get());
+        // Don't need any transition here, we want to stay in this state
+        // until SHOOT is called.
+        break;
 
       case PRIMED_SHOOTER:
         /*
@@ -184,8 +176,7 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
@@ -193,6 +184,7 @@ public class Superstructure {
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
+
         /*
          * SHOOT (Right Driver Trigger)
          * if shooter and arm are PRIMED, conveyor moves note and shoots
@@ -215,13 +207,18 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        // arm.setPosition(-.258);
-        // if (arm.getState() == ArmStates.AT_SETPOINT) {
-        conveyor.setDiverting();
-        // }
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
 
         break;
-
+      case SCORE_TRAP:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setDiverting();
+        }
+        break;
       case CLIMB:
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
@@ -233,11 +230,11 @@ public class Superstructure {
       case FLIPPING:
         climb.flip();
     }
-    // Logger.recordOutput("Superstructure/State", systemState);
-    // Logger.recordOutput("Superstructure/ArmState", arm.getState());
-    // Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
-    // Logger.recordOutput("Superstructure/IntakeState", intake.getState());
-    // Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput("Superstructure/State", systemState);
+    Logger.recordOutput("Superstructure/ArmState", arm.getState());
+    Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
+    Logger.recordOutput("Superstructure/IntakeState", intake.getState());
+    Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
   }
 
   public void stop() {
@@ -253,7 +250,8 @@ public class Superstructure {
   }
 
   public void primeShooter() {
-    systemState = SuperstructureStates.PRIMING_SHOOTER;
+    // systemState = SuperstructureStates.PRIMING_SHOOTER;
+    shooter.shoot(flywheelSpeedInput.get());
   }
 
   public void hasNote() {
@@ -262,6 +260,14 @@ public class Superstructure {
 
   public void shoot() {
     systemState = SuperstructureStates.SHOOT;
+  }
+
+  /**
+   * Returns true if we are in the process of shooting i.e either priming up to shooting or
+   * shooting.
+   */
+  public boolean isShooting() {
+    return systemState == SuperstructureStates.SHOOT;
   }
 
   public void primingAmp() {

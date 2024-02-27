@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.33,
+      "y": 5.51
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "startB_note2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "note2_n7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n7_return"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

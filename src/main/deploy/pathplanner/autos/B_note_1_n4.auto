@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 1.33,
+      "y": 5.51
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -14,7 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "note1_note4"
+            "pathName": "note1_n4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n4_return"
           }
         }
       ]
