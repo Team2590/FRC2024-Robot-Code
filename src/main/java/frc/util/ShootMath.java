@@ -2,13 +2,7 @@ package frc.util;
 
 import java.util.function.DoubleSupplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -23,64 +17,52 @@ import frc.robot.subsystems.drive.Drive;
  */
 public interface ShootMath {
 
+    double DEADBAND = 0.1;
+
+    /**
+     * Maps an input from -1 to 1 to an output from -1 to 1.
+     * @param x - [-1, 1]
+     * @return - [-1, 1]
+     */
+    private static double scale(double x) {
+        return Math.copySign(x * x, x);
+    }
+
     public static Command shoot(
         Drive drive,
-        DoubleSupplier joystickX, DoubleSupplier joystickY
+        DoubleSupplier xSupplier, DoubleSupplier ySupplier
     ) {
         return Commands.run(
             () -> {
-                // Apply deadband
-                double linearMagnitude = MathUtil.applyDeadband(
-                    Math.hypot(joystickX.getAsDouble(), joystickY.getAsDouble()), 0.1
-                );
-                Rotation2d linearDirection = new Rotation2d(joystickX.getAsDouble(), joystickY.getAsDouble());
-
-                // Square values
-                linearMagnitude = linearMagnitude * linearMagnitude;
-
-                // Calcaulate new linear velocity
-                Translation2d linearVelocity = new Translation2d(linearMagnitude, linearDirection);
-
-                // Convert to field relative speeds & send command
-                drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        MathUtil.applyDeadband(joystickX.getAsDouble(), 0.1) * Drive.MAX_LINEAR_SPEED,
-                        MathUtil.applyDeadband(joystickY.getAsDouble(), 0.1) * Drive.MAX_LINEAR_SPEED,
-                        omega * drive.getMaxAngularSpeedRadPerSec(), // MINE
-                        drive.getRotation()));
+                final var theta = calcConstantVelocity(0,0,0,0,0,0,0,0).yaw;
+      
+                final var x = xSupplier.getAsDouble();
+                final var y = ySupplier.getAsDouble();
+      
+                final var magnitude = Math.hypot(x, y);
+      
+                if (magnitude < DEADBAND) {
+                  drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                    0, 0,
+                    drive.snapController.calculate(drive.getRotation().getRadians(), theta) * Drive.MAX_ANGULAR_SPEED,
+                    drive.getRotation()
+                  ));
+                  return;
+                }
+      
+                final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
+                final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
+                final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
+      
+                drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+                  newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
+                  drive.snapController.calculate(drive.getRotation().getRadians(), theta) * Drive.MAX_ANGULAR_SPEED,
+                  drive.getRotation()
+                ));
             },
             drive
         );
     }
-
-    public static Command SnapToTarget(
-      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose2d target) {
-    return Commands.run(
-        (() -> {
-          Transform2d difference = drive.getPose().minus(target);
-          double theta = Math.atan2(difference.getY(), difference.getX());
-          double currentAngle = drive.getRotation().getRadians();
-          double currentError = theta - currentAngle;
-          if (currentError > Math.PI) {
-            currentAngle += 2 * Math.PI;
-          } else if (currentError < -Math.PI) {
-            currentAngle -= 2 * Math.PI;
-          }
-          Logger.recordOutput("SnapController/TargetPose", target);
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  -xSupplier.getAsDouble()
-                      * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
-                  -ySupplier.getAsDouble()
-                      * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
-                  drive.snapController.calculate(currentAngle, theta)
-                      * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
-        }),
-        drive);
-  }
 
     /**
      * Represents the state of the shooter.
