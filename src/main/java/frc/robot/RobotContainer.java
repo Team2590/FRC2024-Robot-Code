@@ -2,6 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -129,14 +131,14 @@ public class RobotContainer {
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(2)) {
-      // CommandScheduler.getInstance()
-      //     .schedule(
-      //         DriveCommands.SnapToTarget(
-      //                 drive,
-      //                 () -> -input.leftJoystickY(),
-      //                 () -> -input.leftJoystickX(),
-      //                 Targets.SPEAKER)
-      //             .until(() -> input.rightJoystickButton(2)));
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.SPEAKER)
+                  .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();

@@ -12,7 +12,6 @@ package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
@@ -70,11 +69,12 @@ public class Superstructure {
     this.arm = arm;
 
     final double[] distance = {
-      0, .9144, 1.2192, 1.524, 1.8288, 2.1336, 2.4384, 2.7432, 3.048, 3.3528, 3.6576, 3.9624,
-      4.2672, 4.572
+      0, 1.398, 1.41, 1.421, 1.573, 1.722, 1.887, 2.042, 2.210, 2.398, 2.530, 2.745, 2.881, 3.048,
+      3.088, 3.133, 3.298, 3.3539, 3.3681, 3.3806, 3.3900, 3.5000, 3.7000, 3.9000, 4.1000
     };
     final double[] armSetpoint = {
-      .16, .16, .145, .133, .12, .109, .103, .097, .090, .09, .088, .084, .08, .076
+      .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
+      .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -82,7 +82,6 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
-    Logger.recordOutput("Arm/RangeTOTarget", RobotContainer.poseEstimator.distanceToSpeaker());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -177,10 +176,9 @@ public class Superstructure {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToSpeaker() + Units.inchesToMeters(15));
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armAngle.get());
+        arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
