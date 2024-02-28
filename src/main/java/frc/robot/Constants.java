@@ -130,6 +130,8 @@ public final class Constants {
     SIM,
 
     /** Replaying from a log file. */
-    REPLAY
+    REPLAY,
+
+    KANG
   }
 }
