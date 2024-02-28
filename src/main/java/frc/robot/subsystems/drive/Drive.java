@@ -323,4 +323,8 @@ public class Drive extends SubsystemBase {
       noteController.setTolerance(noteControllerTolerance.get());
     }
   }
+
+  public boolean snapControllerAtSetpoint(){
+    return snapController.atSetpoint();
+  }
 }
