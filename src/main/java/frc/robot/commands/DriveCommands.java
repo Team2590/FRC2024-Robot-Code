@@ -186,12 +186,13 @@ public class DriveCommands {
 
   public static Command turnToNote(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
+    final var yaw = yawSupplier.getAsDouble();
     return joystickDrive(
         drive,
         xSupplier,
         ySupplier,
         () -> {
-          return -yawSupplier.getAsDouble() / 15;
+          return Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10;
         });
   }
 }
