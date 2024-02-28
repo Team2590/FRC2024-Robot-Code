@@ -77,7 +77,23 @@ public class RobotContainer {
         noteNotifier.setName("PhotonNoteRunnable");
         noteNotifier.startPeriodic(0.02);
         break;
-
+      case KANG:
+      drive =
+            new Drive(
+                new GyroIOPigeon2(true),
+                new ModuleIOTalonFX(0),
+                new ModuleIOTalonFX(1),
+                new ModuleIOTalonFX(2),
+                new ModuleIOTalonFX(3));
+        flywheel = new Flywheel(new FlywheelIOTalonFX());
+        // instantiate other subsystems
+        conveyor = new Conveyor(new ConveyorIOTalonFX());
+        intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
+        noteNotifier.setName("PhotonNoteRunnable");
+        noteNotifier.startPeriodic(0.02);
+        break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
