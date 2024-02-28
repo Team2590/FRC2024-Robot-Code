@@ -323,7 +323,7 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    if(arm.getAbsolutePosition() <= ArmConstants.ARM_MAX){
+    if(arm.getAbsolutePosition() >= ArmConstants.ARM_MAX){
       arm.setPosition(0.3);
     }
     else{
@@ -333,6 +333,10 @@ public class Superstructure {
   }
 
   public void armDown() {
+    
+    if(arm.getAbsolutePosition() <= ArmConstants.HOME_SETPOINT){
+      arm.setPosition(ArmConstants.HOME_SETPOINT);
+    }
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
   }
