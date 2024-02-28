@@ -42,6 +42,7 @@ public class Superstructure {
     PRIMED_SHOOTER,
     HAS_NOTE,
     SHOOT,
+    SUBWOOFER_SHOT,
     PRIMING_AMP,
     SCORE_AMP,
     CLIMB,
@@ -189,6 +190,14 @@ public class Superstructure {
         //   conveyor.setShooting();
         // }
         break;
+        case SUBWOOFER_SHOT:
+        arm.setPosition(ArmConstants.HOME_SETPOINT);
+        shooter.shoot(flywheelSpeedInput.get());
+        if (arm.getState() == ArmStates.AT_SETPOINT
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+          conveyor.setShooting();
+        }
+        break;
 
       case PRIMING_AMP:
         /*
@@ -256,6 +265,10 @@ public class Superstructure {
 
   public void shoot() {
     systemState = SuperstructureStates.SHOOT;
+  }
+
+  public void subwooferShot() {
+    systemState = SuperstructureStates.SUBWOOFER_SHOT;
   }
 
   /**
