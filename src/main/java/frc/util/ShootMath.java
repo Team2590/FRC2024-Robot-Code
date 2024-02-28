@@ -3,65 +3,43 @@ package frc.util;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 
 /**
  * @author Elan Ronen
- * 
- * TODO: add formula for shooting with entry angle
- * TODO: finish simplifying equation for t_f
- * TODO: find inequality to check if a target is "within reach"
+ * TODO: set arm speed as z velocity
  */
 public interface ShootMath {
 
     double DEADBAND = 0.1;
 
-    /**
-     * Maps an input from -1 to 1 to an output from -1 to 1.
-     * @param x - [-1, 1]
-     * @return - [-1, 1]
-     */
-    private static double scale(double x) {
-        return Math.copySign(x * x, x);
-    }
+    double GRAVITY = 9.8;
+    /** TODO: measure and set */
+    double SHOOT_VELOCITY = 0;
+    /** TODO: measure and set */
+    double PROJECTILE_INITIAL_HEIGHT = 0;
 
     public static Command shoot(
         Drive drive,
-        DoubleSupplier xSupplier, DoubleSupplier ySupplier
+        DoubleSupplier xSupplier, DoubleSupplier ySupplier,
+        Pose3d target
     ) {
-        return Commands.run(
-            () -> {
-                final var theta = calcConstantVelocity(0,0,0,0,0,0,0,0).yaw;
-      
-                final var x = xSupplier.getAsDouble();
-                final var y = ySupplier.getAsDouble();
-      
-                final var magnitude = Math.hypot(x, y);
-      
-                if (magnitude < DEADBAND) {
-                  drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                    0, 0,
-                    drive.snapController.calculate(drive.getRotation().getRadians(), theta) * Drive.MAX_ANGULAR_SPEED,
-                    drive.getRotation()
-                  ));
-                  return;
-                }
-      
-                final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
-                final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
-                final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
-      
-                drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-                  newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
-                  drive.snapController.calculate(drive.getRotation().getRadians(), theta) * Drive.MAX_ANGULAR_SPEED,
-                  drive.getRotation()
-                ));
-            },
-            drive
-        );
+        return DriveCommands.joystickDrive(drive, xSupplier, ySupplier, () -> {
+
+            final var robotPose = drive.getPose();
+            final var theta = calcConstantVelocity(
+                SHOOT_VELOCITY,
+                target.getX() - robotPose.getX(), target.getY() - robotPose.getY(), target.getZ() - PROJECTILE_INITIAL_HEIGHT,
+                drive.currentChassisSpeeds.vxMetersPerSecond,
+                drive.currentChassisSpeeds.vyMetersPerSecond,
+                0,
+                GRAVITY
+            ).yaw;
+            return drive.snapController.calculate(drive.getRotation().getRadians(), theta) * Drive.MAX_ANGULAR_SPEED;
+        });
     }
 
     /**
