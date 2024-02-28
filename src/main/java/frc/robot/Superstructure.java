@@ -193,7 +193,10 @@ public class Superstructure {
       case SUBWOOFER_SHOT:
         arm.setPosition(0.168);
         shooter.shoot(flywheelSpeedInput.get());
-
+        if (arm.getState() == ArmStates.AT_SETPOINT
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+          conveyor.setShooting();
+        }
         break;
       case PRIMING_AMP:
         /*
