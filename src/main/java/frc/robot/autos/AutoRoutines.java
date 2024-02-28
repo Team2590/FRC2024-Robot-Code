@@ -8,18 +8,23 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutoRoutines {
 
+  private static final String SHOOT = "shoot";
+  private static final String SNAP_SHOOT = "snap_shoot";
+  private static final String INTAKE = "intake";
+
   public static final LoggedDashboardChooser<Command> buildChooser(
       Drive drive, Superstructure superstructure) {
     LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
 
     PathPlannerPaths paths = PathPlannerPaths.create();
-    AutoFunction ezAuto = (dynamicPaths) -> buildAuto(paths, drive, superstructure, dynamicPaths);
+    // An easy way to create autos without having to supply paths, drive and superstructure for every call.
+    AutoFunction ezAuto = (instructions) -> buildAuto(paths, drive, superstructure, instructions);
 
     // Register all the auto routines here
     autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
     // This is the same as OneNoteAuto
     autoChooser.addOption(
-        "EasyTwoNoteAuto", ezAuto.apply("shoot", "startB_note1", "shoot", "n2-n3", "snap_shoot"));
+        "EasyTwoNoteAuto", ezAuto.apply(SHOOT, "startB_note1", SHOOT, "n2-n3", SNAP_SHOOT));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
@@ -45,17 +50,17 @@ public class AutoRoutines {
    * for running intake.
    */
   private static Command buildAuto(
-      PathPlannerPaths pathPlans, Drive drive, Superstructure superstructure, String... paths) {
+      PathPlannerPaths pathPlans, Drive drive, Superstructure superstructure, String... instructions) {
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
-    for (String path : paths) {
+    for (String path : instructions) {
       switch (path) {
-        case "shoot":
+        case SHOOT:
           builder.shoot(false);
           break;
-        case "snap_shoot":
+        case SNAP_SHOOT:
           builder.shoot(true);
           break;
-        case "intake":
+        case INTAKE:
           // intake automatically starts up after shoot but just in case if we need it.
           builder.intake();
           break;
