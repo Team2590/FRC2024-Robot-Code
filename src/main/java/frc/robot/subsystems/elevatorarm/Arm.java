@@ -126,7 +126,6 @@ public class Arm extends SubsystemBase {
     state = ArmStates.STOPPED;
   }
 
-
   public ArmStates getState() {
     return state;
   }

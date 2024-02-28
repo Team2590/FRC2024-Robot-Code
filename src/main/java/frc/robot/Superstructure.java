@@ -126,19 +126,16 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        
+
         // if (arm.getState() == ArmStates.HOME) {
-        if (arm.getState() == ArmStates.HOME){
+        if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
 
-        }
-        else{
+        } else {
           arm.setHome();
         }
-        
-        
-        
+
         // }
         if (conveyor.hasNote()) {
           intake.setStopped();
@@ -201,7 +198,7 @@ public class Superstructure {
         //   conveyor.setShooting();
         // }
         break;
-        case SUBWOOFER_SHOT:
+      case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT

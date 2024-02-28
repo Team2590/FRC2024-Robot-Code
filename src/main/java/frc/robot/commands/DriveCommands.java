@@ -35,6 +35,7 @@ import org.littletonrobotics.junction.Logger;
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
   private static double linearMagnitude;
+  private static double omega;
 
   private DriveCommands() {}
 
@@ -63,8 +64,13 @@ public class DriveCommands {
           }
           Rotation2d linearDirection =
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
+          if (DrivetrainConstants.SLOW_MODE == false) {
+            omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
+          } else {
+            omega =
+                MathUtil.applyDeadband(
+                    omegaSupplier.getAsDouble() / DrivetrainConstants.SLOW_MODE_CONSTANT, DEADBAND);
+          }
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
           omega = Math.copySign(omega * omega, omega);
