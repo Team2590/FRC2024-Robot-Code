@@ -19,10 +19,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.AprilTag;
+import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -66,5 +73,126 @@ public class DriveCommands {
                   drive.getRotation()));
         },
         drive);
+  }
+  /**
+   * Snap to the target position, while maintaining joystick movement
+   *
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param target - pos to snap to
+   * @return the command
+   * @author Ian Keller
+   * @see <a href =
+   *     "https://github.com/Team254/FRC-2022-Public/blob/main/src/main/java/com/team254/lib/control/SwerveHeadingController.java">Code
+   *     Reference</a>
+   */
+  public static Command SnapToTarget(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      FieldConstants.Targets target) {
+    return Commands.run(
+        (() -> {
+          // get target pose
+          Pose2d targetPose;
+          switch (target) {
+            case SPEAKER:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? AprilTag.getTagPose(4)
+                      : AprilTag.getTagPose(7);
+              break;
+            case AMP:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? AprilTag.getTagPose(5)
+                      : AprilTag.getTagPose(6);
+              break;
+            case STAGE:
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Red
+                      ? GeomUtil.triangleCenter(
+                          AprilTag.getTagPose(11), AprilTag.getTagPose(12), AprilTag.getTagPose(13))
+                      : GeomUtil.triangleCenter(
+                          AprilTag.getTagPose(14),
+                          AprilTag.getTagPose(15),
+                          AprilTag.getTagPose(16));
+              break;
+            default:
+              targetPose = new Pose2d();
+              break;
+          }
+          // find angle
+          Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
+          double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+          double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
+          double currentAngle =
+              RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
+          double currentError = theta - currentAngle;
+          if (currentError > Math.PI) {
+            currentAngle += 2 * Math.PI;
+          } else if (currentError < -Math.PI) {
+            currentAngle -= 2 * Math.PI;
+          }
+          Logger.recordOutput("SnapController/Target", target);
+          Logger.recordOutput("SnapController/TargetPose", targetPose);
+          // run the motors
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  xSupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  ySupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.snapControllermultiplier.get(),
+                  drive.snapController.calculate(currentAngle, theta)
+                      * drive.getMaxAngularSpeedRadPerSec(),
+                  RobotContainer.poseEstimator.getLatestPose().getRotation()));
+        }),
+        drive);
+  }
+
+  /**
+   * Translate in line to a grounded note. Use camera data to get relative note pose.
+   *
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param yError - lateral error from note; take directly from note camera
+   * @return the command
+   */
+  public static Command translateToNote(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yError) {
+    return Commands.run(
+        (() -> {
+          Logger.recordOutput(
+              "Drive/NoteController/PID Output",
+              drive.noteController.calculate(-yError.getAsDouble(), 0)
+                  * drive.getMaxLinearSpeedMetersPerSec());
+          Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  // joystick magnitude
+                  -Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble())
+                      * drive.getMaxLinearSpeedMetersPerSec(),
+                  drive.noteController.calculate(-yError.getAsDouble(), 0)
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.noteControllermultiplier.get(),
+                  0));
+        }),
+        drive);
+  }
+
+  public static Command turnToNote(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
+    final var yaw = yawSupplier.getAsDouble();
+    return joystickDrive(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          return Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10;
+        });
   }
 }
