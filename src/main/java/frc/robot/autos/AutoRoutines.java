@@ -14,6 +14,9 @@ public class AutoRoutines {
     PathPlannerPaths paths = PathPlannerPaths.create();
     // Register all the auto routines here
     autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
+    autoChooser.addOption(
+        "EasyTwoNoteAuto",
+        buildAuto(paths, drive, superstructure, "shoot", "startB_note1", "snap_shoot", "n2-n3"));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
@@ -30,5 +33,26 @@ public class AutoRoutines {
         .followPath("n2-n3")
         .shoot(true)
         .build();
+  }
+
+  /**
+   * Easy way to configure an Auto Routine, just path in the paths.
+   *
+   * <p>Use 'shoot' for just shooting or 'snap_shoot' for snaping to target and shooting.
+   */
+  private static Command buildAuto(
+      PathPlannerPaths pathPlans, Drive drive, Superstructure superstructure, String... paths) {
+    AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
+    for (String path : paths) {
+      if ("shoot".equals(path)) {
+        builder.shoot(false);
+      } else if ("snap_shoot".equals(path)) {
+        builder.shoot(true);
+      } else {
+        // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
+        builder.followPath(path);
+      }
+    }
+    return builder.build();
   }
 }
