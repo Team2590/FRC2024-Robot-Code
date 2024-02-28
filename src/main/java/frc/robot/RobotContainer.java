@@ -163,8 +163,7 @@ public class RobotContainer {
                       Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
-    }
-    else if (input.rightJoystickButton(3)) {
+    } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
@@ -188,7 +187,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
-    // return null;
   }
 
   /**
