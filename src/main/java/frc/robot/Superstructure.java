@@ -47,7 +47,8 @@ public class Superstructure {
     SCORE_AMP,
     CLIMB,
     FLIPPING,
-    SCORE_TRAP
+    SCORE_TRAP,
+    ARM_CLIMB
   }
 
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
@@ -59,6 +60,7 @@ public class Superstructure {
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
@@ -175,7 +177,7 @@ public class Superstructure {
         double armDistanceSetPoint =
             armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint);
+        arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
@@ -205,6 +207,7 @@ public class Superstructure {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
+        // arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
       case SCORE_AMP:
@@ -224,6 +227,9 @@ public class Superstructure {
           conveyor.setDiverting();
         }
         break;
+      case ARM_CLIMB:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        break;
       case CLIMB:
         /*
          * arm.setposition(HOME); -- > Stow the arm for climb
@@ -240,6 +246,8 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
     Logger.recordOutput("Superstructure/IntakeState", intake.getState());
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput(
+        "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
   }
 
   public void stop() {
@@ -257,6 +265,10 @@ public class Superstructure {
   public void primeShooter() {
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
+  }
+
+  public void primeAmp() {
+    systemState = SuperstructureStates.PRIMING_AMP;
   }
 
   public void hasNote() {
@@ -304,6 +316,10 @@ public class Superstructure {
   public void armDown() {
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public void armClimb() {
+    systemState = SuperstructureStates.ARM_CLIMB;
   }
 
   public void flip() {
