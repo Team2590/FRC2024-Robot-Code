@@ -22,6 +22,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.ArmConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -191,7 +192,7 @@ public class Superstructure {
         // }
         break;
       case SUBWOOFER_SHOT:
-        arm.setPosition(0.168);
+        arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT) {
