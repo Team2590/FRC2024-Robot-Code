@@ -120,12 +120,11 @@ public class Arm extends SubsystemBase {
     DutyCycleOut power = new DutyCycleOut(0.1);
     arm.setPower(power);
   }
-
+  
   /** Stops the flywheel. */
   public void setStopped() {
     state = ArmStates.STOPPED;
   }
-
 
   public ArmStates getState() {
     return state;
