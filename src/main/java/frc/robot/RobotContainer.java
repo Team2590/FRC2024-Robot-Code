@@ -122,7 +122,7 @@ public class RobotContainer {
             drive,
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
-            () -> input.rightJoystickX()));
+            () -> -input.rightJoystickX()));
   }
 
   public void stop() {
@@ -163,24 +163,23 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
                       Targets.SPEAKER)
-                  .until(() -> input.rightJoystickButton(2)));
+                  .until(() -> input.leftJoystickTrigger()));
       superstructure.shoot();
-    }
-    else if(input.rightJoystickTrigger()){
+    } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
     }
-    else if (input.rightJoystickButton(3)){
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
-                  .until(() -> input.rightJoystickButton(2)));
-    }
-    else if (input.rightJoystickButton(11)){
-      //manual arm w climb DOESNT WORK
+    // else if (input.rightJoystickButton(3)) {
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           DriveCommands.SnapToTarget(
+    //                   drive,
+    //                   () -> -input.leftJoystickY(),
+    //                   () -> -input.leftJoystickX(),
+    //                   Targets.SPEAKER)
+    //               .until(() -> input.rightJoystickButton(3)));
+    // }
+    else if (input.rightJoystickButton(11)) {
+      // manual arm w climb DOESNT WORK
       superstructure.climb();
     } else if (input.rightJoystickButton(7)) {
       DrivetrainConstants.SLOW_MODE = !DrivetrainConstants.SLOW_MODE;
@@ -191,12 +190,29 @@ public class RobotContainer {
     }
     else if (input.rightJoystickPOV() == 270 || input.rightJoystickPOV() == -90){
       //spit
-    }
-    else{
+    } else if (input.rightJoystickButton(5)) {
+      drive.zeroGyro();
+    } else if (input.leftJoystickPOV() == 270 || input.leftJoystickPOV() == -90) {
+      // safe shot
+    } else if (input.rightJoystickPOV() == 270 || input.rightJoystickPOV() == -90) {
+      // spit
+      superstructure.outtake();
+    } else if (input.leftJoystickButton(4)) {
+      // highkey does not work rn
+      superstructure.primingAmp();
+    } else if (input.rightJoystickButton(3)) {
+      superstructure.scoreAmp();
+    } else {
       superstructure.idle();
     }
 
-    //TBD OPERATOR BUTTONS
+    if (input.controllerYButton()) {
+      superstructure.climb();
+    }
+    if (input.controllerXButton()) {
+      superstructure.armClimb();
+    }
+    // TBD OPERATOR BUTTONS
 
     // if (input.leftJoystickTrigger()) {
     //   superstructure.intake();
