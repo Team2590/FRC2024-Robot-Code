@@ -4,7 +4,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -143,25 +142,15 @@ public class RobotContainer {
       superstructure.intake();
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
-    } else if (input.rightJoystickButton(2)) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
-                  .until(() -> input.rightJoystickButton(2)));
-      // Example Use below
-      // CommandScheduler.getInstance()
-      //     .schedule(
-      //         DriveCommands.turnToNote(
-      //                 drive,
-      //                 () -> -input.leftJoystickY(),
-      //                 () -> -input.leftJoystickX(),
-      //                 PhotonNoteRunnable.target::getYaw)
-      //             .until(() -> input.rightJoystickButton(2)));
-      superstructure.shoot();
+    } else if (input.rightJoystickButton(2) && PhotonNoteRunnable.target != null) {
+      CommandScheduler.getInstance().schedule(
+        DriveCommands.turnToNote(
+          drive,
+          () -> -input.leftJoystickY(),
+          () -> -input.leftJoystickX(),
+          PhotonNoteRunnable.target::getYaw
+        ).until(() -> input.rightJoystickButton(2))
+      );
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else if (input.rightJoystickButton(5)) {

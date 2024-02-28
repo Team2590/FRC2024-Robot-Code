@@ -185,33 +185,13 @@ public class DriveCommands {
   }
 
   public static Command turnToNote(
-      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
-    return Commands.run(
-        () -> {
-          final var x = xSupplier.getAsDouble();
-          final var y = ySupplier.getAsDouble();
-
-          final var magnitude = Math.hypot(x, y);
-
-          if (magnitude < DEADBAND) {
-            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-              0, 0,
-              omega * Drive.MAX_ANGULAR_SPEED,
-              drive.getRotation()
-            ));
-            return;
-          }
-
-          final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
-          final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
-          final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
-
-          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-            newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
-            omega * Drive.MAX_ANGULAR_SPEED,
-            drive.getRotation()
-          ));
-        },
-        drive);
+    Drive drive,
+    DoubleSupplier xSupplier, DoubleSupplier ySupplier,
+    DoubleSupplier yawSupplier
+  ) {
+    return joystickDrive(drive, xSupplier, ySupplier, () -> {
+      return -yawSupplier.getAsDouble() / 15;
+    });
   }
+
 }
