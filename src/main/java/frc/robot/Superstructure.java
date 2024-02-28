@@ -255,6 +255,7 @@ public class Superstructure {
   }
 
   public void primeShooter() {
+    System.out.println("-- primingShooter");
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
   }

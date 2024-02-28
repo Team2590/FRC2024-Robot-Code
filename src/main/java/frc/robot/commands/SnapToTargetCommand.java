@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -57,11 +58,9 @@ public class SnapToTargetCommand extends Command {
     count = 0;
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
-    // get target pose
     switch (target) {
       case SPEAKER:
         targetPose = isRed ? AprilTag.getTagPose(4) : AprilTag.getTagPose(7);
-
         break;
       case AMP:
         targetPose = isRed ? AprilTag.getTagPose(5) : AprilTag.getTagPose(6);
@@ -82,10 +81,12 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
+    count++;
     // find angle
     count++;
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-    double theta = Math.atan2(difference.getY(), difference.getX());
+    double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+    double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
     double currentAngle = RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
     currentError = theta - currentAngle;
     if (currentError > Math.PI) {
@@ -97,8 +98,9 @@ public class SnapToTargetCommand extends Command {
     Logger.recordOutput("SnapController/Target", target);
     Logger.recordOutput("SnapController/TargetPose", targetPose);
 
-    System.out.println(
-        "SnapToTarget - currentError:" + currentError + ", currentAngle:" + currentAngle);
+    System.out.printf(
+        "----> SnapToTargetComand: currentError[%f], currentAngle[%f], currentAngleDegree[%f]\n",
+        currentError, currentAngle, Units.radiansToDegrees(currentAngle));
     // run the motors
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -116,7 +118,8 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 50;
+    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 25;
+    // return false;
   }
 
   @Override

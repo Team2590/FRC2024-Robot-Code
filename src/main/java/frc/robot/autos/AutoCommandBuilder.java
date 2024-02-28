@@ -59,7 +59,7 @@ public class AutoCommandBuilder {
               () -> 0,
               () -> 0,
               Targets.SPEAKER,
-              0.1 // TODO: Figure out the best error tolerance.
+              0.00001d // TODO: Figure out the best error tolerance.
               ));
       // Commands.race(
       //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
