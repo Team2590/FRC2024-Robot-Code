@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -8,6 +10,7 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -31,7 +34,6 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -146,11 +148,18 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(2)) {
       CommandScheduler.getInstance()
           .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
+              new SnapToTargetCommand(
+                drive,
+                () -> -input.leftJoystickY(),
+                () -> -input.leftJoystickX(),
+                Targets.SPEAKER,
+                0.1 // TODO: Figure out the best error tolerance.
+              )
+              // DriveCommands.SnapToTarget(
+              //         drive,
+              //         () -> -input.leftJoystickY(),
+              //         () -> -input.leftJoystickX(),
+              //         Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
       // Example Use below
       // CommandScheduler.getInstance()
