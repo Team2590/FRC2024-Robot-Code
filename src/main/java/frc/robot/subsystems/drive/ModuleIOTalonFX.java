@@ -25,6 +25,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
+
 import java.util.Queue;
 
 /**
@@ -87,6 +91,59 @@ public class ModuleIOTalonFX implements ModuleIO {
    * voila!
    */
   public ModuleIOTalonFX(int index) {
+    if (Constants.currentMode == Mode.KANG){
+      // Doing it like this due to deviceID mismatches, I know it's gross
+      switch (index) {
+      case 0: // Front Left
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        driveTalon = new TalonFX(13, "Takeover");
+        turnTalon = new TalonFX(11, "Takeover");
+        cancoder = new CANcoder(12, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(-2.979);
+        // Uncomment for jynx
+        // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
+        SmartDashboard.putNumber(
+            "Module0 offset", cancoder.getAbsolutePosition().getValueAsDouble());
+        break;
+      case 1: // Front Right
+        driveTalon = new TalonFX(23, "Takeover");
+        turnTalon = new TalonFX(21, "Takeover");
+        cancoder = new CANcoder(22, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(-.927);
+        // Uncomment for jynx
+        // absoluteEncoderOffset = new Rotation2d(-.928 + Math.PI); // 2.778
+        SmartDashboard.putNumber(
+            "Module1 offset", cancoder.getAbsolutePosition().getValueAsDouble());
+        break;
+      case 2: // Back Left
+        driveTalon = new TalonFX(33, "Takeover");
+        turnTalon = new TalonFX(31, "Takeover");
+        cancoder = new CANcoder(32, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(-1.68);
+        // Uncomment for jynx
+        // absoluteEncoderOffset = new Rotation2d(1.474 + Math.PI); // -2.551
+        SmartDashboard.putNumber(
+            "Module2 offset", cancoder.getAbsolutePosition().getValueAsDouble());
+        break;
+      case 3: // Back Right
+        driveTalon = new TalonFX(43, "Takeover");
+        turnTalon = new TalonFX(41, "Takeover");
+        cancoder = new CANcoder(42, "Takeover");
+        absoluteEncoderOffset = new Rotation2d(0.313);
+        // Uncomment for jynx
+        // absoluteEncoderOffset = new Rotation2d(-2.686 + Math.PI); // -1/717
+        SmartDashboard.putNumber(
+            "Module3 offset", cancoder.getAbsolutePosition().getValueAsDouble());
+        break;
+      default:
+        throw new RuntimeException("Invalid module index");
+    }
+    } else{
     switch (index) {
       case 0: // Front Left
         try {
@@ -129,6 +186,7 @@ public class ModuleIOTalonFX implements ModuleIO {
       default:
         throw new RuntimeException("Invalid module index");
     }
+  }
 
     var driveConfig = new TalonFXConfiguration();
     driveConfig.CurrentLimits.StatorCurrentLimit = 40.0;
