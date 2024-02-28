@@ -284,8 +284,13 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    pwr = new DutyCycleOut(-0.1);
-    systemState = SuperstructureStates.MANUAL_ARM;
+    if(arm.getAbsolutePosition() <= ArmConstants.ARM_MAX){
+      arm.setPosition(0.3);
+    }
+    else{
+      pwr = new DutyCycleOut(-0.1);
+      systemState = SuperstructureStates.MANUAL_ARM;
+    }
   }
 
   public void armDown() {

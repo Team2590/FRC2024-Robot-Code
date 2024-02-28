@@ -89,6 +89,7 @@ public final class Constants {
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
     public static final double MAG_OFFSET = -.156;
+      public static final double ARM_MAX = -0.3;
   }
 
   public final class ShooterConstants {
