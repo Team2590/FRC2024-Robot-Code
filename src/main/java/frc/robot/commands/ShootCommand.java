@@ -41,7 +41,8 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (!superstructure.isShooting()) || (timer.hasElapsed(timeToWait));
+    // return !(superstructure.note_present()) || (timer.hasElapsed(timeToWait));
+    return timer.hasElapsed(timeToWait);
     // TODO create a condition to figure out when shooting is done- conveyor, !hasnote
   }
 
@@ -49,6 +50,6 @@ public class ShootCommand extends Command {
   public void end(boolean interrupted) {
     timer.stop();
     // start intake immediately after shooting
-    superstructure.intake();
+    // superstructure.intake();
   }
 }
