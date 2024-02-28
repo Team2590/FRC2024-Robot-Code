@@ -140,21 +140,11 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    if (input.leftJoystickTrigger()) {
-      superstructure.intake();
-    } else if (input.rightJoystickTrigger()) {
-      superstructure.outtake();
-    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
-      // I just put this button as a place holder
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.turnToNote(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      PhotonNoteRunnable.target::getYaw)
-                  .until(() -> input.rightJoystickButton(10)));
-    } else if (input.rightJoystickButton(2)) {
+    // if (input.leftJoystickTrigger()) {
+    //   superstructure.intake();
+    // } else if (input.rightJoystickTrigger()) {
+    //   superstructure.outtake();
+    // } 
     if(input.leftJoystickTrigger()){
       CommandScheduler.getInstance()
           .schedule(
@@ -167,18 +157,17 @@ public class RobotContainer {
       superstructure.shoot();
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
-    }
-    // else if (input.rightJoystickButton(3)) {
-    //   CommandScheduler.getInstance()
-    //       .schedule(
-    //           DriveCommands.SnapToTarget(
-    //                   drive,
-    //                   () -> -input.leftJoystickY(),
-    //                   () -> -input.leftJoystickX(),
-    //                   Targets.SPEAKER)
-    //               .until(() -> input.rightJoystickButton(3)));
-    // }
-    else if (input.rightJoystickButton(11)) {
+    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
+      // I just put this button as a place holder
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.turnToNote(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      PhotonNoteRunnable.target::getYaw)
+                  .until(() -> input.rightJoystickButton(10)));
+    } else if (input.rightJoystickButton(11)) {
       // manual arm w climb DOESNT WORK
       superstructure.climb();
     } else if (input.rightJoystickButton(7)) {
@@ -192,12 +181,12 @@ public class RobotContainer {
       //spit
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
-    } else if (input.leftJoystickPOV() == 270 || input.leftJoystickPOV() == -90) {
-      // safe shot
-    } else if (input.rightJoystickPOV() == 270 || input.rightJoystickPOV() == -90) {
+    } else if (input.leftJoystickPOV() == 180) {
+      superstructure.subwooferShot();
+    } else if (input.rightJoystickPOV() == 180) {
       // spit
       superstructure.outtake();
-    } else if (input.leftJoystickButton(4)) {
+    } else if (input.rightJoystickButton(4)) {
       // highkey does not work rn
       superstructure.primingAmp();
     } else if (input.rightJoystickButton(3)) {
@@ -209,9 +198,9 @@ public class RobotContainer {
     if (input.controllerYButton()) {
       superstructure.climb();
     }
-    if (input.controllerXButton()) {
-      superstructure.armClimb();
-    }
+    // if (input.controllerXButton()) {
+    //   superstructure.armClimb();
+    // }
     // TBD OPERATOR BUTTONS
 
     // if (input.leftJoystickTrigger()) {
