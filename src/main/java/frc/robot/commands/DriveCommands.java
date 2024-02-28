@@ -35,6 +35,7 @@ public interface DriveCommands {
 
   /**
    * Maps an input from -1 to 1 to an output from -1 to 1.
+   *
    * @param x - [-1, 1]
    * @return - [-1, 1]
    */
@@ -43,9 +44,9 @@ public interface DriveCommands {
   }
 
   /**
-   * Field relative drive command using two joysticks
-   * (controlling linear and angular velocities).
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
    * Desmos: https://www.desmos.com/calculator/cswpncuxr2
+   *
    * @param drive - the drive subsystem
    * @param xSupplier - function to supply x values [-1, 1]
    * @param ySupplier - function to supply y values [-1, 1]
@@ -67,26 +68,31 @@ public interface DriveCommands {
           final var magnitude = Math.hypot(x, y);
 
           if (magnitude < DEADBAND) {
-            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-              0, 0,
-              omega * Drive.MAX_ANGULAR_SPEED,
-              drive.getRotation()
-            ));
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    0, 0, omega * Drive.MAX_ANGULAR_SPEED, drive.getRotation()));
             return;
           }
 
-          final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
-          final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
-          final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
+          final var newMagnitude =
+              scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
+          final var newX =
+              newMagnitude > 1
+                  ? Math.signum(x) / Math.hypot(y / x, 1)
+                  : newMagnitude * x / magnitude;
+          final var newY =
+              newMagnitude > 1
+                  ? Math.signum(y) / Math.hypot(x / y, 1)
+                  : newMagnitude * y / magnitude;
 
-          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-            newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
-            omega * Drive.MAX_ANGULAR_SPEED,
-            drive.getRotation()
-          ));
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  newX * Drive.MAX_LINEAR_SPEED,
+                  newY * Drive.MAX_LINEAR_SPEED,
+                  omega * Drive.MAX_ANGULAR_SPEED,
+                  drive.getRotation()));
         },
-        drive
-    );
+        drive);
   }
 
   /**

@@ -98,7 +98,7 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(13, "Takeover");
         turnTalon = new TalonFX(11, "Takeover");
         cancoder = new CANcoder(12, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(0.069); // 0.069
+        absoluteEncoderOffset = new Rotation2d(-2.979); // 0.069
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-3.123 + Math.PI);
         break;
@@ -106,23 +106,23 @@ public class ModuleIOTalonFX implements ModuleIO {
         driveTalon = new TalonFX(23, "Takeover");
         turnTalon = new TalonFX(21, "Takeover");
         cancoder = new CANcoder(22, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(-1.805); // -1.805
+        absoluteEncoderOffset = new Rotation2d(-0.927); // -1.805
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-.928 + Math.PI); // 2.778
         break;
       case 2: // Back RIGHT
-        driveTalon = new TalonFX(43, "Takeover");
-        turnTalon = new TalonFX(41, "Takeover");
+        driveTalon = new TalonFX(33, "Takeover");
+        turnTalon = new TalonFX(31, "Takeover");
         cancoder = new CANcoder(32, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(0.604); // 0.604
+        absoluteEncoderOffset = new Rotation2d(-1.68); // 0.604
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(1.474 + Math.PI); // -2.551
         break;
       case 3: // Back LEFT
-        driveTalon = new TalonFX(33, "Takeover");
-        turnTalon = new TalonFX(31, "Takeover");
+        driveTalon = new TalonFX(43, "Takeover");
+        turnTalon = new TalonFX(41, "Takeover");
         cancoder = new CANcoder(42, "Takeover");
-        absoluteEncoderOffset = new Rotation2d(1.977); // 1.977
+        absoluteEncoderOffset = new Rotation2d(0.313); // 1.977
         // Uncomment for jynx
         // absoluteEncoderOffset = new Rotation2d(-2.686 + Math.PI); // -1/717
         break;
