@@ -185,13 +185,13 @@ public class DriveCommands {
   }
 
   public static Command turnToNote(
-    Drive drive,
-    DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-    DoubleSupplier yawSupplier
-  ) {
-    return joystickDrive(drive, xSupplier, ySupplier, () -> {
-      return -yawSupplier.getAsDouble() / 15;
-    });
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
+    return joystickDrive(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          return -yawSupplier.getAsDouble() / 15;
+        });
   }
-
 }
