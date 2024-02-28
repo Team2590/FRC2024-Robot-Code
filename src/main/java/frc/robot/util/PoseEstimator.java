@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.NavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.locks.ReentrantLock;
+import org.littletonrobotics.junction.Logger;
 
 public class PoseEstimator {
   private static final double historyLengthSecs = 0.3;
@@ -162,7 +163,7 @@ public class PoseEstimator {
       // so the lock gets released even if there is an exception.
       updateLock.unlock();
     }
-    // Logger.recordOutput("Odometry/RobotPosition", latestPose);
+    Logger.recordOutput("Odometry/RobotPosition", latestPose);
   }
 
   /**

@@ -56,7 +56,7 @@ public class AutoCommandBuilder {
       commands.addCommands(
           Commands.race(
               DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-              Commands.waitSeconds(2.0)));
+              Commands.waitSeconds(0.5d)));
     }
     commands.addCommands(new ShootCommand(superstructure, 2.0));
     return this;
