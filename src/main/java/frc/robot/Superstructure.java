@@ -190,7 +190,7 @@ public class Superstructure {
         //   conveyor.setShooting();
         // }
         break;
-        case SUBWOOFER_SHOT:
+      case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
