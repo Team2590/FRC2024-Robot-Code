@@ -1,9 +1,13 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants.Targets;
+import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
@@ -48,7 +52,7 @@ public class RobotContainer {
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
-  // private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
 
@@ -110,8 +114,8 @@ public class RobotContainer {
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb);
     // Set up auto routines
-    // autoChooser = AutoRoutines.buildChooser(drive, superstructure);
-    // populateAutoChooser();
+    autoChooser = AutoRoutines.buildChooser(drive, superstructure);
+    populateAutoChooser();
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
@@ -139,7 +143,8 @@ public class RobotContainer {
       superstructure.intake();
     } else if (input.rightJoystickTrigger()) {
       superstructure.outtake();
-    } else if (input.rightJoystickButton(2) && PhotonNoteRunnable.target != null) {
+    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
+      // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
               DriveCommands.turnToNote(
@@ -147,8 +152,19 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
                       PhotonNoteRunnable.target::getYaw)
+                  .until(() -> input.rightJoystickButton(10)));
+    } else if (input.rightJoystickButton(2)) {
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
-    } else if (input.rightJoystickButton(3)) {
+      superstructure.shoot();
+    }
+    else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
@@ -171,8 +187,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // return autoChooser.get();
-    return null;
+    return autoChooser.get();
+    // return null;
   }
 
   /**
