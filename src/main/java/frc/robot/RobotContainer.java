@@ -189,7 +189,7 @@ public class RobotContainer {
       superstructure.outtake();
     } else if (input.leftJoystickButton(4)) {
       // highkey does not work rn
-      superstructure.primingAmp();
+      superstructure.primeAmp();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else {
