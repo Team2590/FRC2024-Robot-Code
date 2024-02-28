@@ -1,6 +1,7 @@
 package frc.robot.subsystems.user_input;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.util.BandedJoystick;
@@ -84,6 +85,10 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return leftJoystick.getTriggerReleased();
   }
 
+  public void setLeftJoystickRumble(double intensity){
+    leftJoystick.setRumble(RumbleType.kBothRumble, intensity);
+  }
+
   // RIGHT JOYSTICK
 
   public double rightJoystickX() {
@@ -116,6 +121,10 @@ public class UserInput extends SubsystemBase implements RobotMap {
 
   public boolean rightJoystickTriggerReleased() {
     return rightJoystick.getTriggerReleased();
+  }
+
+  public void setRightJoystickRumble(double intensity){
+    rightJoystick.setRumble(RumbleType.kBothRumble, intensity);
   }
 
   // OPERATOR CONTROLLER
@@ -218,5 +227,9 @@ public class UserInput extends SubsystemBase implements RobotMap {
 
   public int controllerPOV() {
     return operatorController.getPOV();
+  }
+
+  public void setOperatorRumble(double intensity){
+    operatorController.setRumble(RumbleType.kBothRumble, intensity);
   }
 }
