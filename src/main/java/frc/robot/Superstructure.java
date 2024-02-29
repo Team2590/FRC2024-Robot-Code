@@ -111,7 +111,7 @@ public class Superstructure {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         // arm.setPosition();
-        shooter.setStopped();
+        // shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
