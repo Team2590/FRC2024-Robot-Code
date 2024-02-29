@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
 
 import java.util.function.DoubleSupplier;
@@ -39,7 +38,7 @@ public interface ShootMath {
         Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
         snapToPosition(drive, xSupplier, ySupplier, target)
       ),
-      new ShootCommand(superstructure, 0)
+      Commands.runOnce(superstructure::shoot, superstructure.getShooter())
     );
   }
 
