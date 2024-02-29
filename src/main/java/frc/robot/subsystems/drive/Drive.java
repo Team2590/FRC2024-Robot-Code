@@ -42,7 +42,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  public static final double MAX_LINEAR_SPEED = Units.feetToMeters(14.5);
+  public static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
   // Uncomment for Jynx
