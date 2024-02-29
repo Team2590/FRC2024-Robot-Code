@@ -11,10 +11,12 @@ import frc.robot.Superstructure;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.flywheel.Flywheel;
+
 import java.util.function.DoubleSupplier;
 
 /**
- * @author Elan Ronen TODO: set arm speed as z velocity
+ * @author Elan Ronen
  */
 public interface ShootMath {
 
@@ -24,8 +26,8 @@ public interface ShootMath {
   double SHOOT_VELOCITY = 20; // TODO: measure and set
   double PROJECTILE_INITIAL_HEIGHT = 0; // TODO: measure and set
 
-  Triangle speaker0 = new Triangle(new Vector(0,0,0),new Vector(0,0,0),new Vector(0,0,0));
-  Triangle speaker1 = new Triangle(new Vector(0,0,0),new Vector(0,0,0),new Vector(0,0,0));
+  Triangle speaker0 = new Triangle(new Vector(1,1,1),new Vector(2,3,2),new Vector(4,5,8)); // TODO: measure and set
+  Triangle speaker1 = new Triangle(new Vector(1,1,1),new Vector(2,3,2),new Vector(4,5,8)); // TODO: measure and set
 
   public static Command shoot(
     Drive drive, Superstructure superstructure,
@@ -35,9 +37,10 @@ public interface ShootMath {
     return new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         checkForHits(drive),
+        Commands.runOnce(superstructure::primeShooter),
         snapToPosition(drive, xSupplier, ySupplier, target)
       ),
-      new ShootCommand(superstructure, DEADBAND)
+      new ShootCommand(superstructure, 0)
     );
   }
 
@@ -108,7 +111,7 @@ public interface ShootMath {
     final var sumsqrs = dx * dx + dy * dy + dz * dz;
     final var tf =
         approxQuartic(
-            Math.pow(g, 2) / 4,
+            g * g / 4,
             -rvz * g,
             dz * g - pv * pv + rvx * rvx + rvy * rvz * rvz,
             -2 * (dx * rvx + dy * rvy + dz * rvz),
@@ -171,18 +174,18 @@ public interface ShootMath {
       double pv_theta,
       double pv_phi,
       Triangle triangle) {
-    final var N = cross(triangle.p1.minus(triangle.p0), triangle.p2.minus(triangle.p1));
+    final var N = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p1));
     final var A = N.z * g;
     final var X = rvx * pv * Math.cos(pv_phi) * Math.cos(pv_theta);
     final var Y = rvy * pv * Math.cos(pv_phi) * Math.sin(pv_theta);
     final var Z = rvz * pv * Math.sin(pv_phi);
-    final var B = dot(N, new Vector(X, Y, Z));
-    final var tf = (B + Math.sqrt(B * B - 2 * A * dot(N, triangle.p0))) / A;
+    final var B = N.dot(new Vector(X, Y, Z));
+    final var tf = (B + Math.sqrt(B * B - 2 * A * N.dot(triangle.p0))) / A;
     final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
-    final var parallelogram0 = cross(triangle.p1.minus(triangle.p0), triangle.p2.minus(triangle.p0)).magnitude();
-    final var parallelogram1 = cross(P.minus(triangle.p0), P.minus(triangle.p1)).magnitude();
-    final var parallelogram2 = cross(P.minus(triangle.p1), P.minus(triangle.p2)).magnitude();
-    final var parallelogram3 = cross(P.minus(triangle.p2), P.minus(triangle.p0)).magnitude();
+    final var parallelogram0 = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p0)).magnitude();
+    final var parallelogram1 = P.minus(triangle.p0).cross(P.minus(triangle.p1)).magnitude();
+    final var parallelogram2 = P.minus(triangle.p1).cross(P.minus(triangle.p2)).magnitude();
+    final var parallelogram3 = P.minus(triangle.p2).cross(P.minus(triangle.p0)).magnitude();
 
     return MathUtil.isNear(parallelogram0, parallelogram1 + parallelogram2 + parallelogram3, 0.0001);
   }
@@ -205,17 +208,21 @@ public interface ShootMath {
       return new Vector(x - other.x, y - other.y, z - other.z);
     }
 
+    public double dot(Vector other) {
+      return x * other.x + y * other.y + z * other.z;
+    }
+
+    public Vector cross(Vector other) {
+      return new Vector(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x
+      );
+    }
+
   }
 
   public static record Triangle(Vector p0, Vector p1, Vector p2) {}
-
-  public static double dot(Vector a, Vector b) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
-  }
-
-  public static Vector cross(Vector a, Vector b) {
-    return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-  }
 
   public static void main(String[] args) {
     System.out.println(calcConstantVelocity(12.4, 9, 8, 4, 5, -5, 3.5, 9.8));
