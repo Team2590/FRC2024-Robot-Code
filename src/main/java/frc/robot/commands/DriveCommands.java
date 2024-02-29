@@ -43,9 +43,51 @@ public interface DriveCommands {
   }
 
   /**
+   * Field relative drive command using one joystick
+   * (controlling linear).
+   * Desmos: https://www.desmos.com/calculator/cswpncuxr2
+   * @param drive - the drive subsystem
+   * @param xSupplier - function to supply x values [-1, 1]
+   * @param ySupplier - function to supply y values [-1, 1]
+   * @param angularVelocitySupplier - function to supply the angular velocity for the chassis speeds
+   * @return the drive command
+   */
+  public static Command oneJoystickDrive(
+    Drive drive,
+    DoubleSupplier xSupplier,
+    DoubleSupplier ySupplier,
+    DoubleSupplier angularVelocitySupplier
+  ) {
+    return Commands.run(() -> {
+      final var x = xSupplier.getAsDouble();
+      final var y = ySupplier.getAsDouble();
+
+      final var magnitude = Math.hypot(x, y);
+
+      if (magnitude < DEADBAND) {
+        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+          0, 0,
+          angularVelocitySupplier.getAsDouble(),
+          drive.getRotation()
+        ));
+        return;
+      }
+
+      final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
+      final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
+      final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
+
+      drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+        newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
+        angularVelocitySupplier.getAsDouble(),
+        drive.getRotation()
+      ));
+    }, drive);
+  }
+
+  /**
    * Field relative drive command using two joysticks
    * (controlling linear and angular velocities).
-   * Desmos: https://www.desmos.com/calculator/cswpncuxr2
    * @param drive - the drive subsystem
    * @param xSupplier - function to supply x values [-1, 1]
    * @param ySupplier - function to supply y values [-1, 1]
@@ -57,35 +99,11 @@ public interface DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
-    return Commands.run(
-        () -> {
-          final var omega = scale(MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND));
-
-          final var x = xSupplier.getAsDouble();
-          final var y = ySupplier.getAsDouble();
-
-          final var magnitude = Math.hypot(x, y);
-
-          if (magnitude < DEADBAND) {
-            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-              0, 0,
-              omega * Drive.MAX_ANGULAR_SPEED,
-              drive.getRotation()
-            ));
-            return;
-          }
-
-          final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
-          final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
-          final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
-
-          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
-            newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
-            omega * Drive.MAX_ANGULAR_SPEED,
-            drive.getRotation()
-          ));
-        },
-        drive
+    return oneJoystickDrive(
+      drive,
+      xSupplier,
+      ySupplier,
+      () -> scale(MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND)) * Drive.MAX_ANGULAR_SPEED
     );
   }
 
