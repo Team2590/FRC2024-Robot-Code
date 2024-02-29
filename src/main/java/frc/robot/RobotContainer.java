@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -77,7 +76,23 @@ public class RobotContainer {
         noteNotifier.setName("PhotonNoteRunnable");
         noteNotifier.startPeriodic(0.02);
         break;
-
+      case KANG:
+      drive =
+            new Drive(
+                new GyroIOPigeon2(true),
+                new ModuleIOTalonFX(0),
+                new ModuleIOTalonFX(1),
+                new ModuleIOTalonFX(2),
+                new ModuleIOTalonFX(3));
+        flywheel = new Flywheel(new FlywheelIOTalonFX());
+        // instantiate other subsystems
+        conveyor = new Conveyor(new ConveyorIOTalonFX());
+        intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
+        noteNotifier.setName("PhotonNoteRunnable");
+        noteNotifier.startPeriodic(0.02);
+        break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
@@ -121,7 +136,7 @@ public class RobotContainer {
             drive,
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
-            () -> input.rightJoystickX()));
+            () -> -input.rightJoystickX()));
   }
 
   public void stop() {
@@ -139,11 +154,12 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
+    // if (input.leftJoystickTrigger()) {
+    //   superstructure.intake();
+    // } else if (input.rightJoystickTrigger()) {
+    //   superstructure.outtake();
+    // }
     if (input.leftJoystickTrigger()) {
-      superstructure.intake();
-    } else if (input.rightJoystickTrigger()) {
-      superstructure.outtake();
-    } else if (input.rightJoystickButton(2)) {
       CommandScheduler.getInstance()
           .schedule(
               DriveCommands.SnapToTarget(
@@ -151,31 +167,84 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
                       Targets.SPEAKER)
-                  .until(() -> input.rightJoystickButton(2)));
-      // Example Use below
-      // CommandScheduler.getInstance()
-      //     .schedule(
-      //         DriveCommands.turnToNote(
-      //                 drive,
-      //                 () -> -input.leftJoystickY(),
-      //                 () -> -input.leftJoystickX(),
-      //                 PhotonNoteRunnable.target::getYaw)
-      //             .until(() -> input.rightJoystickButton(2)));
+                  .until(() -> input.leftJoystickTrigger()));
       superstructure.shoot();
-    } else if (input.rightJoystickButton(3)) {
-      superstructure.scoreAmp();
+    } else if (input.rightJoystickTrigger()) {
+      superstructure.intake();
+    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
+      // I just put this button as a place holder
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.turnToNote(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      PhotonNoteRunnable.target::getYaw)
+                  .until(() -> input.rightJoystickButton(10)));
+    } else if (input.rightJoystickButton(11)) {
+      // manual arm w climb DOESNT WORK
+      superstructure.climb();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
-      System.out.println("Gyro is reset");
-    } else if (input.leftJoystickButton(2)) {
-      superstructure.armUp();
-    } else if (input.leftJoystickButton(3)) {
-      superstructure.armDown();
-    } else if (input.rightJoystickButton(6)) {
-      superstructure.climb();
+    } else if (input.leftJoystickPOV() == 180) {
+      superstructure.subwooferShot();
+    } else if (input.rightJoystickPOV() == 180) {
+      // spit
+      superstructure.outtake();
+    } else if (input.rightJoystickButton(4)) {
+      // highkey does not work rn
+      superstructure.primingAmp();
+    } else if (input.rightJoystickButton(3)) {
+      superstructure.scoreAmp();
     } else {
       superstructure.idle();
     }
+
+    if (input.controllerYButton()) {
+      superstructure.climb();
+    }
+    // if (input.controllerXButton()) {
+    //   superstructure.armClimb();
+    // }
+    // TBD OPERATOR BUTTONS
+
+    // if (input.leftJoystickTrigger()) {
+    //   superstructure.intake();
+    // } else if (input.rightJoystickTrigger()) {
+    //   superstructure.outtake();
+    // } else if (input.rightJoystickButton(2)) {
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           DriveCommands.SnapToTarget(
+    //                   drive,
+    //                   () -> -input.leftJoystickY(),
+    //                   () -> -input.leftJoystickX(),
+    //                   Targets.SPEAKER)
+    //               .until(() -> input.rightJoystickButton(2)));
+    //   // Example Use below
+    //   // CommandScheduler.getInstance()
+    //   //     .schedule(
+    //   //         DriveCommands.turnToNote(
+    //   //                 drive,
+    //   //                 () -> -input.leftJoystickY(),
+    //   //                 () -> -input.leftJoystickX(),
+    //   //                 PhotonNoteRunnable.target::getYaw)
+    //   //             .until(() -> input.rightJoystickButton(2)));
+    //   superstructure.shoot();
+    // } else if (input.rightJoystickButton(3)) {
+    //   superstructure.scoreAmp();
+    // } else if (input.rightJoystickButton(5)) {
+    //   drive.zeroGyro();
+    //   System.out.println("Gyro is reset");
+    // } else if (input.leftJoystickButton(2)) {
+    //   superstructure.armUp();
+    // } else if (input.leftJoystickButton(3)) {
+    //   superstructure.armDown();
+    // } else if (input.rightJoystickButton(6)) {
+    //   superstructure.climb();
+    // } else {
+    //   superstructure.idle();
+    // }
   }
 
   // --------AUTO CHOOSER FUNCTIONS------------
@@ -185,6 +254,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // superstructure
+    //     .getShooter()
+    //     .setDefaultCommand(
+    //         new InstantCommand(() -> superstructure.primeShooter(),
+    // superstructure.getShooter()));
     return autoChooser.get();
   }
 
@@ -194,13 +268,13 @@ public class RobotContainer {
    */
   private void populateAutoChooser() {
     // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Drive FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // autoChooser.addOption(
+    //     "Flywheel FF Characterization",
+    //     new FeedForwardCharacterization(
+    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
   }
 }

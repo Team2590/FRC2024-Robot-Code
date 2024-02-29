@@ -86,6 +86,12 @@ public class Arm extends SubsystemBase {
 
   /** Run open loop at the specified voltage. */
   public void setPosition(double setpoint) {
+    if(setpoint <= ArmConstants.ARM_MAX){
+      setpoint = ArmConstants.ARM_MAX;
+    }
+    else if(setpoint >= ArmConstants.HOME_SETPOINT){
+      setpoint = ArmConstants.HOME_SETPOINT;
+    }
     armSetpoint = setpoint;
     if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
       state = ArmStates.APPROACHINGSETPOINT;
@@ -127,7 +133,11 @@ public class Arm extends SubsystemBase {
   }
 
   public double getAbsolutePosition(){
+<<<<<<< HEAD
     return arm.getAbsolutePosition();
+=======
+    return arm.armCancoder.getAbsolutePosition().getValueAsDouble();
+>>>>>>> 456f48f7e6dcf83d063dd3b3911d6597a3b6ff72
   }
 
   public ArmStates getState() {
