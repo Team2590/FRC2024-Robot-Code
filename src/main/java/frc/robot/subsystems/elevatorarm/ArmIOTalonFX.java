@@ -94,6 +94,10 @@ public class ArmIOTalonFX implements ArmIO {
     arm.setControl(mmv.withPosition(position));
   }
 
+  public double getAbsolutePosition(){
+    return armCancoder.getAbsolutePosition().getValueAsDouble();
+  }
+
   public void stop() {
     arm.stopMotor();
   }

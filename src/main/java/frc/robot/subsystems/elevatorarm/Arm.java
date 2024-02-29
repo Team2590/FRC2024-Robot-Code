@@ -86,6 +86,12 @@ public class Arm extends SubsystemBase {
 
   /** Run open loop at the specified voltage. */
   public void setPosition(double setpoint) {
+    if(setpoint <= ArmConstants.ARM_MAX){
+      setpoint = ArmConstants.ARM_MAX;
+    }
+    else if(setpoint >= ArmConstants.HOME_SETPOINT){
+      setpoint = ArmConstants.HOME_SETPOINT;
+    }
     armSetpoint = setpoint;
     if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
       state = ArmStates.APPROACHINGSETPOINT;
@@ -120,12 +126,15 @@ public class Arm extends SubsystemBase {
     DutyCycleOut power = new DutyCycleOut(0.1);
     arm.setPower(power);
   }
-
+  
   /** Stops the flywheel. */
   public void setStopped() {
     state = ArmStates.STOPPED;
   }
 
+  public double getAbsolutePosition(){
+    return arm.armCancoder.getAbsolutePosition().getValueAsDouble();
+  }
 
   public ArmStates getState() {
     return state;
