@@ -11,7 +11,6 @@ import frc.robot.Superstructure;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.flywheel.Flywheel;
 
 import java.util.function.DoubleSupplier;
 
