@@ -193,17 +193,17 @@ public class Superstructure {
         break;
 
       case SHOOT:
-        double armDistanceSetPoint =
-          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
-          Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-          if (!manualMode){
-            arm.setPosition(
-            armDistanceSetPoint);
-        shooter.shoot(flywheelSpeedInput.get());
-        if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
-          conveyor.setShooting();
-        }
+      double armDistanceSetPoint =
+      armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
+      Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
+      if (!manualMode){
+        arm.setPosition(
+        armDistanceSetPoint);
+    shooter.shoot(flywheelSpeedInput.get());
+    if (arm.getState() == ArmStates.AT_SETPOINT
+        && shooter.getState() == ShooterStates.AT_SETPOINT) {
+      conveyor.setShooting();
+    }
         }
         else{
           shooter.shoot(flywheelSpeedInput.get());
@@ -256,14 +256,14 @@ public class Superstructure {
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
-        }
-        else{
-          conveyor.setDiverting();
-        }
-        break;
-      case SCORE_TRAP:
-      if (!manualMode){
-        arm.setPosition(ArmConstants.TRAP_SETPOINT);
+      }
+      else{
+        conveyor.setDiverting();
+      }
+      break;
+    case SCORE_TRAP:
+    if (!manualMode){
+      arm.setPosition(ArmConstants.TRAP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
