@@ -80,6 +80,8 @@ public class Drive extends SubsystemBase {
   LoggedTunableNumber noteControllerTolerance =
       new LoggedTunableNumber("NoteController/tolerance", .1);
 
+  public ChassisSpeeds currentChassisSpeeds = new ChassisSpeeds();
+
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;
   // }
@@ -212,6 +214,7 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   public void runVelocity(ChassisSpeeds speeds) {
+    currentChassisSpeeds = speeds;
     // Calculate module setpoints
     ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
