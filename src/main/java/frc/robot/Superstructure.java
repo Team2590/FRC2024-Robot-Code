@@ -11,6 +11,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -29,7 +31,7 @@ import org.littletonrobotics.junction.Logger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
   // TBD: declare variables to add subsystems into
   public static enum SuperstructureStates {
     DISABLED,
