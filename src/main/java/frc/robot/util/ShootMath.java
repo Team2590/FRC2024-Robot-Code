@@ -38,38 +38,33 @@ public interface ShootMath {
       Pose3d target) {
     return new SequentialCommandGroup(
         new ParallelDeadlineGroup(
-            checkForHits(drive),
+            checkForHits(drive, speaker0, speaker1),
             Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
-            snapToPosition(drive, xSupplier, ySupplier, target)),
+            snapToTarget(drive, xSupplier, ySupplier, target)),
         Commands.runOnce(superstructure::shoot, superstructure.getShooter()));
   }
 
-  public static Command checkForHits(Drive drive) {
+  public static Command checkForHits(Drive drive, Triangle... triangles) {
     return Commands.waitUntil(
         () -> {
           final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-          return willHit(
-                  drive.currentChassisSpeeds.vxMetersPerSecond,
-                  drive.currentChassisSpeeds.vyMetersPerSecond,
-                  0, // TODO: calculate
-                  GRAVITY,
-                  SHOOT_VELOCITY,
-                  robotPose.getRotation().getRadians(),
-                  Math.PI / 4, // TODO: calculate
-                  speaker0)
-              || willHit(
-                  drive.currentChassisSpeeds.vxMetersPerSecond,
-                  drive.currentChassisSpeeds.vyMetersPerSecond,
-                  0, // TODO: calculate
-                  GRAVITY,
-                  SHOOT_VELOCITY,
-                  robotPose.getRotation().getRadians(),
-                  Math.PI / 4, // TODO: calculate
-                  speaker1);
+          for (final var triangle : triangles) {
+            if (willHit(
+              drive.currentChassisSpeeds.vxMetersPerSecond,
+              drive.currentChassisSpeeds.vyMetersPerSecond,
+              0, // TODO: calculate
+              GRAVITY,
+              SHOOT_VELOCITY,
+              robotPose.getRotation().getRadians(),
+              Math.PI / 4, // TODO: calculate,
+              triangle
+            )) return true;
+          }
+          return false;
         });
   }
 
-  public static Command snapToPosition(
+  public static Command snapToTarget(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose3d target) {
     return DriveCommands.oneJoystickDrive(
         drive,
