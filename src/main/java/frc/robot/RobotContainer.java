@@ -238,6 +238,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // superstructure
+    //     .getShooter()
+    //     .setDefaultCommand(
+    //         new InstantCommand(() -> superstructure.primeShooter(),
+    // superstructure.getShooter()));
     return autoChooser.get();
   }
 
