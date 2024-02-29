@@ -203,8 +203,6 @@ public class RobotContainer {
       // highkey does not work rn
       teleopSpeaker = false;
       superstructure.primeAmp();
-    } else if (input.rightJoystickButton(3)) {
-      superstructure.scoreAmp();
     } else {
       teleopSpeaker = true;
       superstructure.idle();
