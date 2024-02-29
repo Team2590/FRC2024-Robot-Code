@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -156,18 +155,11 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(2)) {
       CommandScheduler.getInstance()
           .schedule(
-              new SnapToTargetCommand(
+              DriveCommands.SnapToTarget(
                       drive,
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
-                      Targets.SPEAKER,
-                      0.001d // TODO: Figure out the best error tolerance.
-                      )
-                  // DriveCommands.SnapToTarget(
-                  //         drive,
-                  //         () -> -input.leftJoystickY(),
-                  //         () -> -input.leftJoystickX(),
-                  //         Targets.SPEAKER)
+                      Targets.SPEAKER)
                   .until(() -> input.rightJoystickButton(2)));
       superstructure.shoot();
     } else if (input.rightJoystickButton(3)) {
