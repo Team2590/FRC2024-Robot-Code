@@ -178,7 +178,7 @@ public class RobotContainer {
       }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
-    } else if (input.rightJoystickButton(2) && PhotonNoteRunnable.target != null) {
+    } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
       // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
