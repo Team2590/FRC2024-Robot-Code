@@ -242,4 +242,5 @@ public interface ShootMath {
   public static void main(String[] args) {
     System.out.println(calcConstantVelocity(12.4, 9, 8, 4, 5, -5, 3.5, 9.8));
   }
+
 }
