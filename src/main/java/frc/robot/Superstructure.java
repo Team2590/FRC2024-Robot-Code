@@ -328,7 +328,6 @@ public class Superstructure {
   }
 
   public void armDown() {
-    
     if(arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT){
       arm.setPosition(ArmConstants.HOME_SETPOINT);
     }
