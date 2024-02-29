@@ -111,7 +111,10 @@ public class Superstructure {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         // arm.setPosition();
-        // shooter.setStopped();
+        // Anthony added this condition
+        if (!conveyor.hasNote()){
+            shooter.setStopped();
+        }
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
