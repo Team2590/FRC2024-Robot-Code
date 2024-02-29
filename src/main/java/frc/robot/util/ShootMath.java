@@ -36,7 +36,7 @@ public interface ShootMath {
     return new SequentialCommandGroup(
       new ParallelDeadlineGroup(
         checkForHits(drive),
-        Commands.runOnce(superstructure::primeShooter, superstructure),
+        Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
         snapToPosition(drive, xSupplier, ySupplier, target)
       ),
       new ShootCommand(superstructure, 0)
