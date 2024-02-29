@@ -15,9 +15,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -31,49 +29,84 @@ import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class DriveCommands {
-  private static final double DEADBAND = 0.1;
+public interface DriveCommands {
 
-  private DriveCommands() {}
+  public static final double DEADBAND = 0.1;
 
   /**
-   * Field relative drive command using two joysticks (controlling linear and angular velocities).
+   * Maps an input from -1 to 1 to an output from -1 to 1.
+   * @param x - [-1, 1]
+   * @return - [-1, 1]
+   */
+  private static double scale(double x) {
+    return Math.copySign(x * x, x);
+  }
+
+  /**
+   * Field relative drive command using one joystick
+   * (controlling linear).
+   * Desmos: https://www.desmos.com/calculator/cswpncuxr2
+   * @param drive - the drive subsystem
+   * @param xSupplier - function to supply x values [-1, 1]
+   * @param ySupplier - function to supply y values [-1, 1]
+   * @param angularVelocitySupplier - function to supply the angular velocity for the chassis speeds
+   * @return the drive command
+   */
+  public static Command oneJoystickDrive(
+    Drive drive,
+    DoubleSupplier xSupplier,
+    DoubleSupplier ySupplier,
+    DoubleSupplier angularVelocitySupplier
+  ) {
+    return Commands.run(() -> {
+      final var x = xSupplier.getAsDouble();
+      final var y = ySupplier.getAsDouble();
+
+      final var magnitude = Math.hypot(x, y);
+
+      if (magnitude < DEADBAND) {
+        drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+          0, 0,
+          angularVelocitySupplier.getAsDouble(),
+          drive.getRotation()
+        ));
+        return;
+      }
+
+      final var newMagnitude = scale((magnitude - Math.copySign(DEADBAND, magnitude)) / (1 - DEADBAND));
+      final var newX = newMagnitude > 1 ? Math.signum(x) / Math.hypot(y / x, 1) : newMagnitude * x / magnitude;
+      final var newY = newMagnitude > 1 ? Math.signum(y) / Math.hypot(x / y, 1) : newMagnitude * y / magnitude;
+
+      drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
+        newX * Drive.MAX_LINEAR_SPEED, newY * Drive.MAX_LINEAR_SPEED,
+        angularVelocitySupplier.getAsDouble(),
+        drive.getRotation()
+      ));
+    }, drive);
+  }
+
+  /**
+   * Field relative drive command using two joysticks
+   * (controlling linear and angular velocities).
+   * @param drive - the drive subsystem
+   * @param xSupplier - function to supply x values [-1, 1]
+   * @param ySupplier - function to supply y values [-1, 1]
+   * @param omegaSupplier - function to supply omega (angular) values [-1, 1]
+   * @return the drive command
    */
   public static Command joystickDrive(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
-    return Commands.run(
-        () -> {
-          // Apply deadband
-          double linearMagnitude =
-              MathUtil.applyDeadband(
-                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()), DEADBAND);
-          Rotation2d linearDirection =
-              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-          double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
-
-          // Square values
-          linearMagnitude = linearMagnitude * linearMagnitude;
-          omega = Math.copySign(omega * omega, omega);
-
-          // Calcaulate new linear velocity
-          Translation2d linearVelocity =
-              new Pose2d(new Translation2d(), linearDirection)
-                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
-                  .getTranslation();
-
-          // Convert to field relative speeds & send command
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                  omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
-        },
-        drive);
+    return oneJoystickDrive(
+      drive,
+      xSupplier,
+      ySupplier,
+      () -> scale(MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND)) * Drive.MAX_ANGULAR_SPEED
+    );
   }
+
   /**
    * Snap to the target position, while maintaining joystick movement
    *
