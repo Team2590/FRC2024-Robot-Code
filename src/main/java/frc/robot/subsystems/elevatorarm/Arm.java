@@ -131,11 +131,6 @@ public class Arm extends SubsystemBase {
   public void setStopped() {
     state = ArmStates.STOPPED;
   }
-
-  public double getAbsolutePosition(){
-    return arm.armCancoder.getAbsolutePosition().getValueAsDouble();
-  }
-
   public ArmStates getState() {
     return state;
   }

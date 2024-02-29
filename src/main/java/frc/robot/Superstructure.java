@@ -126,15 +126,12 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        
+
         // if (arm.getState() == ArmStates.HOME) {
-        if (arm.getState() == ArmStates.HOME){
+        if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
-        }
-        else{
-          arm.setHome();
-        }
+
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
