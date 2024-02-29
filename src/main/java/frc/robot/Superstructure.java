@@ -126,13 +126,12 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        
+
         // if (arm.getState() == ArmStates.HOME) {
-        if (arm.getState() == ArmStates.HOME){
+        if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
-        }
-        else{
+        } else {
           arm.setHome();
         }
         if (conveyor.hasNote()) {
@@ -313,17 +312,16 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    if(arm.getAbsolutePosition() <= ArmConstants.ARM_MAX){
+    if (arm.getAbsolutePosition() <= ArmConstants.ARM_MAX) {
       arm.setPosition(ArmConstants.ARM_MAX);
-    }
-    else{
+    } else {
       pwr = new DutyCycleOut(-0.1);
       systemState = SuperstructureStates.MANUAL_ARM;
     }
   }
 
   public void armDown() {
-    if(arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT){
+    if (arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT) {
       arm.setPosition(ArmConstants.HOME_SETPOINT);
     }
     pwr = new DutyCycleOut(0.1);

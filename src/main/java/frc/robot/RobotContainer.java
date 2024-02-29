@@ -30,6 +30,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -54,6 +55,7 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
+  private boolean teleopSpeaker;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -77,7 +79,7 @@ public class RobotContainer {
         noteNotifier.startPeriodic(0.02);
         break;
       case KANG:
-      drive =
+        drive =
             new Drive(
                 new GyroIOPigeon2(true),
                 new ModuleIOTalonFX(0),
@@ -137,6 +139,8 @@ public class RobotContainer {
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
             () -> -input.rightJoystickX()));
+
+    teleopSpeaker = true;
   }
 
   public void stop() {
@@ -160,15 +164,19 @@ public class RobotContainer {
     //   superstructure.outtake();
     // }
     if (input.leftJoystickTrigger()) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
-                  .until(() -> input.leftJoystickTrigger()));
-      superstructure.shoot();
+      if (teleopSpeaker) {
+        CommandScheduler.getInstance()
+            .schedule(
+                DriveCommands.SnapToTarget(
+                        drive,
+                        () -> -input.leftJoystickY(),
+                        () -> -input.leftJoystickX(),
+                        Targets.SPEAKER)
+                    .until(() -> input.leftJoystickTrigger()));
+        superstructure.shoot();
+      } else {
+        superstructure.scoreAmp();
+      }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
     } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
@@ -193,16 +201,19 @@ public class RobotContainer {
       superstructure.outtake();
     } else if (input.rightJoystickButton(4)) {
       // highkey does not work rn
+      teleopSpeaker = false;
       superstructure.primeAmp();
     } else if (input.rightJoystickButton(3)) {
       superstructure.scoreAmp();
     } else {
+      teleopSpeaker = true;
       superstructure.idle();
     }
 
     if (input.controllerYButton()) {
       superstructure.climb();
     }
+    // Logger.recordOutput("shoot speaker?", teleopSpeaker);
     // if (input.controllerXButton()) {
     //   superstructure.armClimb();
     // }
