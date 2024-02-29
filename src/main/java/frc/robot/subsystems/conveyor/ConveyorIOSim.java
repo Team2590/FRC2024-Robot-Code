@@ -13,11 +13,13 @@ import frc.robot.Constants.ConveyorConstants;
 public class ConveyorIOSim implements ConveyorIO {
   // TODO: find the 2 guessed values (they also may not be that important because the actual
   // movement is not that important)
-  private final DCMotorSim feederSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
-  private final DCMotorSim diverterSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
+  private final DCMotorSim feederSim = new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.FEEDER_GEAR_RATIO, 1.0);
+  private final DCMotorSim diverterSim = new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.DIVERTER_GEAR_RATIO, 1.0);
   private final AnalogInputSim intakeProxSim = new AnalogInputSim(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInputSim shooterProxSim =
       new AnalogInputSim(ConveyorConstants.SHOOTER_PROX_ID);
+  private double feederAppliedVolts;
+  private double diverterAppliedVolts;
 
   @Override
   public void updateInputs(ConveyorIOInputs inputs) {
@@ -25,19 +27,28 @@ public class ConveyorIOSim implements ConveyorIO {
     inputs.intakeProxVolts = intakeProxSim.getVoltage();
     inputs.detectedShooterSide = detectedShooterSide();
     inputs.shooterProxVolts = shooterProxSim.getVoltage();
+    inputs.feederRPM = feederSim.getAngularVelocityRPM();
+    inputs.feederVolts = feederAppliedVolts;
+    inputs.diverterRPM = diverterSim.getAngularVelocityRPM();
+    inputs.diverterVolts = diverterAppliedVolts;
+    inputs.currentAmps = new double[] {Math.abs(feederSim.getCurrentDrawAmps()),Math.abs(diverterSim.getCurrentDrawAmps())};
     inputs.hasNote = noteInConveyor();
   }
 
   @Override
   public void runPower(double power) {
-    feederSim.setInput(power);
-    diverterSim.setInput(power);
+    feederAppliedVolts = 10 * power;
+    diverterAppliedVolts = 10 * power;
+    feederSim.setInputVoltage(feederAppliedVolts);
+    diverterSim.setInputVoltage(diverterAppliedVolts);
   }
 
   @Override
   public void runPower(double feederPower, double diverterPower) {
-    feederSim.setInput(feederPower);
-    diverterSim.setInput(diverterPower);
+    feederAppliedVolts = 10 * feederPower;
+    diverterAppliedVolts = 10 * diverterPower;
+    feederSim.setInputVoltage(feederAppliedVolts);
+    diverterSim.setInputVoltage(diverterAppliedVolts);
   }
 
   /**

@@ -20,7 +20,7 @@ public interface ConveyorIO {
     public double[] currentAmps = new double[] {};
   }
 
-  /** Updates the set of loggable inputs, and applies them to the motors based on state. */
+  /** Updates the set of loggable inputs */
   public default void updateInputs(ConveyorIOInputs inputs) {}
 
   /**
