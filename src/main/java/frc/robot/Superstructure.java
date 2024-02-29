@@ -271,6 +271,10 @@ public class Superstructure {
     systemState = SuperstructureStates.INTAKE;
   }
 
+  public boolean note_present() {
+    return conveyor.hasNote();
+  }
+
   public void primeShooter() {
     System.out.println("-- primingShooter");
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
