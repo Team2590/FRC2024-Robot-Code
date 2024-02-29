@@ -11,8 +11,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -128,19 +126,16 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        
+
         // if (arm.getState() == ArmStates.HOME) {
-        if (arm.getState() == ArmStates.HOME){
+        if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
 
-        }
-        else{
+        } else {
           arm.setHome();
         }
-        
-        
-        
+
         // }
         if (conveyor.hasNote()) {
           intake.setStopped();

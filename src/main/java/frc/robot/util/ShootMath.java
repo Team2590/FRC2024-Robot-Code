@@ -10,7 +10,6 @@ import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
-
 import java.util.function.DoubleSupplier;
 
 /**
@@ -24,70 +23,75 @@ public interface ShootMath {
   double SHOOT_VELOCITY = 20; // TODO: measure and set
   double PROJECTILE_INITIAL_HEIGHT = 0; // TODO: measure and set
 
-  Triangle speaker0 = new Triangle(new Vector(1,1,1),new Vector(2,3,2),new Vector(4,5,8)); // TODO: measure and set
-  Triangle speaker1 = new Triangle(new Vector(1,1,1),new Vector(2,3,2),new Vector(4,5,8)); // TODO: measure and set
+  Triangle speaker0 =
+      new Triangle(
+          new Vector(1, 1, 1), new Vector(2, 3, 2), new Vector(4, 5, 8)); // TODO: measure and set
+  Triangle speaker1 =
+      new Triangle(
+          new Vector(1, 1, 1), new Vector(2, 3, 2), new Vector(4, 5, 8)); // TODO: measure and set
 
   public static Command shoot(
-    Drive drive, Superstructure superstructure,
-    DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-    Pose3d target
-  ) {
+      Drive drive,
+      Superstructure superstructure,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      Pose3d target) {
     return new SequentialCommandGroup(
-      new ParallelDeadlineGroup(
-        checkForHits(drive),
-        Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
-        snapToPosition(drive, xSupplier, ySupplier, target)
-      ),
-      Commands.runOnce(superstructure::shoot, superstructure.getShooter())
-    );
+        new ParallelDeadlineGroup(
+            checkForHits(drive),
+            Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
+            snapToPosition(drive, xSupplier, ySupplier, target)),
+        Commands.runOnce(superstructure::shoot, superstructure.getShooter()));
   }
 
   public static Command checkForHits(Drive drive) {
-    return Commands.waitUntil(() -> {
-      final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-      return willHit(
-        drive.currentChassisSpeeds.vxMetersPerSecond,
-        drive.currentChassisSpeeds.vyMetersPerSecond,
-        0, // TODO: calculate
-        GRAVITY,
-        SHOOT_VELOCITY,
-        robotPose.getRotation().getRadians(),
-        Math.PI/4, // TODO: calculate
-        speaker0
-      ) || willHit(
-        drive.currentChassisSpeeds.vxMetersPerSecond,
-        drive.currentChassisSpeeds.vyMetersPerSecond,
-        0, // TODO: calculate
-        GRAVITY,
-        SHOOT_VELOCITY,
-        robotPose.getRotation().getRadians(),
-        Math.PI/4, // TODO: calculate
-        speaker1
-      );
-    });
+    return Commands.waitUntil(
+        () -> {
+          final var robotPose = RobotContainer.poseEstimator.getLatestPose();
+          return willHit(
+                  drive.currentChassisSpeeds.vxMetersPerSecond,
+                  drive.currentChassisSpeeds.vyMetersPerSecond,
+                  0, // TODO: calculate
+                  GRAVITY,
+                  SHOOT_VELOCITY,
+                  robotPose.getRotation().getRadians(),
+                  Math.PI / 4, // TODO: calculate
+                  speaker0)
+              || willHit(
+                  drive.currentChassisSpeeds.vxMetersPerSecond,
+                  drive.currentChassisSpeeds.vyMetersPerSecond,
+                  0, // TODO: calculate
+                  GRAVITY,
+                  SHOOT_VELOCITY,
+                  robotPose.getRotation().getRadians(),
+                  Math.PI / 4, // TODO: calculate
+                  speaker1);
+        });
   }
 
   public static Command snapToPosition(
-    Drive drive,
-    DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-    Pose3d target
-  ) {
-    return DriveCommands.oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
-      final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-      final var theta = calcConstantVelocity(
-        SHOOT_VELOCITY,
-        target.getX() - robotPose.getX(),
-        target.getY() - robotPose.getY(),
-        target.getZ() - PROJECTILE_INITIAL_HEIGHT,
-        drive.currentChassisSpeeds.vxMetersPerSecond,
-        drive.currentChassisSpeeds.vyMetersPerSecond,
-        0, //TODO: calculate
-        GRAVITY
-      ).yaw;
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Pose3d target) {
+    return DriveCommands.oneJoystickDrive(
+        drive,
+        xSupplier,
+        ySupplier,
+        () -> {
+          final var robotPose = RobotContainer.poseEstimator.getLatestPose();
+          final var theta =
+              calcConstantVelocity(
+                      SHOOT_VELOCITY,
+                      target.getX() - robotPose.getX(),
+                      target.getY() - robotPose.getY(),
+                      target.getZ() - PROJECTILE_INITIAL_HEIGHT,
+                      drive.currentChassisSpeeds.vxMetersPerSecond,
+                      drive.currentChassisSpeeds.vyMetersPerSecond,
+                      0, // TODO: calculate
+                      GRAVITY)
+                  .yaw;
 
-      return drive.snapController.calculate(drive.getRotation().getRadians(), theta)
-        * Drive.MAX_ANGULAR_SPEED;
-    });
+          return drive.snapController.calculate(drive.getRotation().getRadians(), theta)
+              * Drive.MAX_ANGULAR_SPEED;
+        });
   }
 
   /**
@@ -180,12 +184,14 @@ public interface ShootMath {
     final var B = N.dot(new Vector(X, Y, Z));
     final var tf = (B + Math.sqrt(B * B - 2 * A * N.dot(triangle.p0))) / A;
     final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
-    final var parallelogram0 = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p0)).magnitude();
+    final var parallelogram0 =
+        triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p0)).magnitude();
     final var parallelogram1 = P.minus(triangle.p0).cross(P.minus(triangle.p1)).magnitude();
     final var parallelogram2 = P.minus(triangle.p1).cross(P.minus(triangle.p2)).magnitude();
     final var parallelogram3 = P.minus(triangle.p2).cross(P.minus(triangle.p0)).magnitude();
 
-    return MathUtil.isNear(parallelogram0, parallelogram1 + parallelogram2 + parallelogram3, 0.0001);
+    return MathUtil.isNear(
+        parallelogram0, parallelogram1 + parallelogram2 + parallelogram3, 0.0001);
   }
 
   // Lightweight 3D math library
@@ -212,12 +218,8 @@ public interface ShootMath {
 
     public Vector cross(Vector other) {
       return new Vector(
-        y * other.z - z * other.y,
-        z * other.x - x * other.z,
-        x * other.y - y * other.x
-      );
+          y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
     }
-
   }
 
   public static record Triangle(Vector p0, Vector p1, Vector p2) {}
@@ -225,5 +227,4 @@ public interface ShootMath {
   public static void main(String[] args) {
     System.out.println(calcConstantVelocity(12.4, 9, 8, 4, 5, -5, 3.5, 9.8));
   }
-
 }
