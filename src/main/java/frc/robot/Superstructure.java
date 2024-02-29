@@ -132,11 +132,6 @@ public class Superstructure {
           intake.setIntake();
           conveyor.setIntaking();
 
-        } else {
-          arm.setHome();
-        }
-
-        // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -320,11 +315,19 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    pwr = new DutyCycleOut(-0.1);
-    systemState = SuperstructureStates.MANUAL_ARM;
+    if(arm.getAbsolutePosition() <= ArmConstants.ARM_MAX){
+      arm.setPosition(ArmConstants.ARM_MAX);
+    }
+    else{
+      pwr = new DutyCycleOut(-0.1);
+      systemState = SuperstructureStates.MANUAL_ARM;
+    }
   }
 
   public void armDown() {
+    if(arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT){
+      arm.setPosition(ArmConstants.HOME_SETPOINT);
+    }
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
   }
