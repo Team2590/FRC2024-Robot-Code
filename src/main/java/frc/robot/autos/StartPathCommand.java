@@ -25,10 +25,9 @@ public class StartPathCommand extends SequentialCommandGroup {
               Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
               RobotContainer.poseEstimator.resetPose(translatedPose);
             }),
-        // Start up the intake system and follow path to first position in parallel.
+        // Starting Running the shooter
         Commands.parallel(
-            Commands.print("Starting up Intake .... "),
-            // Starting Running the shooter
+            // Start up the intake system and follow path to first position in parallel.
             new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
             // new InstantCommand(() -> superstructure.primeShooter(), superstructure.getShooter()),
             paths.getFollowPathCommand(startingPath)));
