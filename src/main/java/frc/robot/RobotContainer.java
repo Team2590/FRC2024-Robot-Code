@@ -30,7 +30,6 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -179,7 +178,7 @@ public class RobotContainer {
       }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
-    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
+    } else if (input.rightJoystickButton(2) && PhotonNoteRunnable.target != null) {
       // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
@@ -188,7 +187,7 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
                       PhotonNoteRunnable.target::getYaw)
-                  .until(() -> input.rightJoystickButton(10)));
+                  .until(() -> input.rightJoystickButton(2)));
     } else if (input.rightJoystickButton(11)) {
       // manual arm w climb DOESNT WORK
       superstructure.climb();
@@ -199,7 +198,7 @@ public class RobotContainer {
     } else if (input.rightJoystickPOV() == 180) {
       // spit
       superstructure.outtake();
-    } else if (input.rightJoystickButton(4)) {
+    } else if (input.rightJoystickButton(3)) {
       // highkey does not work rn
       teleopSpeaker = false;
       superstructure.primeAmp();
