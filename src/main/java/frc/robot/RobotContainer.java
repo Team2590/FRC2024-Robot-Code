@@ -158,9 +158,9 @@ public class RobotContainer {
      * Driver input w/ superstructure
      */
 
-    if (input.controllerAButton()){
+    if (input.controllerAButton()) {
       superstructure.primeShooter();
-    } else if (input.controllerBButton()){
+    } else if (input.controllerBButton()) {
       superstructure.stopShooter();
     }
 
@@ -272,7 +272,7 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public static Drive getDrive(){
+  public static Drive getDrive() {
     return drive;
   }
 

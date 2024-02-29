@@ -14,7 +14,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
@@ -112,8 +111,8 @@ public class Superstructure {
          */
         // arm.setPosition();
         // Anthony added this condition
-        if (!conveyor.hasNote()){
-            shooter.setStopped();
+        if (!conveyor.hasNote()) {
+          shooter.setStopped();
         }
         intake.setStopped();
         conveyor.setStopped();
@@ -187,7 +186,8 @@ public class Superstructure {
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT && RobotContainer.getDrive().snapControllerAtSetpoint()) {
+            && shooter.getState() == ShooterStates.AT_SETPOINT
+            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
           conveyor.setShooting();
         }
 
@@ -290,7 +290,7 @@ public class Superstructure {
     systemState = SuperstructureStates.SHOOT;
   }
 
-  public void stopShooter(){
+  public void stopShooter() {
     shooter.setStopped();
   }
 
