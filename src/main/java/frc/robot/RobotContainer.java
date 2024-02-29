@@ -29,7 +29,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
+import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator;
+import frc.robot.util.ShootMath;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -115,12 +118,12 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -input.leftJoystickY(),
-            () -> -input.leftJoystickX(),
-            () -> -input.rightJoystickX()));
+    drive.setDefaultCommand(ShootMath.shoot(
+      drive, superstructure,
+      () -> -input.leftJoystickY(),
+      () -> -input.leftJoystickX(),
+      AprilTag.speakerRed
+    ));
   }
 
   public void stop() {
