@@ -211,7 +211,7 @@ public class Superstructure {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
-        // arm.setPosition(ArmConstants.AMP_SETPOINT);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
       case SCORE_AMP:
@@ -219,7 +219,6 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
@@ -298,10 +297,6 @@ public class Superstructure {
    */
   public boolean isShooting() {
     return systemState == SuperstructureStates.SHOOT;
-  }
-
-  public void primingAmp() {
-    systemState = SuperstructureStates.PRIMING_AMP;
   }
 
   public void scoreAmp() {
