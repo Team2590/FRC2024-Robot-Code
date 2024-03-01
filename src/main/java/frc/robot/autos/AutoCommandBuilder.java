@@ -1,13 +1,17 @@
 package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ResetPoseCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoCommandBuilder {
 
@@ -15,9 +19,6 @@ public class AutoCommandBuilder {
   private final Drive drive;
   private final Superstructure superstructure;
   private final SequentialCommandGroup commands;
-  private boolean startPathSpecified = false;
-
-  private static String curr_path_name = "none";
 
   public AutoCommandBuilder(PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     this.paths = paths;
@@ -26,63 +27,46 @@ public class AutoCommandBuilder {
     this.commands = new SequentialCommandGroup();
   }
 
-  public AutoCommandBuilder startPath(String pathName) {
-    curr_path_name = pathName;
-    startPathSpecified = true;
-    commands.addCommands(
-        Commands.print("Running Start Path for " + pathName),
-        new StartPathCommand(paths, pathName, superstructure));
+  public AutoCommandBuilder resetPoseUsingPath(String pathName) {
+    Pose2d poseFromPath = paths.getStartingPose(pathName);
+    return resetPose(poseFromPath);
+  }
+
+  public AutoCommandBuilder resetPose(Pose2d pose) {
+    commands.addCommands(new ResetPoseCommand(pose));
     return this;
   }
 
   public AutoCommandBuilder followPath(String pathName) {
-    curr_path_name = pathName;
-    if (!startPathSpecified) {
-      // If the first path wasn't specified, make this the first path.
-      startPath(pathName);
-    } else {
-      commands.addCommands(
-          Commands.print("Running FollowPathCommand for " + pathName),
-          Commands.parallel(
-              paths.getFollowPathCommand(pathName),
-              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)));
-    }
+    commands.addCommands(
+        trace("FollowPath:" + pathName),
+        Commands.parallel(
+            paths.getFollowPathCommand(pathName),
+            Commands.either(
+                trace("Note Present, not starting Intake"),
+                new IntakeCommand(superstructure, 1.0),
+                () -> superstructure.note_present())));
     return this;
   }
 
   public AutoCommandBuilder intake() {
-    commands.addCommands(
-        Commands.print("Running intake command"),
-        new InstantCommand(() -> superstructure.intake()));
-
+    commands.addCommands(new IntakeCommand(superstructure, 1.0));
     return this;
   }
 
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
     if (snapToSpeaker) {
-      commands.addCommands(
-          new SnapToTargetCommand(
-              drive,
-              () -> 0,
-              () -> 0,
-              Targets.SPEAKER,
-              0.00001d // TODO: Figure out the best error tolerance.
-              ));
-      // Commands.race(
-      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-      //     Commands.waitSeconds(2.0)));
+      commands.addCommands(new SnapToTargetCommand(drive, () -> 0, () -> 0, Targets.SPEAKER, 2.0));
     }
-
-    commands.addCommands(new ShootCommand(superstructure, 3));
+    commands.addCommands(new ShootCommand(superstructure, 1.0));
     return this;
   }
 
-  public static String getName() {
-    return curr_path_name;
-  }
-  // TODO Add a method to keep the shooter primed while moving.
-
   public SequentialCommandGroup build() {
     return commands;
+  }
+
+  private static final Command trace(String message) {
+    return Commands.runOnce(() -> Logger.recordOutput("Auto/Trace", message));
   }
 }

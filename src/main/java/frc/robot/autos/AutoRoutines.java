@@ -22,8 +22,9 @@ public class AutoRoutines {
     AutoFunction ezAuto = (instructions) -> buildAuto(paths, drive, superstructure, instructions);
 
     // Register all the auto routines here
-    // autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
+    // // autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
     // This is the same as OneNoteAuto
+
 
     autoChooser.addOption(
         "2_startA_n1", ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT));
@@ -73,28 +74,28 @@ public class AutoRoutines {
         "3_startC_n3_n8",
         ezAuto.apply(
             "startC", SNAP_SHOOT, "startC_note3", SNAP_SHOOT, "note3_n8", "n8_return", SNAP_SHOOT));
-    autoChooser.addOption(
-        "3_startC_n3_n7",
-        ezAuto.apply(
-            "startC",
-            SNAP_SHOOT,
-            "startC_note3",
-            SNAP_SHOOT,
-            "note3_n7",
-            "n7_return_under",
-            SNAP_SHOOT));
-
     // autoChooser.addOption(
-    //     "outside_first",
+    //     "3_startC_n3_n7",
     //     ezAuto.apply(
     //         "startC",
     //         SNAP_SHOOT,
-    //         "n8_outside",
-    //         "n8_return",
+    //         "startC_note3",
     //         SNAP_SHOOT,
     //         "note3_n7",
-    //         "n7_return",
+    //         "n7_return_under",
     //         SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "outside_first",
+        ezAuto.apply(
+            "startC",
+            SNAP_SHOOT,
+            "n8_outside",
+            "n8_return",
+            SNAP_SHOOT,
+            "note3_n7",
+            "n7_return",
+            SNAP_SHOOT));
 
     autoChooser.addOption(
         "4_startB_close",
@@ -158,6 +159,32 @@ public class AutoRoutines {
     //         "note2_n6",
     //         "n6_return",
     //         SNAP_SHOOT));
+    // autoChooser.addOption(
+    //     "StartA",
+    //     ezAuto.apply(
+    //         "startA", // Starting Position A
+    //         SNAP_SHOOT,
+    //         "startA_note1",
+    //         SNAP_SHOOT));
+
+    // autoChooser.addOption(
+    //     "StartB",
+    //     ezAuto.apply(
+    //         "startB", // Starting Position B
+    //         SNAP_SHOOT,
+    //         "startB_note1",
+    //         SNAP_SHOOT,
+    //         "n2-n3",
+    //         SNAP_SHOOT));
+            
+
+    // autoChooser.addOption(
+    //     "StartC",
+    //     ezAuto.apply(
+    //         "startC", // runs path startC
+    //         SNAP_SHOOT,
+    //         "startC_note3",
+    //         SNAP_SHOOT));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
@@ -168,9 +195,9 @@ public class AutoRoutines {
   // private static Command oneNoteAuto(
   //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
   //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(true)
+  //       .shoot(false)
   //       .startPath("startB_note1")
-  //       .shoot(true)
+  //       .shoot(false)
   //       .followPath("n2-n3")
   //       .shoot(true)
   //       .build();
@@ -178,6 +205,9 @@ public class AutoRoutines {
 
   /**
    * Easy way to configure an Auto Routine, just pass in the paths.
+   *
+   * <p>IMPORTANT!!!! The first instruction needs to be the path which is used to reset the robot
+   * pose otherwise we will crash at start up.
    *
    * <p>Use 'shoot' for just shooting or 'snap_shoot' for snaping to target and shooting or 'intake'
    * for running intake.
@@ -188,8 +218,14 @@ public class AutoRoutines {
       Superstructure superstructure,
       String... instructions) {
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
-    for (String path : instructions) {
-      switch (path) {
+    // Since SnapToTarget requires that we have initialized our pose, the first path that gets
+    // passed in is used only for resetting the pose.
+    String pathToUseForResettingPose = instructions[0];
+    builder.resetPoseUsingPath(pathToUseForResettingPose);
+
+    for (int i = 1; i < instructions.length; i++) {
+      String instruction = instructions[i];
+      switch (instruction) {
         case SHOOT:
           builder.shoot(false);
           break;
@@ -202,7 +238,7 @@ public class AutoRoutines {
           break;
         default:
           // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
-          builder.followPath(path);
+          builder.followPath(instruction);
           break;
       }
     }
