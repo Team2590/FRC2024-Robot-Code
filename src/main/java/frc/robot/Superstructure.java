@@ -19,6 +19,7 @@ import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
@@ -57,6 +58,7 @@ public class Superstructure {
   private final Flywheel shooter;
   private final Arm arm;
   private final Climb climb;
+  private final NemesisLED led;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
@@ -66,13 +68,14 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb) {
+  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
     this.climb = climb;
+    this.led = led;
     climb.resetRotationCount();
 
     final double[] distance = {

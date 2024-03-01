@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
@@ -46,6 +48,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final Climb climb;
+  private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -61,13 +64,13 @@ public class RobotContainer {
     input = UserInput.getInstance();
     switch (Constants.currentMode) {
       case REAL:
-        drive =
-            new Drive(
-                new GyroIOPigeon2(true),
-                new ModuleIOTalonFX(0),
-                new ModuleIOTalonFX(1),
-                new ModuleIOTalonFX(2),
-                new ModuleIOTalonFX(3));
+      drive =
+      new Drive(
+        new GyroIOPigeon2(true),
+        new ModuleIOTalonFX(0),
+        new ModuleIOTalonFX(1),
+        new ModuleIOTalonFX(2),
+        new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         // instantiate other subsystems
         conveyor = new Conveyor(new ConveyorIOTalonFX());
@@ -128,7 +131,7 @@ public class RobotContainer {
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb);
+    superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
