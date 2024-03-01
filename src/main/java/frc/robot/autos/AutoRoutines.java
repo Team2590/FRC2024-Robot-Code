@@ -25,7 +25,14 @@ public class AutoRoutines {
     autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
     // This is the same as OneNoteAuto
     autoChooser.addOption(
-        "EasyTwoNoteAuto", ezAuto.apply(SHOOT, "startB_note1", SHOOT, "n2-n3", SNAP_SHOOT));
+        "3_startB_n2_n3", ezAuto.apply(SHOOT, "startB_note2", SHOOT, "n2-n3", SNAP_SHOOT));
+    autoChooser.addOption("", ezAuto.apply(SNAP_SHOOT, "startB_note3", SHOOT, "n3"));
+
+
+    autoChooser.addOption("3_startB_n2_n6_ret",ezAuto.apply(SHOOT, "startB_note2", SHOOT, "n2_n6", "n6_return", SNAP_SHOOT));
+    autoChooser.addOption("3_startB_n3_n7_ret", ezAuto.apply(SNAP_SHOOT, "startC_note3", SNAP_SHOOT, "n3_n7", "n7_return_under", SHOOT));
+    // create the path for note 1 to note 4  ---- autoChooser.addOption("hello", ezAuto(SNAP_SHOOT, "startA_note1", ));
+    autoChooser.addOption("3_startB_n3_n7_ret", ezAuto.apply(SNAP_SHOOT, "startC_note3", SNAP_SHOOT, "n3_n8", "n8_return", SNAP_SHOOT));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
