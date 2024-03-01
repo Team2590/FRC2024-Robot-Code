@@ -64,7 +64,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 300);
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -190,8 +190,7 @@ public class Superstructure {
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT
-            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
 
