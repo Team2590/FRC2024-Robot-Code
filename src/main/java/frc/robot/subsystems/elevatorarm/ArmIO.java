@@ -1,8 +1,7 @@
 package frc.robot.subsystems.elevatorarm;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ArmIO {
   @AutoLog

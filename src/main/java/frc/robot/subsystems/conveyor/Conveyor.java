@@ -1,6 +1,7 @@
 package frc.robot.subsystems.conveyor;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -122,6 +123,9 @@ public class Conveyor extends SubsystemBase {
    * @return if something is detected
    */
   public boolean detectedIntakeSide() {
+    if (Robot.isSimulation()) {
+      return hasNote();
+    }
     return inputs.detectedShooterSide;
   }
 
@@ -131,6 +135,9 @@ public class Conveyor extends SubsystemBase {
    * @return if something is detected
    */
   public boolean detectedShooterSide() {
+    if (Robot.isSimulation()) {
+      return hasNote();
+    }
     return inputs.detectedShooterSide;
   }
 
@@ -140,6 +147,9 @@ public class Conveyor extends SubsystemBase {
    * @return if there is a note in resting pos
    */
   public boolean hasNote() {
+    if (Robot.isSimulation()) {
+      return state == ConveyorStates.INTAKE || state == ConveyorStates.SHOOT;
+    }
     return inputs.hasNote;
   }
 }

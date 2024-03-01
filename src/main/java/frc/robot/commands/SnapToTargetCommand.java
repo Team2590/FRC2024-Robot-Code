@@ -13,8 +13,8 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.Tracer;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Snaps to target command.
@@ -52,7 +52,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void initialize() {
-    Logger.recordOutput("Auto/Trace", "Running SnapToTargetCommand");
+    Tracer.trace("Running SnapToTargetCommand");
     count = 0;
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
@@ -112,7 +112,7 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
-    Logger.recordOutput("Auto/Trace", "SnapControllerAtSetPoint:" + snapControllerAtSetpoint);
+    Tracer.trace("SnapControllerAtSetPoint:" + snapControllerAtSetpoint);
     return timer.hasElapsed(waitTimeSeconds) || snapControllerAtSetpoint;
   }
 
@@ -120,6 +120,6 @@ public class SnapToTargetCommand extends Command {
   public void end(boolean interrupted) {
     timer.stop();
     drive.stop(); // added dt stop
-    Logger.recordOutput("Auto/Trace", "SnapToTargetCommand Done.");
+    Tracer.trace("SnapToTargetCommand Done.");
   }
 }

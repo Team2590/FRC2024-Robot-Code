@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.util.GeomUtil;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.util.Tracer;
 
 /** Command to Initialize starting pose. */
 public class ResetPoseCommand extends Command {
@@ -19,7 +19,7 @@ public class ResetPoseCommand extends Command {
   public void execute() {
     Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(initialPose);
     RobotContainer.poseEstimator.resetPose(translatedPose);
-    Logger.recordOutput("Auto/Trace", "Resetting Pose");
+    Tracer.trace("Resetting Pose");
   }
 
   @Override

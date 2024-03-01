@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.util.Tracer;
 
 /** Runs the intake. */
 public class IntakeCommand extends Command {
@@ -25,7 +25,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void execute() {
-    Logger.recordOutput("Auto/Trace", "Running IntakeCommand");
+    Tracer.trace("Running IntakeCommand");
     superstructure.intake();
   }
 
@@ -36,6 +36,6 @@ public class IntakeCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    Logger.recordOutput("Auto/Trace", "IntakeCommand Done.");
+    Tracer.trace("IntakeCommand Done.");
   }
 }

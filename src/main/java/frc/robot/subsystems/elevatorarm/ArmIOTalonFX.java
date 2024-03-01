@@ -20,7 +20,7 @@ import frc.robot.util.LoggedTunableNumber;
 
 /**
  * IO class for a real arm subsystem
- * 
+ *
  * @author Vidur Janapureddy
  */
 public class ArmIOTalonFX implements ArmIO {

@@ -11,7 +11,7 @@ import frc.robot.commands.ResetPoseCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.util.Tracer;
 
 public class AutoCommandBuilder {
 
@@ -67,6 +67,6 @@ public class AutoCommandBuilder {
   }
 
   private static final Command trace(String message) {
-    return Commands.runOnce(() -> Logger.recordOutput("Auto/Trace", message));
+    return Commands.runOnce(() -> Tracer.trace(message));
   }
 }

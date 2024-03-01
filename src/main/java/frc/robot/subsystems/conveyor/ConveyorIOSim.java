@@ -13,8 +13,10 @@ import frc.robot.Constants.ConveyorConstants;
 public class ConveyorIOSim implements ConveyorIO {
   // TODO: find the 2 guessed values (they also may not be that important because the actual
   // movement is not that important)
-  private final DCMotorSim feederSim = new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.FEEDER_GEAR_RATIO, 1.0);
-  private final DCMotorSim diverterSim = new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.DIVERTER_GEAR_RATIO, 1.0);
+  private final DCMotorSim feederSim =
+      new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.FEEDER_GEAR_RATIO, 1.0);
+  private final DCMotorSim diverterSim =
+      new DCMotorSim(DCMotor.getFalcon500(1), ConveyorConstants.DIVERTER_GEAR_RATIO, 1.0);
   private final AnalogInputSim intakeProxSim = new AnalogInputSim(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInputSim shooterProxSim =
       new AnalogInputSim(ConveyorConstants.SHOOTER_PROX_ID);
@@ -31,7 +33,10 @@ public class ConveyorIOSim implements ConveyorIO {
     inputs.feederVolts = feederAppliedVolts;
     inputs.diverterRPM = diverterSim.getAngularVelocityRPM();
     inputs.diverterVolts = diverterAppliedVolts;
-    inputs.currentAmps = new double[] {Math.abs(feederSim.getCurrentDrawAmps()),Math.abs(diverterSim.getCurrentDrawAmps())};
+    inputs.currentAmps =
+        new double[] {
+          Math.abs(feederSim.getCurrentDrawAmps()), Math.abs(diverterSim.getCurrentDrawAmps())
+        };
     inputs.hasNote = noteInConveyor();
   }
 

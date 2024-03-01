@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.util.HelperFn;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -93,6 +94,9 @@ public class Flywheel extends SubsystemBase {
 
   /** Returns true if the motor speed is at the set point of our tolerance. * */
   private boolean isMotorSpeedAtSetPoint() {
+    if (Robot.isSimulation()) {
+      return true;
+    }
     return HelperFn.isWithinTolerance(
         Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec),
         currentSetpoint,

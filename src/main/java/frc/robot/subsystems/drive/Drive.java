@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.LoggedTunableNumber;
@@ -325,6 +326,9 @@ public class Drive extends SubsystemBase {
   }
 
   public boolean snapControllerAtSetpoint() {
+    if (Robot.isSimulation()) {
+      return true;
+    }
     Logger.recordOutput("SnapController/Error", snapController.getPositionError());
     return snapController.atSetpoint();
   }

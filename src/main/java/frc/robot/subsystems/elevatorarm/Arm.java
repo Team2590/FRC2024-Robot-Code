@@ -3,6 +3,7 @@ package frc.robot.subsystems.elevatorarm;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Robot;
 import frc.robot.util.HelperFn;
 import org.littletonrobotics.junction.Logger;
 
@@ -80,6 +81,9 @@ public class Arm extends SubsystemBase {
   }
 
   private boolean isArmAtSetPointPosition(double setPoint) {
+    if (Robot.isSimulation()) {
+      return true;
+    }
     return HelperFn.isWithinTolerance(
         arm.armCancoder.getAbsolutePosition().getValueAsDouble(), setPoint, tolerance);
   }
@@ -92,11 +96,18 @@ public class Arm extends SubsystemBase {
       setpoint = ArmConstants.HOME_SETPOINT;
     }
     armSetpoint = setpoint;
-    if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
+    if (!isArmAbsPositionAtSetPoint(armSetpoint)) {
       state = ArmStates.APPROACHINGSETPOINT;
     } else {
       state = ArmStates.AT_SETPOINT;
     }
+  }
+
+  private boolean isArmAbsPositionAtSetPoint(double setPoint) {
+    if (Robot.isSimulation()) {
+      return true;
+    }
+    return HelperFn.isWithinTolerance(inputs.armabspos, setPoint, tolerance);
   }
 
   // public void setManualPower(double percent) {

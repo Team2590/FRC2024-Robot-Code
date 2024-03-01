@@ -5,9 +5,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.Constants;
 
-/**
- * IO class for a real intake subsystem
- */
+/** IO class for a real intake subsystem */
 public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX talon = new TalonFX(Constants.IntakeConstants.INTAKE_ID, Constants.CANBUS);
   private final StatusSignal<Double> intakePosition = talon.getPosition();

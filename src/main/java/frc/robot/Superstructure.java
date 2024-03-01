@@ -134,7 +134,6 @@ public class Superstructure {
          * Stop intake && transition to HAS_NOTE state
          */
 
-        // if (arm.getState() == ArmStates.HOME) {
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
