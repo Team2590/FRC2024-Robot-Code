@@ -43,11 +43,13 @@ public class Superstructure {
     PRIMED_SHOOTER,
     HAS_NOTE,
     SHOOT,
+    SUBWOOFER_SHOT,
     PRIMING_AMP,
     SCORE_AMP,
     CLIMB,
     FLIPPING,
-    SCORE_TRAP
+    SCORE_TRAP,
+    ARM_CLIMB
   }
 
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
@@ -60,6 +62,7 @@ public class Superstructure {
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
   private final LookupTable armInterpolation;
@@ -110,7 +113,10 @@ public class Superstructure {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         // arm.setPosition();
-        shooter.setStopped();
+        // Anthony added this condition
+        if (!conveyor.hasNote()) {
+          shooter.setStopped();
+        }
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
@@ -126,11 +132,14 @@ public class Superstructure {
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
          */
-        arm.setHome();
+
         // if (arm.getState() == ArmStates.HOME) {
-        intake.setIntake();
-        conveyor.setIntaking();
-        // }
+        if (arm.getState() == ArmStates.HOME) {
+          intake.setIntake();
+          conveyor.setIntaking();
+        } else {
+          arm.setHome();
+        }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -177,10 +186,11 @@ public class Superstructure {
         double armDistanceSetPoint =
             armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint);
+        arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            && shooter.getState() == ShooterStates.AT_SETPOINT
+            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
           conveyor.setShooting();
         }
 
@@ -192,6 +202,14 @@ public class Superstructure {
         //   conveyor.setShooting();
         // }
         break;
+      case SUBWOOFER_SHOT:
+        arm.setPosition(ArmConstants.HOME_SETPOINT);
+        shooter.shoot(flywheelSpeedInput.get());
+        if (arm.getState() == ArmStates.AT_SETPOINT
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+          conveyor.setShooting();
+        }
+        break;
 
       case PRIMING_AMP:
         /*
@@ -199,6 +217,7 @@ public class Superstructure {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
       case SCORE_AMP:
@@ -206,7 +225,6 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
@@ -217,6 +235,9 @@ public class Superstructure {
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
+        break;
+      case ARM_CLIMB:
+        arm.setPosition(ArmConstants.TRAP_SETPOINT);
         break;
       case CLIMB:
         /*
@@ -234,6 +255,8 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ShooterState", shooter.getState());
     Logger.recordOutput("Superstructure/IntakeState", intake.getState());
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
+    Logger.recordOutput(
+        "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
   }
 
   public void stop() {
@@ -248,9 +271,18 @@ public class Superstructure {
     systemState = SuperstructureStates.INTAKE;
   }
 
+  public boolean note_present() {
+    return conveyor.hasNote();
+  }
+
   public void primeShooter() {
+    System.out.println("-- primingShooter");
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
+  }
+
+  public void primeAmp() {
+    systemState = SuperstructureStates.PRIMING_AMP;
   }
 
   public void hasNote() {
@@ -261,16 +293,20 @@ public class Superstructure {
     systemState = SuperstructureStates.SHOOT;
   }
 
+  public void stopShooter() {
+    shooter.setStopped();
+  }
+
+  public void subwooferShot() {
+    systemState = SuperstructureStates.SUBWOOFER_SHOT;
+  }
+
   /**
    * Returns true if we are in the process of shooting i.e either priming up to shooting or
    * shooting.
    */
   public boolean isShooting() {
     return systemState == SuperstructureStates.SHOOT;
-  }
-
-  public void primingAmp() {
-    systemState = SuperstructureStates.PRIMING_AMP;
   }
 
   public void scoreAmp() {
@@ -287,13 +323,24 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    pwr = new DutyCycleOut(-0.1);
-    systemState = SuperstructureStates.MANUAL_ARM;
+    if (arm.getAbsolutePosition() <= ArmConstants.ARM_MAX) {
+      arm.setPosition(ArmConstants.ARM_MAX);
+    } else {
+      pwr = new DutyCycleOut(-0.1);
+      systemState = SuperstructureStates.MANUAL_ARM;
+    }
   }
 
   public void armDown() {
+    if (arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT) {
+      arm.setPosition(ArmConstants.HOME_SETPOINT);
+    }
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public void armClimb() {
+    systemState = SuperstructureStates.ARM_CLIMB;
   }
 
   public void flip() {

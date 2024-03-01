@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure;
-import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
 
 public class AutoCommandBuilder {
@@ -17,6 +17,8 @@ public class AutoCommandBuilder {
   private final SequentialCommandGroup commands;
   private boolean startPathSpecified = false;
 
+  private static String curr_path_name = "none";
+
   public AutoCommandBuilder(PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     this.paths = paths;
     this.drive = drive;
@@ -25,6 +27,7 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder startPath(String pathName) {
+    curr_path_name = pathName;
     startPathSpecified = true;
     commands.addCommands(
         Commands.print("Running Start Path for " + pathName),
@@ -33,13 +36,16 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder followPath(String pathName) {
+    curr_path_name = pathName;
     if (!startPathSpecified) {
       // If the first path wasn't specified, make this the first path.
       startPath(pathName);
     } else {
       commands.addCommands(
           Commands.print("Running FollowPathCommand for " + pathName),
-          paths.getFollowPathCommand(pathName));
+          Commands.parallel(
+              paths.getFollowPathCommand(pathName),
+              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)));
     }
     return this;
   }
@@ -47,21 +53,33 @@ public class AutoCommandBuilder {
   public AutoCommandBuilder intake() {
     commands.addCommands(
         Commands.print("Running intake command"),
-        new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()));
+        new InstantCommand(() -> superstructure.intake()));
+
     return this;
   }
 
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
     if (snapToSpeaker) {
       commands.addCommands(
-          Commands.race(
-              DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-              Commands.waitSeconds(2.0)));
+          new SnapToTargetCommand(
+              drive,
+              () -> 0,
+              () -> 0,
+              Targets.SPEAKER,
+              0.00001d // TODO: Figure out the best error tolerance.
+              ));
+      // Commands.race(
+      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
+      //     Commands.waitSeconds(2.0)));
     }
-    commands.addCommands(new ShootCommand(superstructure, 2.0));
+
+    commands.addCommands(new ShootCommand(superstructure, 3));
     return this;
   }
 
+  public static String getName() {
+    return curr_path_name;
+  }
   // TODO Add a method to keep the shooter primed while moving.
 
   public SequentialCommandGroup build() {

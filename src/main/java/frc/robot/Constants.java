@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -35,6 +36,7 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
+  public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);
 
   public final class FieldConstants {
     public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -83,12 +85,13 @@ public final class Constants {
   public final class ArmConstants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
-    public static final double AMP_SETPOINT = -0.2;
+    public static double AMP_SETPOINT = -0.27;
     public static final double TRAP_SETPOINT = -0.258;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
     public static final double MAG_OFFSET = -.156;
+    public static final double ARM_MAX = -0.3;
   }
 
   public final class ShooterConstants {
@@ -130,6 +133,8 @@ public final class Constants {
     SIM,
 
     /** Replaying from a log file. */
-    REPLAY
+    REPLAY,
+
+    KANG
   }
 }
