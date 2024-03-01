@@ -161,8 +161,16 @@ public class RobotContainer {
      * Driver input w/ superstructure
      */
 
+    if (poseEstimator.distanceToTarget() <= 6.7) {
+      input.setOperatorRumble(1);
+    } else if (poseEstimator.distanceToTarget() > 6.7) {
+      input.setOperatorRumble(0);
+    } 
+    
+
     if (input.controllerAButton()) {
       superstructure.primeShooter();
+      input.setOperatorRumble(0);
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
     }

@@ -347,9 +347,11 @@ public class Superstructure {
     systemState = SuperstructureStates.FLIPPING;
   }
 
+
+
   public SuperstructureStates getState() {
     return systemState;
-  }
+  } 
 
   public Arm getArm() {
     return arm;
