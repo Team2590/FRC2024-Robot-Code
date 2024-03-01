@@ -48,7 +48,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final Climb climb;
-  private final NemesisLED led;
+  private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -77,7 +77,6 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
         climb = new Climb(new ClimbIOTalonFX());
-        led = new NemesisLED(9, 100);
         noteNotifier.setName("PhotonNoteRunnable");
         noteNotifier.startPeriodic(0.02);
         break;
@@ -113,7 +112,6 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
         climb = new Climb(new ClimbIOTalonFX());
-        led = new NemesisLED(9, 100);
         break;
 
       default:
@@ -130,7 +128,6 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOTalonFX());
         climb = new Climb(new ClimbIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
-        led = new NemesisLED(9, 100);
         break;
     }
     // pass in all subsystems into superstructure
