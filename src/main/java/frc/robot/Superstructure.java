@@ -65,7 +65,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .015);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 300.0); // 2300
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
