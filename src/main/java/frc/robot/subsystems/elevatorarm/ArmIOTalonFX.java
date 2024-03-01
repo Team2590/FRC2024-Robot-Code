@@ -19,6 +19,8 @@ import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
+ * IO class for a real arm subsystem
+ * 
  * @author Vidur Janapureddy
  */
 public class ArmIOTalonFX implements ArmIO {
@@ -81,6 +83,7 @@ public class ArmIOTalonFX implements ArmIO {
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, armpos, armabspos);
   }
 
+  @Override
   public void updateInputs(ArmIOInputs inputs) {
     BaseStatusSignal.refreshAll(armabspos, armpos);
     inputs.armabspos = armabspos.getValueAsDouble();
@@ -90,6 +93,7 @@ public class ArmIOTalonFX implements ArmIO {
     updateTunableNumbers();
   }
 
+  @Override
   public void setPosition(double position) {
     arm.setControl(mmv.withPosition(position));
   }
@@ -102,6 +106,7 @@ public class ArmIOTalonFX implements ArmIO {
     arm.stopMotor();
   }
 
+  @Override
   public void updateTunableNumbers() {
     if (kP.hasChanged(0)) {
       slot0.kP = kP.get();
@@ -146,6 +151,7 @@ public class ArmIOTalonFX implements ArmIO {
     }
   }
 
+  @Override
   public void setPower(DutyCycleOut power) {
     arm.setControl(power);
   }

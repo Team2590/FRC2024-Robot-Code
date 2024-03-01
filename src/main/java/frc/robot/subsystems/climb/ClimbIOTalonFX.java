@@ -7,6 +7,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimbConstants;
 
+/**
+ * IO class for a real climb subsystem
+ */
 public class ClimbIOTalonFX implements ClimbIO {
   private final TalonFX leader = new TalonFX(24, "Takeover");
   private final TalonFX follower = new TalonFX(25, "Takeover");

@@ -8,15 +8,21 @@ public interface ClimbIO {
     public double positionRotations = 0.0;
   }
 
-  public void updateInputs(ClimbIOInputs inputs);
+  /** Updates the set of loggable inputs */
+  public default void updateInputs(ClimbIOInputs inputs) {}
 
-  public void run(double speed);
+  /** Run the motors at the give speed */
+  public default void run(double speed) {}
 
-  public void setVoltage(double voltage);
+  /** Run the motors at the given voltage. If one motor falls behind, the other will be slowed so it can catch up */
+  public default void setVoltage(double voltage) {}
 
-  public void stop();
+  /** Stop the motors */
+  public default void stop() {}
 
-  public double getRotationCount();
+  /** Returns the rotation count of the leading motor */
+  public default double getRotationCount() { return 0; }
 
-  public void resetRotationCount();
+  /** Resets rotation count of both motors */
+  public default void resetRotationCount() {}
 }

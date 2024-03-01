@@ -46,7 +46,7 @@ public class Intake extends SubsystemBase {
         // io.runPower(manualPower);
         break;
       default:
-        System.out.println("Reached conveyor default case");
+        System.out.println("Reached intake default case");
         break;
     }
   }

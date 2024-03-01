@@ -2,6 +2,8 @@ package frc.robot.subsystems.elevatorarm;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
+
 public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
@@ -30,4 +32,13 @@ public interface ArmIO {
 
   /** Updates tunable numbers */
   public default void updateTunableNumbers() {}
+
+  /** Sets the desired setpoint of the arm */
+  public default void setPosition(double position) {}
+
+  /** Stops the arm */
+  public default void stop() {}
+
+  /** Sets the manual power of the arm */
+  public default void setPower(DutyCycleOut power) {}
 }
