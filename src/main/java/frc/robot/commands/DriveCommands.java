@@ -171,16 +171,16 @@ public class DriveCommands {
     return Commands.run(
         (() -> {
           Logger.recordOutput(
-              "Drive/NoteController/PID Output",
-              drive.noteController.calculate(-yError.getAsDouble(), 0)
+              "Drive/noteController/PID Output",
+              drive.linearMovementController.calculate(-yError.getAsDouble(), 0)
                   * drive.getMaxLinearSpeedMetersPerSec());
-          Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
+          Logger.recordOutput("Drive/noteController/YError", yError.getAsDouble());
           drive.runVelocity(
               new ChassisSpeeds(
                   // joystick magnitude
                   -Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble())
                       * drive.getMaxLinearSpeedMetersPerSec(),
-                  drive.noteController.calculate(-yError.getAsDouble(), 0)
+                  drive.linearMovementController.calculate(-yError.getAsDouble(), 0)
                       * drive.getMaxLinearSpeedMetersPerSec()
                       * Drive.noteControllermultiplier.get(),
                   0));
@@ -197,7 +197,6 @@ public class DriveCommands {
   public static Command TurnTranslateToTarget(
     Drive drive, List<PhotonTrackedTarget> targets) {
       // TODO: both turn and translate might need their own pids with seperate gains; just using snap controller for now 
-      // TODO: INSTEAD OF getBestCameraToTarget(), USE TAG POSE FROM FIELD LAYOUT MINUS ROBOT POSE
       return Commands.run((() -> {
         for (PhotonTrackedTarget t: targets) {
           // turn to speaker (center tag only, red and blue)
@@ -222,25 +221,29 @@ public class DriveCommands {
             break;
           // translate to amp/stage (centered, all 3 stage sides, red and blue)
           } else if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
-            Transform3d difference = t.getBestCameraToTarget();
-            double xOffset = difference.getX();
-            double yOffset = difference.getY();
+            double lateralOffset = t.getBestCameraToTarget().getY();
             drive.runVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                  drive.snapController.calculate(xOffset, 0)
-                    * drive.getMaxLinearSpeedMetersPerSec()
-                    * Drive.snapControllermultiplier.get(),
-                  drive.snapController.calculate(yOffset,0)
-                    * drive.getMaxLinearSpeedMetersPerSec()
-                    * Drive.snapControllermultiplier.get(),
+                new ChassisSpeeds(
                   0,
-                  drive.getRotation()));
+                  drive.linearMovementController.calculate(lateralOffset, 0)
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * Drive.alignControllermultiplier.get(),
+                  0));
+
           }
         }
       }),
       drive);
     }
-
+  
+  /**
+   * Turn towards a grounded note while maintaining joystick movement; use camera data to get relative note yaw
+   * @param drive - drive instance
+   * @param xSupplier - left joystick x value
+   * @param ySupplier - left joystick y value
+   * @param yawSupplier - yaw to note; take from camera
+   * @return the command
+   */
   public static Command turnToNote(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yawSupplier) {
     final var yaw = yawSupplier.getAsDouble();
