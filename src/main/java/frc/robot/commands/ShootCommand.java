@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Command for shooting using the Superstructure.
@@ -35,21 +36,21 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
-    System.out.println("Shooting .... ");
+    Logger.recordOutput("Auto/Trace", "Running ShootCommand");
     superstructure.shoot();
   }
 
   @Override
   public boolean isFinished() {
-    // return !(superstructure.note_present()) || (timer.hasElapsed(timeToWait));
-    return timer.hasElapsed(timeToWait);
-    // TODO create a condition to figure out when shooting is done- conveyor, !hasnote
+    // If the shooter side prox sensor of conveyor doesn't detect note, shoot is done.
+    boolean detectedShooterSideNote = superstructure.getConveyor().detectedShooterSide();
+    Logger.recordOutput("Auto/Trace", "Conveyer ShooterSideHasNote" + detectedShooterSideNote);
+    return timer.hasElapsed(timeToWait) || !detectedShooterSideNote;
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    // start intake immediately after shooting
-    // superstructure.intake();
+    Logger.recordOutput("Auto/Trace", "ShootCommand Done.");
   }
 }
