@@ -27,8 +27,6 @@ public class AutoRoutines {
     autoChooser.addOption(
         "EasyTwoNoteAuto", ezAuto.apply(SHOOT, "startB_note1", SHOOT, "n2-n3", SNAP_SHOOT));
 
-    autoChooser.addOption("startA_n1", ezAuto.apply("StartA", SNAP_SHOOT, "startA_n1", SNAP_SHOOT));
-
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
     return autoChooser;

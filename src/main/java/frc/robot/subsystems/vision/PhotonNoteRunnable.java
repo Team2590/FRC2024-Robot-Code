@@ -21,7 +21,7 @@ public class PhotonNoteRunnable implements Runnable {
   /** Updates results on the note detection camera. */
   @Override
   public void run() {
-    // result = NoteCam.getLatestResult();
+    result = NoteCam.getLatestResult();
     if (result.hasTargets()) {
       target = result.getBestTarget();
       noteXOffset = camHeight / (Math.tan(camPitch - Math.toRadians(target.getPitch())));

@@ -39,6 +39,7 @@ public final class Constants {
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);
 
   public final class FieldConstants {
+    public static final double RUMBLE_THRESHOLD = 6;
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
     public static final Pose2d FLIPPING_POSE =
@@ -91,6 +92,7 @@ public final class Constants {
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
     public static final double MAG_OFFSET = -.156;
+    public static final double ARM_MAX = -0.3;
   }
 
   public final class ShooterConstants {

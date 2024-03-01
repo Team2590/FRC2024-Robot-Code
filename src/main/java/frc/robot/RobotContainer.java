@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
@@ -40,12 +42,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private static Drive drive;
   private final Flywheel flywheel;
   private final Conveyor conveyor;
   private final Arm arm;
   private final Intake intake;
   private final Climb climb;
+  private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
@@ -54,12 +57,30 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
+  private boolean teleopSpeaker;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     input = UserInput.getInstance();
     switch (Constants.currentMode) {
       case REAL:
+      drive =
+      new Drive(
+        new GyroIOPigeon2(true),
+        new ModuleIOTalonFX(0),
+        new ModuleIOTalonFX(1),
+        new ModuleIOTalonFX(2),
+        new ModuleIOTalonFX(3));
+        flywheel = new Flywheel(new FlywheelIOTalonFX());
+        // instantiate other subsystems
+        conveyor = new Conveyor(new ConveyorIOTalonFX());
+        intake = new Intake(new IntakeIOTalonFX());
+        arm = new Arm(new ArmIOTalonFX());
+        climb = new Climb(new ClimbIOTalonFX());
+        noteNotifier.setName("PhotonNoteRunnable");
+        noteNotifier.startPeriodic(0.02);
+        break;
+      case KANG:
         drive =
             new Drive(
                 new GyroIOPigeon2(true),
@@ -76,7 +97,6 @@ public class RobotContainer {
         noteNotifier.setName("PhotonNoteRunnable");
         noteNotifier.startPeriodic(0.02);
         break;
-
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
@@ -111,7 +131,7 @@ public class RobotContainer {
         break;
     }
     // pass in all subsystems into superstructure
-    superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb);
+    superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
     autoChooser = AutoRoutines.buildChooser(drive, superstructure);
     populateAutoChooser();
@@ -121,6 +141,8 @@ public class RobotContainer {
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
             () -> -input.rightJoystickX()));
+
+    teleopSpeaker = true;
   }
 
   public void stop() {
@@ -138,24 +160,37 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    // if (input.leftJoystickTrigger()) {
-    //   superstructure.intake();
-    // } else if (input.rightJoystickTrigger()) {
-    //   superstructure.outtake();
-    // }
+
+    if (poseEstimator.distanceToTarget() <= Constants.FieldConstants.RUMBLE_THRESHOLD) {
+      input.setOperatorRumble(1);
+    } else if (poseEstimator.distanceToTarget() > Constants.FieldConstants.RUMBLE_THRESHOLD) {
+      input.setOperatorRumble(0);
+    } 
+
+    if (input.controllerAButton()) {
+      superstructure.primeShooter();
+      input.setOperatorRumble(0);
+    } else if (input.controllerBButton()) {
+      superstructure.stopShooter();
+    }
+
     if (input.leftJoystickTrigger()) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.SPEAKER)
-                  .until(() -> input.leftJoystickTrigger()));
-      superstructure.shoot();
+      if (teleopSpeaker) {
+        CommandScheduler.getInstance()
+            .schedule(
+                DriveCommands.SnapToTarget(
+                        drive,
+                        () -> -input.leftJoystickY(),
+                        () -> -input.leftJoystickX(),
+                        Targets.SPEAKER)
+                    .until(() -> input.leftJoystickTrigger()));
+        superstructure.shoot();
+      } else {
+        superstructure.scoreAmp();
+      }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
-    } else if (input.rightJoystickButton(10) && PhotonNoteRunnable.target != null) {
+    } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
       // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
@@ -164,7 +199,7 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       () -> -input.leftJoystickX(),
                       PhotonNoteRunnable.target::getYaw)
-                  .until(() -> input.rightJoystickButton(10)));
+                  .until(() -> input.rightJoystickButton(2)));
     } else if (input.rightJoystickButton(11)) {
       // manual arm w climb DOESNT WORK
       superstructure.climb();
@@ -175,18 +210,20 @@ public class RobotContainer {
     } else if (input.rightJoystickPOV() == 180) {
       // spit
       superstructure.outtake();
-    } else if (input.rightJoystickButton(4)) {
-      // highkey does not work rn
-      superstructure.primingAmp();
     } else if (input.rightJoystickButton(3)) {
-      superstructure.scoreAmp();
+      // highkey does not work rn
+      teleopSpeaker = false;
+      input.setOperatorRumble(0);
+      superstructure.primeAmp();
     } else {
+      teleopSpeaker = true;
       superstructure.idle();
     }
 
     if (input.controllerYButton()) {
       superstructure.climb();
     }
+    // Logger.recordOutput("shoot speaker?", teleopSpeaker);
     // if (input.controllerXButton()) {
     //   superstructure.armClimb();
     // }
@@ -244,6 +281,10 @@ public class RobotContainer {
     //         new InstantCommand(() -> superstructure.primeShooter(),
     // superstructure.getShooter()));
     return autoChooser.get();
+  }
+
+  public static Drive getDrive() {
+    return drive;
   }
 
   /**

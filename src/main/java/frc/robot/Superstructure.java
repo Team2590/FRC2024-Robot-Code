@@ -19,6 +19,7 @@ import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
@@ -57,6 +58,7 @@ public class Superstructure {
   private final Flywheel shooter;
   private final Arm arm;
   private final Climb climb;
+  private final NemesisLED led;
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
@@ -66,13 +68,14 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb) {
+  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
     this.shooter = shooter;
     this.arm = arm;
     this.climb = climb;
+    this.led = led;
     climb.resetRotationCount();
 
     final double[] distance = {
@@ -110,7 +113,10 @@ public class Superstructure {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         // arm.setPosition();
-        shooter.setStopped();
+        // Anthony added this condition
+        if (!conveyor.hasNote()) {
+          shooter.setStopped();
+        }
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
@@ -131,12 +137,9 @@ public class Superstructure {
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
-
         } else {
           arm.setHome();
         }
-
-        // }
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -186,7 +189,8 @@ public class Superstructure {
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            && shooter.getState() == ShooterStates.AT_SETPOINT
+            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
           conveyor.setShooting();
         }
 
@@ -213,7 +217,7 @@ public class Superstructure {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
-        // arm.setPosition(ArmConstants.AMP_SETPOINT);
+        arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
       case SCORE_AMP:
@@ -221,7 +225,6 @@ public class Superstructure {
          * PRIMED_AMP
          * Arm is at AMP Setpoint -- > conveyor diverts to score AMP
          */
-        arm.setPosition(ArmConstants.AMP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
         }
@@ -290,6 +293,10 @@ public class Superstructure {
     systemState = SuperstructureStates.SHOOT;
   }
 
+  public void stopShooter() {
+    shooter.setStopped();
+  }
+
   public void subwooferShot() {
     systemState = SuperstructureStates.SUBWOOFER_SHOT;
   }
@@ -300,10 +307,6 @@ public class Superstructure {
    */
   public boolean isShooting() {
     return systemState == SuperstructureStates.SHOOT;
-  }
-
-  public void primingAmp() {
-    systemState = SuperstructureStates.PRIMING_AMP;
   }
 
   public void scoreAmp() {
@@ -320,11 +323,18 @@ public class Superstructure {
 
   public void armUp() {
     // optimization, make these two duty cycles local variables so these aren't created each time
-    pwr = new DutyCycleOut(-0.1);
-    systemState = SuperstructureStates.MANUAL_ARM;
+    if (arm.getAbsolutePosition() <= ArmConstants.ARM_MAX) {
+      arm.setPosition(ArmConstants.ARM_MAX);
+    } else {
+      pwr = new DutyCycleOut(-0.1);
+      systemState = SuperstructureStates.MANUAL_ARM;
+    }
   }
 
   public void armDown() {
+    if (arm.getAbsolutePosition() >= ArmConstants.HOME_SETPOINT) {
+      arm.setPosition(ArmConstants.HOME_SETPOINT);
+    }
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
   }
@@ -337,9 +347,11 @@ public class Superstructure {
     systemState = SuperstructureStates.FLIPPING;
   }
 
+
+
   public SuperstructureStates getState() {
     return systemState;
-  }
+  } 
 
   public Arm getArm() {
     return arm;
