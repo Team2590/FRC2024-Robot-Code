@@ -4,7 +4,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
@@ -64,13 +63,13 @@ public class RobotContainer {
     input = UserInput.getInstance();
     switch (Constants.currentMode) {
       case REAL:
-      drive =
-      new Drive(
-        new GyroIOPigeon2(true),
-        new ModuleIOTalonFX(0),
-        new ModuleIOTalonFX(1),
-        new ModuleIOTalonFX(2),
-        new ModuleIOTalonFX(3));
+        drive =
+            new Drive(
+                new GyroIOPigeon2(true),
+                new ModuleIOTalonFX(0),
+                new ModuleIOTalonFX(1),
+                new ModuleIOTalonFX(2),
+                new ModuleIOTalonFX(3));
         flywheel = new Flywheel(new FlywheelIOTalonFX());
         // instantiate other subsystems
         conveyor = new Conveyor(new ConveyorIOTalonFX());
@@ -165,7 +164,7 @@ public class RobotContainer {
       input.setOperatorRumble(1);
     } else if (poseEstimator.distanceToTarget() > Constants.FieldConstants.RUMBLE_THRESHOLD) {
       input.setOperatorRumble(0);
-    } 
+    }
 
     if (input.controllerAButton()) {
       superstructure.primeShooter();
