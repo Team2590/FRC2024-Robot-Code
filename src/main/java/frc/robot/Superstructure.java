@@ -20,6 +20,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
+import frc.robot.subsystems.nemesisLED.NemesisLED.Color;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
@@ -92,6 +93,13 @@ public class Superstructure {
 
   /** This is where you would call all of the periodic functions of the subsystems. */
   public void periodic() {
+    if (RobotContainer.poseEstimator.distanceToTarget() <= Constants.DrivetrainConstants.SHOOTING_RANGE) {
+      led.setColor(Color.Green);
+
+    } else {
+      led.setColor(Color.Red);
+    }
+
     switch (systemState) {
       case DISABLED:
         // stop

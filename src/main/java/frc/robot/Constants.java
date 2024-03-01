@@ -80,6 +80,7 @@ public final class Constants {
 
   public final class DrivetrainConstants {
     // Fill in
+    public static final double SHOOTING_RANGE = 3.5;
   }
 
   public final class ArmConstants {
