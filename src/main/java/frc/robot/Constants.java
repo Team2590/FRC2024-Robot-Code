@@ -39,6 +39,7 @@ public final class Constants {
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);
 
   public final class FieldConstants {
+    public static final double RUMBLE_THRESHOLD = 6;
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
     public static final Pose2d FLIPPING_POSE =
