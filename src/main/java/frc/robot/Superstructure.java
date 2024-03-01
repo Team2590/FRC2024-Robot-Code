@@ -68,7 +68,8 @@ public class Superstructure {
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
-  public Superstructure(Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
+  public Superstructure(
+      Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
@@ -347,11 +348,9 @@ public class Superstructure {
     systemState = SuperstructureStates.FLIPPING;
   }
 
-
-
   public SuperstructureStates getState() {
     return systemState;
-  } 
+  }
 
   public Arm getArm() {
     return arm;
