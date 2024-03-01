@@ -81,7 +81,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
-    count++;
+    // count++;
     // find angle
     count++;
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);

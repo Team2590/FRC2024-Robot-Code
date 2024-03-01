@@ -25,7 +25,8 @@ public class AutoRoutines {
     autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
     // This is the same as OneNoteAuto
     autoChooser.addOption(
-        "EasyTwoNoteAuto", ezAuto.apply(SHOOT, "startB_note1", SHOOT, "n2-n3", SNAP_SHOOT));
+        "EasyTwoNoteAuto",
+        ezAuto.apply("startB", SNAP_SHOOT, "startB_note1", SNAP_SHOOT, "n2-n3", SNAP_SHOOT));
 
     autoChooser.addOption("StartA", ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT));
 
@@ -38,9 +39,9 @@ public class AutoRoutines {
   private static Command oneNoteAuto(
       PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     return new AutoCommandBuilder(paths, drive, superstructure)
-        .shoot(false)
+        .shoot(true)
         .startPath("startB_note1")
-        .shoot(false)
+        .shoot(true)
         .followPath("n2-n3")
         .shoot(true)
         .build();
