@@ -45,7 +45,7 @@ public class ShootCommand extends Command {
     // If the shooter side prox sensor of conveyor doesn't detect note, shoot is done.
     boolean detectedShooterSideNote = superstructure.getConveyor().detectedShooterSide();
     Tracer.trace("Conveyer ShooterSideHasNote:" + detectedShooterSideNote);
-    return timer.hasElapsed(timeToWait) || !detectedShooterSideNote;
+    return timer.hasElapsed(timeToWait) /*|| !detectedShooterSideNote */;
   }
 
   @Override
