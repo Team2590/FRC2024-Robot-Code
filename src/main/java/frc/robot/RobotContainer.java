@@ -40,7 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private static Drive drive;
   private final Flywheel flywheel;
   private final Conveyor conveyor;
   private final Arm arm;
@@ -157,11 +157,13 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    // if (input.leftJoystickTrigger()) {
-    //   superstructure.intake();
-    // } else if (input.rightJoystickTrigger()) {
-    //   superstructure.outtake();
-    // }
+
+    if (input.controllerAButton()) {
+      superstructure.primeShooter();
+    } else if (input.controllerBButton()) {
+      superstructure.stopShooter();
+    }
+
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
         CommandScheduler.getInstance()
@@ -268,6 +270,10 @@ public class RobotContainer {
     //         new InstantCommand(() -> superstructure.primeShooter(),
     // superstructure.getShooter()));
     return autoChooser.get();
+  }
+
+  public static Drive getDrive() {
+    return drive;
   }
 
   /**

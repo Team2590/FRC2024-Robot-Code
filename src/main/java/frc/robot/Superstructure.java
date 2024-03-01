@@ -110,7 +110,10 @@ public class Superstructure {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         // arm.setPosition();
-        shooter.setStopped();
+        // Anthony added this condition
+        if (!conveyor.hasNote()) {
+          shooter.setStopped();
+        }
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
@@ -183,7 +186,8 @@ public class Superstructure {
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
         if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            && shooter.getState() == ShooterStates.AT_SETPOINT
+            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
           conveyor.setShooting();
         }
 
@@ -284,6 +288,10 @@ public class Superstructure {
 
   public void shoot() {
     systemState = SuperstructureStates.SHOOT;
+  }
+
+  public void stopShooter() {
+    shooter.setStopped();
   }
 
   public void subwooferShot() {

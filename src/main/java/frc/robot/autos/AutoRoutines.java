@@ -17,7 +17,8 @@ public class AutoRoutines {
     LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto Choices");
 
     PathPlannerPaths paths = PathPlannerPaths.create();
-    // An easy way to create autos without having to supply paths, drive and superstructure for every call.
+    // An easy way to create autos without having to supply paths, drive and superstructure for
+    // every call.
     AutoFunction ezAuto = (instructions) -> buildAuto(paths, drive, superstructure, instructions);
 
     // Register all the auto routines here
@@ -50,7 +51,10 @@ public class AutoRoutines {
    * for running intake.
    */
   private static Command buildAuto(
-      PathPlannerPaths pathPlans, Drive drive, Superstructure superstructure, String... instructions) {
+      PathPlannerPaths pathPlans,
+      Drive drive,
+      Superstructure superstructure,
+      String... instructions) {
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     for (String path : instructions) {
       switch (path) {

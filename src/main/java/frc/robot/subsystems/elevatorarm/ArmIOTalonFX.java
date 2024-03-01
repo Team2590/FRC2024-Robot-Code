@@ -94,7 +94,7 @@ public class ArmIOTalonFX implements ArmIO {
     arm.setControl(mmv.withPosition(position));
   }
 
-  public double getAbsolutePosition(){
+  public double getAbsolutePosition() {
     return armCancoder.getAbsolutePosition().getValueAsDouble();
   }
 
@@ -149,7 +149,6 @@ public class ArmIOTalonFX implements ArmIO {
   public void setPower(DutyCycleOut power) {
     arm.setControl(power);
   }
-
 
   // private static double CANCoderSensorUnitsToDegrees(double sensorUnits) {
   //     return sensorUnits * (360.0) / 4096.0;
