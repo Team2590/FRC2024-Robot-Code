@@ -15,6 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.Tracer;
 import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -106,8 +107,8 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
-    robotContainer.updateSubsystems();
     CommandScheduler.getInstance().run();
+    robotContainer.updateSubsystems();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -123,6 +124,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    Tracer.enableTrace = true;
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     if (autonomousCommand == null) {
@@ -139,6 +141,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    Tracer.enableTrace = false;
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

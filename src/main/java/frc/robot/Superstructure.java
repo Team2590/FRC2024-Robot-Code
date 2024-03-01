@@ -11,6 +11,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -22,6 +23,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
+import frc.robot.util.Tracer;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -30,7 +32,7 @@ import org.littletonrobotics.junction.Logger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
   // TBD: declare variables to add subsystems into
   public static enum SuperstructureStates {
     DISABLED,
@@ -92,6 +94,7 @@ public class Superstructure {
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
+  @Override
   public void periodic() {
     switch (systemState) {
       case DISABLED:
@@ -135,12 +138,16 @@ public class Superstructure {
          */
 
         if (arm.getState() == ArmStates.HOME) {
+          Tracer.trace("SuperStructure[INTAKE]: Arm is home, starting intake");
           intake.setIntake();
           conveyor.setIntaking();
         } else {
+          Tracer.trace("SuperStructure[INTAKE]: Arm is NOT home, setting arm.setHome()");
           arm.setHome();
         }
         if (conveyor.hasNote()) {
+          Tracer.trace(
+              "SuperStructure[INTAKE]: Conveyor hasNote:true, transition to HAS_NOTE, stopping intake");
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
@@ -188,9 +195,16 @@ public class Superstructure {
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
+        Tracer.trace(
+            String.format(
+                "SuperStructure[SHOOT]: ArmState[%s], ShooterState[%s], SnapContollerAtSetpoint[%s]",
+                arm.getState(),
+                shooter.getState(),
+                RobotContainer.getDrive().snapControllerAtSetpoint()));
         if (arm.getState() == ArmStates.AT_SETPOINT
             && shooter.getState() == ShooterStates.AT_SETPOINT
             && RobotContainer.getDrive().snapControllerAtSetpoint()) {
+          Tracer.trace("SuperStructure[SHOOT]: Running conveyor to shoot");
           conveyor.setShooting();
         }
 

@@ -109,6 +109,9 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void shoot(double rpm) {
+    if (Robot.isSimulation() && state == ShooterStates.AT_SETPOINT) {
+      return;
+    }
     if (inputs.velocityRadPerSec == 0) {
       state = ShooterStates.APPROACHING_SETPOINT;
     }
