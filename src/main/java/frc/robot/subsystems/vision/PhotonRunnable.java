@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.RobotContainer;
 import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
@@ -61,6 +62,7 @@ public class PhotonRunnable implements Runnable {
 
   @Override
   public void run() {
+    if (!RobotBase.isReal()) return;
     // Get AprilTag data
     if (photonPoseEstimator != null && photonCamera != null) {
       photonResults = photonCamera.getLatestResult();

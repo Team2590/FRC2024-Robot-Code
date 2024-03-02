@@ -2,9 +2,7 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,17 +19,12 @@ import java.util.function.DoubleSupplier;
  */
 public interface ShootMath {
 
-    /** Constant of gravity (m/s^2) */
-    final double GRAVITY = 9.8;
+    /** Acceleration due to gravity (m/s^2) */
+    final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 20; // TODO: measure and set
 
-    /**
-     * Speaker coords.
-     * 
-     * Center of red speaker: ( in, 218.42 in)
-     * Center of blue speaker: ( in, 218.42 in)
-     */
+    /** Speaker coords. (m) */
     public interface Speaker {
 
         /** Lowest edge of opening. (m) */
@@ -49,42 +42,47 @@ public interface ShootMath {
         /** Blue speaker's x coordinate. (m) */
         final double BLUE_X = Units.inchesToMeters(-1.5);
 
+        // DriverStation.getAlliance().get()
+        final Vector CENTER = new Vector(
+            Alliance.Red == Alliance.Red ? RED_X - EXTRUDE/2 : BLUE_X + EXTRUDE/2,
+            CENTER_Y,
+            (LOW + HIGH)/2
+        );
+
         /** Vertex of the speaker opening in the +y +z direction. */
         final Vector MAX_Y_MAX_Z_VERTEX = new Vector(
-            DriverStation.getAlliance().get() == Alliance.Red ? RED_X : BLUE_X,
+            (Alliance.Red == Alliance.Red ? RED_X : BLUE_X) + EXTRUDE,
             CENTER_Y + WIDTH / 2,
             LOW
         );
         /** Vertex of the speaker opening in the +y -z direction. */
-        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, 0, HIGH));
+        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(EXTRUDE, 0, HIGH));
         /** Vertex of the speaker opening in the -y -z direction. */
-        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, HIGH));
+        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(EXTRUDE, WIDTH, HIGH));
         /** Vertex of the speaker opening in the -y +z direction. */
-        final Vector MIN_Y_MAX_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, HIGH));
+        final Vector MIN_Y_MAX_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, 0));
 
-        final Triangle mAX_YZ_Triangle = DriverStation.getAlliance().get() == Alliance.Red ?
-            new Triangle(
-                MAX_YZ_SPEAKER_VERTEX, // +y +z
-                MAX_YZ_SPEAKER_VERTEX.minus(new Vector(0, 0, m(83 - 78))), // +y -z
-                MAX_YZ_SPEAKER_VERTEX.minus(new Vector(0, m(41.625), 0)) // -y +z
-            ) :
-            new Triangle(
+        /** The triangle of the speaker opening in the +y +z direction. */
+        final Triangle MAX_YZ_Triangle = new Triangle(MAX_Y_MAX_Z_VERTEX, MAX_Y_MIN_Z_VERTEX, MIN_Y_MAX_Z_VERTEX);
 
-            );
+        /** The triangle of the speaker opening in the -y -z direction. */
+        final Triangle MIN_YZ_Triangle = new Triangle(MIN_Y_MIN_Z_VERTEX, MIN_Y_MAX_Z_VERTEX, MAX_Y_MIN_Z_VERTEX);
 
+        final Target target = new Target(CENTER, MAX_YZ_Triangle, MIN_YZ_Triangle);
     }
 
     public static Command shoot(
         Drive drive,
         Superstructure superstructure,
-        DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-        Pose3d target
+        DoubleSupplier xSupplier,
+        DoubleSupplier ySupplier,
+        Target target
     ) {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                checkForHits(drive, speaker0, speaker1),
+                checkForHits(drive, target.surfaces),
                 Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
-                snapToTarget(drive, xSupplier, ySupplier, target)
+                snapToTarget(drive, xSupplier, ySupplier, target.point)
             ),
             Commands.runOnce(superstructure::shoot, superstructure.getShooter())
         );
@@ -114,16 +112,16 @@ public interface ShootMath {
     public static Command snapToTarget(
         Drive drive,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-        Pose3d target
+        Vector target
     ) {
         return DriveCommands.oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-            final var robotInitialHeight = 0; // TODO: calculate
+            final var projectileInitialHeight = 0; // TODO: calculate
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
-                target.getX() - robotPose.getX(),
-                target.getY() - robotPose.getY(),
-                target.getZ() - robotInitialHeight,
+                target.x - robotPose.getX(),
+                target.y - robotPose.getY(),
+                target.z - projectileInitialHeight,
                 drive.currentChassisSpeeds.vxMetersPerSecond,
                 drive.currentChassisSpeeds.vyMetersPerSecond,
                 0, // TODO: calculate
@@ -157,20 +155,20 @@ public interface ShootMath {
         double rvx, double rvy, double rvz,
         double g
     ) {
-        final var sumsqrs = dx * dx + dy * dy + dz * dz;
+        final var sumSquares = dx * dx + dy * dy + dz * dz;
         final var tf = approxQuartic(
             g * g / 4,
             -rvz * g,
             dz * g - pv * pv + rvx * rvx + rvy * rvz * rvz,
             -2 * (dx * rvx + dy * rvy + dz * rvz),
-            sumsqrs,
-            Math.sqrt(sumsqrs) / pv,
+            sumSquares,
+            Math.sqrt(sumSquares) / pv,
             10
         );
 
         final var vx = dx / tf - rvx;
         final var vy = dy / tf - rvy;
-        final var vz = dz / tf + g * tf / 2 - rvz;
+        final var vz = dz / tf - rvz + g * tf / 2;
 
         final var pv_theta = Math.atan2(vy, vx);
         final var pv_phi = Math.atan2(vz, Math.hypot(vx, vy));
@@ -252,37 +250,35 @@ public interface ShootMath {
 
     public static record Vector(double x, double y, double z) {
 
-        public double magnitude() {
-            return Math.sqrt(x * x + y * y + z * z);
-        }
-
-        public Vector minus(Vector other) {
-            return new Vector(x - other.x, y - other.y, z - other.z);
-        }
-
-        public double dot(Vector other) {
-            return x * other.x + y * other.y + z * other.z;
-        }
-
-        public Vector cross(Vector other) {
-            return new Vector(
-                y * other.z - z * other.y,
-                z * other.x - x * other.z,
-                x * other.y - y * other.x
-            );
-        }
+    public double magnitude() {
+        return Math.sqrt(x * x + y * y + z * z);
     }
+
+    public Vector minus(Vector other) {
+        return new Vector(x - other.x, y - other.y, z - other.z);
+    }
+
+    public double dot(Vector other) {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    public Vector cross(Vector other) {
+        return new Vector(
+            y * other.z - z * other.y,
+            z * other.x - x * other.z,
+            x * other.y - y * other.x
+        );
+    }
+  }
 
     public static record Triangle(Vector p0, Vector p1, Vector p2) {
 
-        public Triangle minus(Vector vector) {
-            return new Triangle(
-                p0.minus(vector),
-                p1.minus(vector),
-                p2.minus(vector)
-            );
-        }
-
+    public Triangle minus(Vector vector) {
+        return new Triangle(p0.minus(vector), p1.minus(vector), p2.minus(vector));
     }
+  }
+
+    public static record Target(Vector point, Triangle... surfaces) {}
 
 }
+// spotless:on
