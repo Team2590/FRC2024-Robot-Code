@@ -17,7 +17,7 @@ public class Conveyor extends SubsystemBase {
   // tunable constants
 
   private double conveyorSpeed = .25;
-  private double diverterSpeed = .25;
+  private double diverterSpeed = .5;
 
   // conveyor states
   public enum ConveyorStates {
