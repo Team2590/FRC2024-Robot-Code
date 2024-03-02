@@ -139,6 +139,8 @@ public class Superstructure {
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
+        }else{
+          arm.setHome();
         }
 
         if (conveyor.hasNote()) {
