@@ -3,6 +3,9 @@ package frc.robot.util;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -19,22 +22,57 @@ import java.util.function.DoubleSupplier;
 public interface ShootMath {
 
     /** Constant of gravity (m/s^2) */
-    double GRAVITY = 9.8;
+    final double GRAVITY = 9.8;
     /** Shooter-induced projectile velocity (m/s) */
-    double SHOOT_VELOCITY = 20; // TODO: measure and set
+    final double SHOOT_VELOCITY = 20; // TODO: measure and set
 
-    /** Bottom left triangle of the red speaker */
-    Triangle speaker0 = new Triangle(
-        new Vector(1, 1, 1),
-        new Vector(2, 3, 2),
-        new Vector(4, 5, 8)
-    ); // TODO: measure and set
+    /**
+     * Speaker coords.
+     * 
+     * Center of red speaker: ( in, 218.42 in)
+     * Center of blue speaker: ( in, 218.42 in)
+     */
+    public interface Speaker {
 
-    Triangle speaker1 = new Triangle(
-        new Vector(1, 1, 1),
-        new Vector(2, 3, 2),
-        new Vector(4, 5, 8)
-    ); // TODO: measure and set
+        /** Lowest edge of opening. (m) */
+        final double LOW = Units.inchesToMeters(78);
+        /** Highest edge of opening. (m) */
+        final double HIGH = Units.inchesToMeters(83);
+        /** Length into the field. (m) */
+        final double EXTRUDE = Units.inchesToMeters(18);
+        /** Width across the field. (m) */
+        final double WIDTH = Units.inchesToMeters(41.625);
+        /** Center of speakers' y coordinates. (m) */
+        final double CENTER_Y = Units.inchesToMeters(218.42);
+        /** Red speaker's x coordinate. (m) */
+        final double RED_X = Units.inchesToMeters(652.73);
+        /** Blue speaker's x coordinate. (m) */
+        final double BLUE_X = Units.inchesToMeters(-1.5);
+
+        /** Vertex of the speaker opening in the +y +z direction. */
+        final Vector MAX_Y_MAX_Z_VERTEX = new Vector(
+            DriverStation.getAlliance().get() == Alliance.Red ? RED_X : BLUE_X,
+            CENTER_Y + WIDTH / 2,
+            LOW
+        );
+        /** Vertex of the speaker opening in the +y -z direction. */
+        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, 0, HIGH));
+        /** Vertex of the speaker opening in the -y -z direction. */
+        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, HIGH));
+        /** Vertex of the speaker opening in the -y +z direction. */
+        final Vector MIN_Y_MAX_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, HIGH));
+
+        final Triangle mAX_YZ_Triangle = DriverStation.getAlliance().get() == Alliance.Red ?
+            new Triangle(
+                MAX_YZ_SPEAKER_VERTEX, // +y +z
+                MAX_YZ_SPEAKER_VERTEX.minus(new Vector(0, 0, m(83 - 78))), // +y -z
+                MAX_YZ_SPEAKER_VERTEX.minus(new Vector(0, m(41.625), 0)) // -y +z
+            ) :
+            new Triangle(
+
+            );
+
+    }
 
     public static Command shoot(
         Drive drive,
