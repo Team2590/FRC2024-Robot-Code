@@ -87,7 +87,7 @@ public class SnapToTargetCommand extends Command {
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
-    double currentAngle = RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians();
+    double currentAngle = drive.getGyroYaw().getRadians();
     currentError = theta - currentAngle;
     if (currentError > Math.PI) {
       currentAngle += 2 * Math.PI;
@@ -112,7 +112,7 @@ public class SnapToTargetCommand extends Command {
                 * Drive.snapControllermultiplier.get(),
             drive.snapController.calculate(currentAngle, theta)
                 * drive.getMaxAngularSpeedRadPerSec(),
-            RobotContainer.poseEstimator.getLatestPose().getRotation()));
+            drive.getGyroYaw()));
   }
 
   @Override
