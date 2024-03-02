@@ -70,7 +70,7 @@ public class DriveCommands {
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getRotation()));
+                  drive.getGyroYaw()));
         },
         drive);
   }

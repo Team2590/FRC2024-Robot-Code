@@ -64,10 +64,10 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         File usbDrive = new File("/U/");
         // Only set up usb logging if the folder exists.
-        if (usbDrive.exists()) {
-          System.err.println("No USB found, not writing logs");
-          Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
-        }
+        // if (usbDrive.exists()) {
+        System.err.println("No USB found, not writing logs");
+        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        // }
         usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
         break;
