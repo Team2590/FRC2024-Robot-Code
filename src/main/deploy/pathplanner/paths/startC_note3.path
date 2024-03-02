@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7523718013035084,
+        "x": 0.75,
         "y": 4.382186700316462
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7523718013035092,
+        "x": 1.7500000000000009,
         "y": 4.382186700316462
       },
       "isLocked": false,
-      "linkedName": "far start"
+      "linkedName": "startC"
     },
     {
       "anchor": {
@@ -30,25 +30,7 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [
-    {
-      "name": "i hate this shit",
-      "waypointRelativePos": 0.45,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "shoot"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

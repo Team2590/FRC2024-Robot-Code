@@ -54,7 +54,7 @@ public class Drive extends SubsystemBase {
 
   public static final Lock odometryLock = new ReentrantLock();
   private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
-  private final GyroIO gyroIO;
+  public final GyroIO gyroIO;
 
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
@@ -307,6 +307,10 @@ public class Drive extends SubsystemBase {
 
   public void zeroGyro() {
     this.gyroIO.reset();
+  }
+
+  public Rotation2d getGyroYaw() {
+    return this.gyroInputs.yawPosition;
   }
 
   private void updateTunableNumbers() {
