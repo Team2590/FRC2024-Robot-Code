@@ -26,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class SnapToTargetCommand extends Command {
 
-  private static final double WAIT_TIME_SECONDS = 2.0;
+  private static final double WAIT_TIME_SECONDS = 1.5;
 
   private final Drive drive;
   private final DoubleSupplier xSupplier;

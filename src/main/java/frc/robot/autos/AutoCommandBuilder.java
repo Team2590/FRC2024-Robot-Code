@@ -8,6 +8,7 @@ import frc.robot.Superstructure;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
+import org.littletonrobotics.junction.Logger;
 
 public class AutoCommandBuilder {
 
@@ -39,14 +40,23 @@ public class AutoCommandBuilder {
     curr_path_name = pathName;
     if (!startPathSpecified) {
       // If the first path wasn't specified, make this the first path.
-      startPath(pathName);
+      init(pathName);
     } else {
       commands.addCommands(
           Commands.print("Running FollowPathCommand for " + pathName),
           Commands.parallel(
               paths.getFollowPathCommand(pathName),
-              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)));
+              new InstantCommand(() -> superstructure.primeShooter()),
+              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)),
+          new InstantCommand(() -> superstructure.primeShooter())
+              .until(paths::isCurrFollowPathFinished));
     }
+    Logger.recordOutput("isCurrPathFinished?", paths.isCurrFollowPathFinished());
+    return this;
+  }
+
+  public AutoCommandBuilder init(String pathname) {
+    commands.addCommands(new init_autoCommand(paths, pathname, superstructure));
     return this;
   }
 
@@ -73,7 +83,7 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 3));
+    commands.addCommands(new ShootCommand(superstructure, 1.5));
     return this;
   }
 

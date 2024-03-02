@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 public class PathPlannerPaths {
 
   private final Map<String, PathPlannerPath> paths;
+  private Command currFollowPathCommand;
 
   private PathPlannerPaths(Map<String, PathPlannerPath> paths) {
     this.paths = paths;
@@ -32,7 +33,12 @@ public class PathPlannerPaths {
    * Command to execute path for the given pathName. Throws an exception if the path is not found.
    */
   public Command getFollowPathCommand(String pathName) {
-    return AutoBuilder.followPath(getPath(pathName));
+    currFollowPathCommand = AutoBuilder.followPath(getPath(pathName));
+    return currFollowPathCommand;
+  }
+
+  public boolean isCurrFollowPathFinished() {
+    return currFollowPathCommand == null ? false : currFollowPathCommand.isFinished();
   }
 
   /** Returns the starting pose from the given path name. */
