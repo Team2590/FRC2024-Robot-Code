@@ -1,4 +1,4 @@
-// @formatter:off
+// spotless:off
 package frc.robot.util;
 
 import edu.wpi.first.math.MathUtil;
