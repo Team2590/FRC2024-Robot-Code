@@ -125,10 +125,11 @@ public class DriveCommands {
           }
           // find angle
           Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-          double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
-          double theta = Math.atan2(difference.getY(), difference.getX()) + angleOffset;
-          double currentAngle =
-              drive.getGyroYaw().getRadians();
+          // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+          double theta = Math.atan2(difference.getY(), difference.getX());
+          double currentAngle = drive.getGyroYaw().getRadians() % (2 * Math.PI); // CHANGED
+          Logger.recordOutput("SnapController/RealCurrentAngle", drive.getGyroYaw().getRadians());
+          Logger.recordOutput("SnapController/CurrentAngle", currentAngle);
           double currentError = theta - currentAngle;
           if (currentError > Math.PI) {
             currentAngle += 2 * Math.PI;

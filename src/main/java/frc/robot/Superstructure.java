@@ -139,7 +139,7 @@ public class Superstructure {
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
-        }else{
+        } else {
           arm.setHome();
         }
 
@@ -360,6 +360,15 @@ public class Superstructure {
 
   public SuperstructureStates getState() {
     return systemState;
+  }
+
+  public void runConveyor() {
+    conveyor.setManual(.25);
+    ;
+  }
+
+  public void stopConveyor() {
+    conveyor.setStopped();
   }
 
   public Arm getArm() {
