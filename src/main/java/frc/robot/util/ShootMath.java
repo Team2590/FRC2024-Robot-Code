@@ -136,12 +136,12 @@ public interface ShootMath {
             final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
-                target.x - robotPose.getX(),
-                target.y - robotPose.getY(),
-                target.z - projectileInitialHeight,
-                drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-                drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
-                0, // TODO: calculate
+                target.minus(new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight)),
+                new Vector(
+                    drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+                    drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
+                    0 // TODO: calculate
+                ),
                 GRAVITY
             );
 
@@ -168,31 +168,23 @@ public interface ShootMath {
      * @param g - constant of gravity
      * @return The shooting velocity, yaw, and pitch.
      */
-    public static ShootState calcConstantVelocity(
-        double pv,
-        double dx, double dy, double dz,
-        double rvx, double rvy, double rvz,
-        double g
-    ) {
-        final var sumSquares = dx * dx + dy * dy + dz * dz;
+    public static ShootState calcConstantVelocity(double sv, Vector d, Vector v, double g) {
         final var tf = approxQuartic(
             g * g / 4,
-            -rvz * g,
-            dz * g - pv * pv + rvx * rvx + rvy * rvy + rvz * rvz,
-            -2 * (dx * rvx + dy * rvy + dz * rvz),
-            sumSquares,
-            Math.sqrt(sumSquares) / pv,
+            -v.z * g,
+            d.z * g - sv * sv + v.dot(v),
+            -2 * d.dot(v),
+            d.dot(d),
+            d.magnitude() / sv,
             10
         );
 
-        final var vx = dx / tf - rvx;
-        final var vy = dy / tf - rvy;
-        final var vz = dz / tf - rvz + g * tf / 2;
+        final var projectileVelocity = d.scale(1/tf).minus(v).plus(new Vector(0, 0, g * tf / 2));
 
-        final var pv_theta = Math.atan2(vy, vx);
-        final var pv_phi = Math.atan2(vz, Math.hypot(vx, vy));
+        final var yaw = Math.atan2(projectileVelocity.y, projectileVelocity.x);
+        final var pitch = Math.atan2(projectileVelocity.z, Math.hypot(projectileVelocity.x, projectileVelocity.y));
 
-        return new ShootState(pv, pv_theta, pv_phi);
+        return new ShootState(sv, yaw, pitch);
     }
 
     /**
@@ -234,18 +226,18 @@ public interface ShootMath {
      * @return Whether the projectile will hit the triangle.
      */
     public static boolean willHit(
-        double rvx, double rvy, double rvz,
+        Vector v,
         double g,
         double pv, double pv_theta, double pv_phi,
         Triangle triangle
     ) {
         final var N = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p1));
         final var A = N.z * g;
-        final var V = new Vector(
-            rvx + pv * Math.cos(pv_phi) * Math.cos(pv_theta),
-            rvy + pv * Math.cos(pv_phi) * Math.sin(pv_theta),
-            rvz + pv * Math.sin(pv_phi)
-        );
+        final var V = v.plus(new Vector(
+            pv * Math.cos(pv_phi) * Math.cos(pv_theta),
+            pv * Math.cos(pv_phi) * Math.sin(pv_theta),
+            pv * Math.sin(pv_phi)
+        ));
         final var B = N.dot(V);
         final var tf = (B + Math.sqrt(B * B - 2 * A * N.dot(triangle.p0))) / A;
         final var P = V.scale(tf).minus(new Vector(0, 0, g * tf * tf / 2));
@@ -288,6 +280,14 @@ public interface ShootMath {
                 x - other.x,
                 y - other.y,
                 z - other.z
+            );
+        }
+
+        public Vector plus(Vector other) {
+            return new Vector(
+                x + other.x,
+                y + other.y,
+                z + other.z
             );
         }
 
