@@ -16,6 +16,7 @@ import java.util.function.DoubleSupplier;
 
 /**
  * @author Elan Ronen
+ * // TODO: with angular velocity to components, check which way is front
  */
 public interface ShootMath {
 
@@ -27,6 +28,8 @@ public interface ShootMath {
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 10; // TODO: measure and set
+    /** Distance from drivetrain center to end of shooter. (m) */
+    final double SHOOTER_RADIUS = Units.inchesToMeters(12); // TODO: measure and set
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -85,28 +88,29 @@ public interface ShootMath {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 checkForHits(drive, target.surfaces),
-                Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
+                //Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
                 snapToTarget(drive, xSupplier, ySupplier, target.point)
             ),
-            Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
-            Commands.runOnce(superstructure::shoot, superstructure.getShooter())
+            //Commands.runOnce(superstructure::shoot, superstructure.getShooter()),
+            Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW"))
         );
     }
 
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
-            System.out.println(FAKE_SHOOTER.pitch);
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
+            final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
             final var robotVector = new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight);
+            final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             for (final var triangle : triangles) {
                 if (willHit(
-                    drive.currentChassisSpeeds.vxMetersPerSecond,
-                    drive.currentChassisSpeeds.vyMetersPerSecond,
+                    drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+                    drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
                     0, // TODO: calculate
                     GRAVITY,
                     SHOOT_VELOCITY,
-                    robotPose.getRotation().getRadians(),
+                    robotHeading,
                     FAKE_SHOOTER.pitch, // TODO: calculate,
                     triangle.minus(robotVector)
                 )) return true;
@@ -122,14 +126,16 @@ public interface ShootMath {
     ) {
         return DriveCommands.oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
+            final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
+            final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.x - robotPose.getX(),
                 target.y - robotPose.getY(),
                 target.z - projectileInitialHeight,
-                drive.currentChassisSpeeds.vxMetersPerSecond,
-                drive.currentChassisSpeeds.vyMetersPerSecond,
+                drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+                drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
                 0, // TODO: calculate
                 GRAVITY
             );
@@ -167,7 +173,7 @@ public interface ShootMath {
         final var tf = approxQuartic(
             g * g / 4,
             -rvz * g,
-            dz * g - pv * pv + rvx * rvx + rvy * rvz * rvz,
+            dz * g - pv * pv + rvx * rvx + rvy * rvy + rvz * rvz,
             -2 * (dx * rvx + dy * rvy + dz * rvz),
             sumSquares,
             Math.sqrt(sumSquares) / pv,

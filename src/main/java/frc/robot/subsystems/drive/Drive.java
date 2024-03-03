@@ -59,7 +59,7 @@ public class Drive extends SubsystemBase {
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
 
-  public final PIDController snapController = new PIDController(.34, 0.0, 0.0);
+  public final PIDController snapController = new PIDController(.94, .0, 0.0);
   public final PIDController noteController = new PIDController(.44, 0.0, .00001);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
