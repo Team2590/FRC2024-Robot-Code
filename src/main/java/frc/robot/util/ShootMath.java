@@ -110,9 +110,11 @@ public interface ShootMath {
             final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             for (final var triangle : triangles) {
                 if (willHit(
-                    drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-                    drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
-                    0, // TODO: calculate
+                    new Vector(
+                        drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+                        drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
+                        0 // TODO: calculate
+                    ),
                     GRAVITY,
                     SHOOT_VELOCITY,
                     robotHeading,
@@ -133,15 +135,10 @@ public interface ShootMath {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
-            final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight)),
-                new Vector(
-                    drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-                    drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
-                    0 // TODO: calculate
-                ),
+                calcRobotVelocity(drive, robotHeading),
                 GRAVITY
             );
 
@@ -152,6 +149,15 @@ public interface ShootMath {
                 targetShooterState.yaw
             ) * Drive.MAX_ANGULAR_SPEED;
         });
+    }
+
+    public static Vector calcRobotVelocity(Drive drive, double robotHeading) {
+        final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
+        return new Vector(
+            drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
+            0 // TODO: calculate
+        );
     }
 
     /**
