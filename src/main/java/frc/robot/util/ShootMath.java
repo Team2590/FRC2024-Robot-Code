@@ -103,9 +103,6 @@ public interface ShootMath {
 
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
-            final var parallelogram0 = triangles[0].p1.minus(triangles[0].p0).cross(triangles[0].p2.minus(triangles[0].p0)).magnitude();
-            System.out.println(parallelogram0);
-
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
