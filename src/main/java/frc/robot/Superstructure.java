@@ -63,7 +63,7 @@ public class Superstructure {
   public boolean readyToShoot = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
-  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .015);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
   private final LookupTable armInterpolation;
@@ -158,7 +158,7 @@ public class Superstructure {
          */
         arm.setHome();
         intake.setOutake();
-        conveyor.setOuttaking();
+        // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
@@ -215,8 +215,7 @@ public class Superstructure {
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(flywheelSpeedInput.get());
-        if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+        if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
         break;
@@ -291,6 +290,10 @@ public class Superstructure {
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
   }
+
+  // public void clearNotes() {
+  //   shooter.fullsend();
+  // }
 
   public void primeAmp() {
     systemState = SuperstructureStates.PRIMING_AMP;
