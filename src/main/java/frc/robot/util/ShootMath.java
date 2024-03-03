@@ -93,10 +93,10 @@ public interface ShootMath {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 checkForHits(drive, target.surfaces),
-                //Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
+                Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
                 snapToTarget(drive, xSupplier, ySupplier, target.point)
             ),
-            //Commands.runOnce(superstructure::shoot, superstructure.getShooter()),
+            Commands.runOnce(superstructure::shoot, superstructure.getShooter()),
             Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW"))
         );
     }
