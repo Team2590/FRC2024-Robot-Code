@@ -84,10 +84,8 @@ public interface ShootMath {
     }
 
     public static Command shoot(
-        Drive drive,
-        Superstructure superstructure,
-        DoubleSupplier xSupplier,
-        DoubleSupplier ySupplier,
+        Drive drive, Superstructure superstructure,
+        DoubleSupplier xSupplier, DoubleSupplier ySupplier,
         Target target
     ) {
         return new SequentialCommandGroup(
