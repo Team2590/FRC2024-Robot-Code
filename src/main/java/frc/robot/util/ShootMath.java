@@ -49,23 +49,28 @@ public interface ShootMath {
         /** Blue speaker's x coordinate. (m) */
         final double BLUE_X = Units.inchesToMeters(-1.5);
 
-        // DriverStation.getAlliance().get()
+        // TODO: DriverStation.getAlliance().get()
+        final double SIGNED_EXTRUDE = Math.copySign(EXTRUDE, Alliance.Red == Alliance.Red ? -1 : 1);
+
+        // TODO: DriverStation.getAlliance().get()
+        /** The center of the speaker opening. */
         final Vector CENTER = new Vector(
-            Alliance.Red == Alliance.Red ? RED_X - EXTRUDE/2 : BLUE_X + EXTRUDE/2,
+            (Alliance.Red == Alliance.Red ? RED_X : BLUE_X) + SIGNED_EXTRUDE / 2,
             CENTER_Y,
             (LOW + HIGH)/2
         );
 
+        // TODO: DriverStation.getAlliance().get()
         /** Vertex of the speaker opening in the +y +z direction. */
         final Vector MAX_Y_MAX_Z_VERTEX = new Vector(
-            (Alliance.Red == Alliance.Red ? RED_X - EXTRUDE: BLUE_X + EXTRUDE),
+            (Alliance.Red == Alliance.Red ? RED_X : BLUE_X) + SIGNED_EXTRUDE,
             CENTER_Y + WIDTH / 2,
             HIGH
         );
         /** Vertex of the speaker opening in the +y -z direction. */
-        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(-EXTRUDE, 0, HIGH-LOW));
+        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(SIGNED_EXTRUDE, 0, HIGH - LOW));
         /** Vertex of the speaker opening in the -y -z direction. */
-        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(-EXTRUDE, WIDTH, HIGH));
+        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(SIGNED_EXTRUDE, WIDTH, HIGH - LOW));
         /** Vertex of the speaker opening in the -y +z direction. */
         final Vector MIN_Y_MAX_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, 0));
 
@@ -98,6 +103,9 @@ public interface ShootMath {
 
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
+            final var parallelogram0 = triangles[0].p1.minus(triangles[0].p0).cross(triangles[0].p2.minus(triangles[0].p0)).magnitude();
+            System.out.println(parallelogram0);
+
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
@@ -236,12 +244,14 @@ public interface ShootMath {
     ) {
         final var N = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p1));
         final var A = N.z * g;
-        final var X = rvx + pv * Math.cos(pv_phi) * Math.cos(pv_theta);
-        final var Y = rvy + pv * Math.cos(pv_phi) * Math.sin(pv_theta);
-        final var Z = rvz + pv * Math.sin(pv_phi);
-        final var B = N.dot(new Vector(X, Y, Z));
+        final var V = new Vector(
+            rvx + pv * Math.cos(pv_phi) * Math.cos(pv_theta),
+            rvy + pv * Math.cos(pv_phi) * Math.sin(pv_theta),
+            rvz + pv * Math.sin(pv_phi)
+        );
+        final var B = N.dot(V);
         final var tf = (B + Math.sqrt(B * B - 2 * A * N.dot(triangle.p0))) / A;
-        final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
+        final var P = V.scale(tf).minus(new Vector(0, 0, g * tf * tf / 2));
         final var parallelogram0 = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p0)).magnitude();
         final var parallelogram1 = P.minus(triangle.p0).cross(P.minus(triangle.p1)).magnitude();
         final var parallelogram2 = P.minus(triangle.p1).cross(P.minus(triangle.p2)).magnitude();
@@ -250,7 +260,7 @@ public interface ShootMath {
         return MathUtil.isNear(
             parallelogram0,
             parallelogram1 + parallelogram2 + parallelogram3,
-            0.0001
+            0.01
         );
     }
 
@@ -266,6 +276,14 @@ public interface ShootMath {
 
         public double magnitude() {
             return Math.sqrt(x * x + y * y + z * z);
+        }
+
+        public Vector scale(double scalar) {
+            return new Vector(
+                x * scalar,
+                y * scalar,
+                z * scalar
+            );
         }
 
         public Vector minus(Vector other) {
