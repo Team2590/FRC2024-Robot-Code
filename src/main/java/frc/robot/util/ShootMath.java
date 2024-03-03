@@ -19,10 +19,14 @@ import java.util.function.DoubleSupplier;
  */
 public interface ShootMath {
 
+    class FAKE_SHOOTER {
+        static double pitch = 3;
+    }
+
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
-    final double SHOOT_VELOCITY = 20; // TODO: measure and set
+    final double SHOOT_VELOCITY = 10; // TODO: measure and set
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -51,14 +55,14 @@ public interface ShootMath {
 
         /** Vertex of the speaker opening in the +y +z direction. */
         final Vector MAX_Y_MAX_Z_VERTEX = new Vector(
-            (Alliance.Red == Alliance.Red ? RED_X : BLUE_X) + EXTRUDE,
+            (Alliance.Red == Alliance.Red ? RED_X - EXTRUDE: BLUE_X + EXTRUDE),
             CENTER_Y + WIDTH / 2,
-            LOW
+            HIGH
         );
         /** Vertex of the speaker opening in the +y -z direction. */
-        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(EXTRUDE, 0, HIGH));
+        final Vector MAX_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(-EXTRUDE, 0, HIGH-LOW));
         /** Vertex of the speaker opening in the -y -z direction. */
-        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(EXTRUDE, WIDTH, HIGH));
+        final Vector MIN_Y_MIN_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(-EXTRUDE, WIDTH, HIGH));
         /** Vertex of the speaker opening in the -y +z direction. */
         final Vector MIN_Y_MAX_Z_VERTEX = MAX_Y_MAX_Z_VERTEX.minus(new Vector(0, WIDTH, 0));
 
@@ -84,12 +88,14 @@ public interface ShootMath {
                 Commands.runOnce(superstructure::primeShooter, superstructure.getShooter()),
                 snapToTarget(drive, xSupplier, ySupplier, target.point)
             ),
+            Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
             Commands.runOnce(superstructure::shoot, superstructure.getShooter())
         );
     }
 
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
+            System.out.println(FAKE_SHOOTER.pitch);
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var projectileInitialHeight = 0; // TODO: calculate
             final var robotVector = new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight);
@@ -101,7 +107,7 @@ public interface ShootMath {
                     GRAVITY,
                     SHOOT_VELOCITY,
                     robotPose.getRotation().getRadians(),
-                    Math.PI / 4, // TODO: calculate,
+                    FAKE_SHOOTER.pitch, // TODO: calculate,
                     triangle.minus(robotVector)
                 )) return true;
             }
@@ -127,6 +133,8 @@ public interface ShootMath {
                 0, // TODO: calculate
                 GRAVITY
             );
+
+            FAKE_SHOOTER.pitch = targetShooterState.pitch;
 
             return drive.snapController.calculate(
                 drive.getRotation().getRadians(),
@@ -211,7 +219,7 @@ public interface ShootMath {
      * @param pv - shooting velocity
      * @param pv_theta - shooter yaw
      * @param pv_phi - shooter pitch
-     * @param triangle - triangle to check collision with
+     * @param triangle - distance to triangle to check collision with
      * @return Whether the projectile will hit the triangle.
      */
     public static boolean willHit(
@@ -222,9 +230,9 @@ public interface ShootMath {
     ) {
         final var N = triangle.p1.minus(triangle.p0).cross(triangle.p2.minus(triangle.p1));
         final var A = N.z * g;
-        final var X = rvx * pv * Math.cos(pv_phi) * Math.cos(pv_theta);
-        final var Y = rvy * pv * Math.cos(pv_phi) * Math.sin(pv_theta);
-        final var Z = rvz * pv * Math.sin(pv_phi);
+        final var X = rvx + pv * Math.cos(pv_phi) * Math.cos(pv_theta);
+        final var Y = rvy + pv * Math.cos(pv_phi) * Math.sin(pv_theta);
+        final var Z = rvz + pv * Math.sin(pv_phi);
         final var B = N.dot(new Vector(X, Y, Z));
         final var tf = (B + Math.sqrt(B * B - 2 * A * N.dot(triangle.p0))) / A;
         final var P = new Vector(X * tf, Y * tf, Z * tf - g * tf * tf / 2);
@@ -250,33 +258,39 @@ public interface ShootMath {
 
     public static record Vector(double x, double y, double z) {
 
-    public double magnitude() {
-        return Math.sqrt(x * x + y * y + z * z);
-    }
+        public double magnitude() {
+            return Math.sqrt(x * x + y * y + z * z);
+        }
 
-    public Vector minus(Vector other) {
-        return new Vector(x - other.x, y - other.y, z - other.z);
-    }
+        public Vector minus(Vector other) {
+            return new Vector(
+                x - other.x,
+                y - other.y,
+                z - other.z
+            );
+        }
 
-    public double dot(Vector other) {
-        return x * other.x + y * other.y + z * other.z;
-    }
+        public double dot(Vector other) {
+            return x * other.x + y * other.y + z * other.z;
+        }
 
-    public Vector cross(Vector other) {
-        return new Vector(
-            y * other.z - z * other.y,
-            z * other.x - x * other.z,
-            x * other.y - y * other.x
-        );
+        public Vector cross(Vector other) {
+            return new Vector(
+                y * other.z - z * other.y,
+                z * other.x - x * other.z,
+                x * other.y - y * other.x
+            );
+        }
+
     }
-  }
 
     public static record Triangle(Vector p0, Vector p1, Vector p2) {
 
-    public Triangle minus(Vector vector) {
-        return new Triangle(p0.minus(vector), p1.minus(vector), p2.minus(vector));
+        public Triangle minus(Vector vector) {
+            return new Triangle(p0.minus(vector), p1.minus(vector), p2.minus(vector));
+        }
+
     }
-  }
 
     public static record Target(Vector point, Triangle... surfaces) {}
 
