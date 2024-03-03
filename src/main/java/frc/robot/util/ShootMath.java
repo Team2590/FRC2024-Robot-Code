@@ -107,14 +107,9 @@ public interface ShootMath {
             final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
             final var robotVector = new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight);
-            final var robotAngularVelocity = SHOOTER_RADIUS * drive.currentChassisSpeeds.omegaRadiansPerSecond;
             for (final var triangle : triangles) {
                 if (willHit(
-                    new Vector(
-                        drive.currentChassisSpeeds.vxMetersPerSecond + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-                        drive.currentChassisSpeeds.vyMetersPerSecond + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
-                        0 // TODO: calculate
-                    ),
+                    calcRobotVelocity(drive, robotPose.getRotation().getRadians()),
                     GRAVITY,
                     SHOOT_VELOCITY,
                     robotHeading,
@@ -133,12 +128,11 @@ public interface ShootMath {
     ) {
         return DriveCommands.oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-            final var robotHeading = robotPose.getRotation().getRadians();
             final var projectileInitialHeight = 0; // TODO: calculate
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), projectileInitialHeight)),
-                calcRobotVelocity(drive, robotHeading),
+                calcRobotVelocity(drive, robotPose.getRotation().getRadians()),
                 GRAVITY
             );
 
