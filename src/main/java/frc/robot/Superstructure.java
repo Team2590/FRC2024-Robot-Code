@@ -66,6 +66,8 @@ public class Superstructure {
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
       new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
+  private final LoggedTunableNumber flywheelEjectSpeedInput = 
+      new LoggedTunableNumber("Flywheel/Flywheel Eject Speed", 300.0); // must be tuned
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -155,9 +157,14 @@ public class Superstructure {
          * Gets subsytems ready for intaking
          * If conveyor.hasNote is true :
          * Stop intake && transition to HAS_NOTE state
+         * 
+         * If the note is in the intake, it is released from the front.
+         * If the note is in the conveyor, it is released from shooter.
          */
         arm.setHome();
         intake.setOutake();
+        shooter.shoot(flywheelEjectSpeedInput.get());
+        if (shooter.getState() == ShooterStates.AT_SETPOINT) { conveyor.setShooting(); }
         // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
