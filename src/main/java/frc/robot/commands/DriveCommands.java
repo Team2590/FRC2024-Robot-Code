@@ -170,11 +170,6 @@ public class DriveCommands {
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yError) {
     return Commands.run(
         (() -> {
-          Logger.recordOutput(
-              "Drive/noteController/PID Output",
-              drive.linearMovementController.calculate(-yError.getAsDouble(), 0)
-                  * drive.getMaxLinearSpeedMetersPerSec());
-          Logger.recordOutput("Drive/noteController/YError", yError.getAsDouble());
           drive.runVelocity(
               new ChassisSpeeds(
                   // joystick magnitude
@@ -190,37 +185,16 @@ public class DriveCommands {
 
   /**
    * Aligns to the target, based on the april tags seen
-   * @param drive - drive instanec
+   * @param drive - drive instance
    * @param targets - list of targets seen; can be taken straight from vision
    * @return the command
    */
-  public static Command TurnTranslateToTarget(
+  public static Command alignToTarget(
     Drive drive, List<PhotonTrackedTarget> targets) {
-      // TODO: both turn and translate might need their own pids with seperate gains; just using snap controller for now 
       return Commands.run((() -> {
         for (PhotonTrackedTarget t: targets) {
-          // turn to speaker (center tag only, red and blue)
-          if (t.getFiducialId() == 4 || t.getFiducialId() == 7) {
-            Transform3d difference = t.getBestCameraToTarget();
-            double theta = Math.atan2(difference.getY(),difference.getX());
-            double currentAngle = drive.getRotation().getRadians();
-            double currentError = theta - currentAngle;
-            if (currentError > Math.PI) {
-              currentAngle += 2 * Math.PI;
-            } else if (currentError < -Math.PI) {
-              currentAngle -= 2 * Math.PI;
-            }
-            Logger.recordOutput("AlignController/TagId", t.getFiducialId());
-            Logger.recordOutput("AlignController/TagPose",difference);
-            drive.runVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                    0,0,
-                    drive.snapController.calculate(currentAngle, theta)
-                        * drive.getMaxAngularSpeedRadPerSec(),
-                    drive.getRotation()));
-            break;
           // translate to amp/stage (centered, all 3 stage sides, red and blue)
-          } else if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
+          if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
             double lateralOffset = t.getBestCameraToTarget().getY();
             drive.runVelocity(
                 new ChassisSpeeds(
