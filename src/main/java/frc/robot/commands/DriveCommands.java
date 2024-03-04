@@ -184,7 +184,7 @@ public class DriveCommands {
   }
 
   /**
-   * Aligns to the target, based on the april tags seen
+   * Aligns to the target, based on the april tags seen; will only align to amp or stage
    * @param drive - drive instance
    * @param targets - list of targets seen; can be taken straight from vision
    * @return the command
