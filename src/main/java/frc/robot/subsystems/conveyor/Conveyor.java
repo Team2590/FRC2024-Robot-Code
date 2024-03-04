@@ -64,6 +64,9 @@ public class Conveyor extends SubsystemBase {
         break;
       case SHOOT:
         io.runPower(conveyorSpeed);
+        if (Robot.isSimulation()) {
+          setStopped();
+        }
         break;
       case MANUAL:
         io.runPower(manualPower);
