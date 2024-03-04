@@ -130,6 +130,12 @@ public final class Constants {
     public static final int TOLERANCE = 5;
   }
 
+  public final class LEDConstants {
+    public static final int LED_PORT = 9;
+    public static final int LED_LENGTH = 100;
+    public static final int FLASH_INTERVAL = 250;
+  }
+
   public static enum Mode {
     /** Running on a real robot. */
     REAL,

@@ -13,6 +13,7 @@ package frc.robot;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -101,6 +102,7 @@ public class Superstructure {
         conveyor.setStopped();
         shooter.setStopped();
         // arm.setStopped();
+        led.setNemesis(false);
         break;
       case RESET:
         /*
@@ -123,6 +125,8 @@ public class Superstructure {
         conveyor.setStopped();
         climb.setStopped();
         arm.setHome();
+        led.setFlow();
+        // TODO: add a signal for when we are detecting a note
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -139,6 +143,7 @@ public class Superstructure {
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
+          led.setFlashing(255, 255, 255, LEDConstants.FLASH_INTERVAL);
         } else {
           arm.setHome();
         }
@@ -162,6 +167,7 @@ public class Superstructure {
         break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
+        led.setRGB(250, 134, 2);
         break;
       case PRIMING_SHOOTER:
         /*
@@ -169,6 +175,7 @@ public class Superstructure {
          * Run flywheel at desired velocity. Useful in auto routines.
          */
         shooter.shoot(flywheelSpeedInput.get());
+        led.setFlashing(255, 0, 0, LEDConstants.FLASH_INTERVAL);
         // Don't need any transition here, we want to stay in this state
         // until SHOOT is called.
         break;
@@ -183,6 +190,7 @@ public class Superstructure {
         if (shooter.getState() != ShooterStates.AT_SETPOINT) {
           systemState = SuperstructureStates.PRIMING_SHOOTER;
         }
+        led.setRGB(255, 0, 0);
         break;
 
       case SHOOT:
@@ -227,6 +235,7 @@ public class Superstructure {
          */
         // arm.setposition(AMP);
         arm.setPosition(ArmConstants.AMP_SETPOINT);
+        led.setFlashing(11, 112,227, LEDConstants.FLASH_INTERVAL);
         break;
 
       case SCORE_AMP:
@@ -236,6 +245,7 @@ public class Superstructure {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
+          led.setRGB(11, 112, 227);
         }
 
         break;
@@ -255,6 +265,7 @@ public class Superstructure {
          * climb.climb() -- > Sets climb to manual state
          */
         climb.run();
+        led.setNemesis(false);
         break;
       case FLIPPING:
         climb.flip();

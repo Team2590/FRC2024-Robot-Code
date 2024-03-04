@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
@@ -47,7 +48,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final Climb climb;
-  private final NemesisLED led = new NemesisLED(9, 100);
+  private final NemesisLED led = new NemesisLED(LEDConstants.LED_PORT, LEDConstants.LED_LENGTH);
   private final Superstructure superstructure;
   private final UserInput input;
   public static final PoseEstimator poseEstimator =
