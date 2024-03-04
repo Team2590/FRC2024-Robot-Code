@@ -17,6 +17,7 @@ import java.util.function.DoubleSupplier;
 /**
  * @author Elan Ronen
  * // TODO: with angular velocity to components, check which way is front
+ * // TODO: make work for blue (maybe yaw switches from + to -?)
  */
 public interface ShootMath {
 
