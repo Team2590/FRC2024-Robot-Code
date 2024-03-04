@@ -143,3 +143,34 @@ public class Conveyor extends SubsystemBase {
     return inputs.hasNote;
   }
 }
+
+/**
+ * spotless:off
+ * autoformatter is a meanie, keeps breaking my easter eggs :(
+ * 
+ *                            _____  _____
+ *                           <     `/     |
+ *                            >          (
+ *                           |   _     _  |
+ *                           |  |_) | |_) |
+ *                           |  | \ | |   |
+ *                           |            |
+ *            ______.______%_|            |__________  _____
+ *          _/                                       \|     |
+ *         |               A B H I K   R A Y                <
+ *         |_____.-._________              ____/|___________|
+ *                           |  2019-2023 |
+ *                           | your code  |
+ *                           | was useful |
+ *                           |      once  |
+ *                           |   _        <
+ *                           |__/         |
+ *                            / `--.      |
+ *                          %|            |%
+ *                      |/.%%|          -< @%%%
+ *                      `\%`@|     v      |@@%@%%
+ *                    .%%%@@@|%    |    % @@@%%@%%%%
+ *               _.%%%%%%@@@@@@%%_/%\_%@@%%@@@@@@@%%%%%%
+ * 
+ * spotless:on
+ */

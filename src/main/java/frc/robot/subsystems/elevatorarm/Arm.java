@@ -26,11 +26,11 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Creates a new Flywheel.
+   * Creates a new Arm.
    *
-   * @param armIOTalonFX
+   * @param io
    */
-  public Arm(ArmIOTalonFX armIOTalonFX) {
+  public Arm(ArmIO io) {
     state = ArmStates.STOPPED;
   }
 
@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
         arm.armCancoder.getAbsolutePosition().getValueAsDouble(), setPoint, tolerance);
   }
 
-  /** Run open loop at the specified voltage. */
+  /** Run open loop at the specified setpoint. */
   public void setPosition(double setpoint) {
     if (setpoint <= ArmConstants.ARM_MAX) {
       setpoint = ArmConstants.ARM_MAX;

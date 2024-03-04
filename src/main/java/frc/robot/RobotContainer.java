@@ -8,6 +8,8 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIO;
+import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.conveyor.ConveyorIO;
@@ -20,12 +22,16 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevatorarm.Arm;
+import frc.robot.subsystems.elevatorarm.ArmIO;
+import frc.robot.subsystems.elevatorarm.ArmIOSim;
 import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
@@ -108,9 +114,9 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOSim());
         // instantiate SIM VERSIONS of other subsystems
         conveyor = new Conveyor(new ConveyorIOSim());
-        intake = new Intake(new IntakeIOTalonFX());
-        arm = new Arm(new ArmIOTalonFX());
-        climb = new Climb(new ClimbIOTalonFX());
+        intake = new Intake(new IntakeIOSim());
+        arm = new Arm(new ArmIOSim());
+        climb = new Climb(new ClimbIOSim());
         break;
 
       default:
@@ -124,9 +130,9 @@ public class RobotContainer {
                 new ModuleIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
         conveyor = new Conveyor(new ConveyorIO() {});
-        intake = new Intake(new IntakeIOTalonFX());
-        climb = new Climb(new ClimbIOTalonFX());
-        arm = new Arm(new ArmIOTalonFX());
+        intake = new Intake(new IntakeIO() {});
+        climb = new Climb(new ClimbIO() {});
+        arm = new Arm(new ArmIO() {});
         break;
     }
     // pass in all subsystems into superstructure
