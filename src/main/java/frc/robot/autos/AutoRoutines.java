@@ -22,8 +22,6 @@ public class AutoRoutines {
     AutoFunction ezAuto = (instructions) -> buildAuto(paths, drive, superstructure, instructions);
 
     // Register all the auto routines here
-    // autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
-    // This is the same as OneNoteAuto
 
     autoChooser.addOption(
         "2_startA_n1", ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT));
@@ -163,18 +161,6 @@ public class AutoRoutines {
     paths.dispose();
     return autoChooser;
   }
-
-  /** Creates a single note auto. */
-  // private static Command oneNoteAuto(
-  //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
-  //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(true)
-  //       .startPath("startB_note1")
-  //       .shoot(true)
-  //       .followPath("n2-n3")
-  //       .shoot(true)
-  //       .build();
-  // }
 
   /**
    * Easy way to configure an Auto Routine, just pass in the paths.
