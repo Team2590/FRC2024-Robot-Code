@@ -84,6 +84,11 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return leftJoystick.getTriggerReleased();
   }
 
+  /**
+   * Sets the joystick rumble.
+   * <p>This function is useful to provide feedback through touch to the driver
+   * @param intensity - intensity of the rumble, from 0 to 1
+   */
   public void setLeftJoystickRumble(double intensity) {
     leftJoystick.setRumble(RumbleType.kBothRumble, intensity);
   }
@@ -122,6 +127,11 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return rightJoystick.getTriggerReleased();
   }
 
+  /**
+   * Sets the joystick rumble.
+   * <p>This function is useful to provide feedback through touch to the driver
+   * @param intensity - intensity of the rumble, from 0 to 1
+   */
   public void setRightJoystickRumble(double intensity) {
     rightJoystick.setRumble(RumbleType.kBothRumble, intensity);
   }
