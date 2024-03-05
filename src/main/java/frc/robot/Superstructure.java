@@ -94,6 +94,7 @@ public class Superstructure extends SubsystemBase{
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
+  @Override
   public void periodic() {
     switch (systemState) {
       case DISABLED:
