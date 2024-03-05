@@ -121,8 +121,6 @@ public class Superstructure extends SubsystemBase{
           break;
         }
         shooter.setStopped();
-        intake.setStopped();
-        conveyor.setStopped();
         climb.setStopped();
         arm.setHome();
         break;
