@@ -114,11 +114,11 @@ public class Superstructure {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        // arm.setPosition();
-        // Anthony added this condition
-        if (!conveyor.hasNote()) {
-          shooter.setStopped();
+        if (conveyor.hasNote()){
+          systemState = SuperstructureStates.HAS_NOTE;
+          break;
         }
+        shooter.setStopped();
         intake.setStopped();
         conveyor.setStopped();
         climb.setStopped();
@@ -144,7 +144,6 @@ public class Superstructure {
         }
 
         if (conveyor.hasNote()) {
-          intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
         break;
@@ -161,7 +160,7 @@ public class Superstructure {
         // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
-        // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
+        intake.setStopped();
         break;
       case PRIMING_SHOOTER:
         /*
