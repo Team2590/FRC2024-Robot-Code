@@ -11,6 +11,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -64,7 +65,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0);
+      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -141,6 +142,7 @@ public class Superstructure {
         } else {
           arm.setHome();
         }
+
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
@@ -156,7 +158,7 @@ public class Superstructure {
          */
         arm.setHome();
         intake.setOutake();
-        conveyor.setOuttaking();
+        // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
         // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
@@ -189,10 +191,17 @@ public class Superstructure {
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
-        if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT
-            && RobotContainer.getDrive().snapControllerAtSetpoint()) {
-          conveyor.setShooting();
+        if (!DriverStation.isAutonomousEnabled()) {
+          if (arm.getState() == ArmStates.AT_SETPOINT
+              && shooter.getState() == ShooterStates.AT_SETPOINT
+              && RobotContainer.getDrive().snapControllerAtSetpoint()) {
+            conveyor.setShooting();
+          }
+        } else {
+          if (arm.getState() == ArmStates.AT_SETPOINT
+              && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            conveyor.setShooting();
+          }
         }
 
         /*
@@ -206,8 +215,7 @@ public class Superstructure {
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(flywheelSpeedInput.get());
-        if (arm.getState() == ArmStates.AT_SETPOINT
-            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+        if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
         }
         break;
@@ -258,6 +266,7 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
     Logger.recordOutput(
         "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
+    Logger.recordOutput("autonomous enabled", DriverStation.isAutonomousEnabled());
   }
 
   public void stop() {
@@ -281,6 +290,10 @@ public class Superstructure {
     // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
   }
+
+  // public void clearNotes() {
+  //   shooter.fullsend();
+  // }
 
   public void primeAmp() {
     systemState = SuperstructureStates.PRIMING_AMP;
@@ -350,6 +363,15 @@ public class Superstructure {
 
   public SuperstructureStates getState() {
     return systemState;
+  }
+
+  public void runConveyor() {
+    conveyor.setManual(.25);
+    ;
+  }
+
+  public void stopConveyor() {
+    conveyor.setStopped();
   }
 
   public Arm getArm() {

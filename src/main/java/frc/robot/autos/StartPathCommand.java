@@ -18,7 +18,8 @@ public class StartPathCommand extends SequentialCommandGroup {
         // Starting Running the shooter
         Commands.parallel(
             // Start up the intake system and follow path to first position in parallel.
-            new InstantCommand(() -> superstructure.intake(), superstructure.getIntake()),
+            new InstantCommand(() -> superstructure.intake(), superstructure.getIntake())
+                .until(superstructure::note_present),
             // new InstantCommand(() -> superstructure.primeShooter(), superstructure.getShooter()),
             paths.getFollowPathCommand(startingPath)));
   }

@@ -24,45 +24,153 @@ public class AutoRoutines {
     // Register all the auto routines here
     // autoChooser.addOption("OneNoteAuto", oneNoteAuto(paths, drive, superstructure));
     // This is the same as OneNoteAuto
-    autoChooser.addOption(
-        "StartA",
-        ezAuto.apply(
-            "startA", // Starting Position A
-            SNAP_SHOOT,
-            "startA_note1",
-            SNAP_SHOOT));
 
     autoChooser.addOption(
-        "StartB",
-        ezAuto.apply(
-            "startB", // Starting Position B
-            SNAP_SHOOT,
-            "startB_note1",
-            SNAP_SHOOT,
-            "n2-n3",
-            SNAP_SHOOT));
-
+        "2_startA_n1", ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT));
     autoChooser.addOption(
-        "StartC",
+        "2_startC_n3", ezAuto.apply("startC", SNAP_SHOOT, "startC_note3", SNAP_SHOOT));
+    autoChooser.addOption(
+        "2_startB_n2", ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startA_n1_n4",
         ezAuto.apply(
-            "startC", // Starting Position C
-            "startC", // runs path startC
+            "startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT, "note1_n4", "n4_return", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n1",
+        ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n1", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n5",
+        ezAuto.apply(
+            "startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n5", "n5_return", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n4",
+        ezAuto.apply(
+            "startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n4", "n4_return", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n3",
+        ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n3", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n7",
+        ezAuto.apply(
+            "startB",
+            SNAP_SHOOT,
+            "startB_note2",
+            SNAP_SHOOT,
+            "note2_n7",
+            "n7_return_under",
+            SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startC_n3_n7",
+        ezAuto.apply(
+            "startC",
             SNAP_SHOOT,
             "startC_note3",
+            SNAP_SHOOT,
+            "note3_n7",
+            "n7_return_under",
             SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startC_n3_n8",
+        ezAuto.apply(
+            "startC", SNAP_SHOOT, "startC_note3", SNAP_SHOOT, "note3_n8", "n8_return", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startC_n3_n7",
+        ezAuto.apply(
+            "startC",
+            SNAP_SHOOT,
+            "startC_note3",
+            SNAP_SHOOT,
+            "note3_n7",
+            "n7_return_under",
+            SNAP_SHOOT));
+
+    // autoChooser.addOption(
+    //     "outside_first",
+    //     ezAuto.apply(
+    //         "startC",
+    //         SNAP_SHOOT,
+    //         "n8_outside",
+    //         "n8_return",
+    //         SNAP_SHOOT,
+    //         "note3_n7",
+    //         "n7_return",
+    //         SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "4_startB_close",
+        ezAuto.apply(
+            "startB",
+            SHOOT,
+            "startB_note1",
+            SNAP_SHOOT,
+            "note1_n2",
+            SNAP_SHOOT,
+            "note2_n3",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "4_startA_n1_n2_n3",
+        ezAuto.apply(
+            "startA",
+            SHOOT,
+            "startA_note1",
+            SNAP_SHOOT,
+            "note1_n2",
+            SNAP_SHOOT,
+            "note2_n3",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "4_startc_n3_n2_n1",
+        ezAuto.apply(
+            "startC",
+            SHOOT,
+            "startC_note3",
+            SNAP_SHOOT,
+            "note3_n2",
+            SNAP_SHOOT,
+            "note2_n1",
+            SNAP_SHOOT));
+
+    // autoChooser.addOption(
+    //     "4_startA_n1",
+    //     ezAuto.apply(
+    //         "startA",
+    //         SNAP_SHOOT,
+    //         "startA_note1",
+    //         SNAP_SHOOT,
+    //         "note1_n4",
+    //         "n4_return",
+    //         SNAP_SHOOT,
+    //         "note2_n5",
+    //         "n5_return",
+    //         SNAP_SHOOT));
+    // autoChooser.addOption(
+    //     "4_startB_n2",
+    //     ezAuto.apply(
+    //         "startB",
+    //         SNAP_SHOOT,
+    //         "startB_note2",
+    //         SNAP_SHOOT,
+    //         "note2_n5",
+    //         "n5_return",
+    //         SNAP_SHOOT,
+    //         "note2_n6",
+    //         "n6_return",
+    //         SNAP_SHOOT));
 
     // dispose of the paths, unused paths with be garbage collected.
     paths.dispose();
     return autoChooser;
   }
 
-  // /** Creates a single note auto. */
+  /** Creates a single note auto. */
   // private static Command oneNoteAuto(
   //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
   //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(false)
+  //       .shoot(true)
   //       .startPath("startB_note1")
-  //       .shoot(false)
+  //       .shoot(true)
   //       .followPath("n2-n3")
   //       .shoot(true)
   //       .build();

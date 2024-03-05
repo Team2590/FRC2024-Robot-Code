@@ -173,6 +173,12 @@ public class RobotContainer {
       superstructure.stopShooter();
     }
 
+    if (input.controllerXButton()) {
+      superstructure.runConveyor();
+    } else if (input.controllerYButton()) {
+      superstructure.stopConveyor();
+    }
+
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
         CommandScheduler.getInstance()
@@ -214,14 +220,13 @@ public class RobotContainer {
       teleopSpeaker = false;
       input.setOperatorRumble(0);
       superstructure.primeAmp();
+    } else if (input.leftJoystickButton(4)) {
+      superstructure.climb();
     } else {
       teleopSpeaker = true;
       superstructure.idle();
     }
 
-    if (input.controllerYButton()) {
-      superstructure.climb();
-    }
     // Logger.recordOutput("shoot speaker?", teleopSpeaker);
     // if (input.controllerXButton()) {
     //   superstructure.armClimb();
@@ -285,6 +290,14 @@ public class RobotContainer {
   public static Drive getDrive() {
     return drive;
   }
+
+  // public void initGyro() {
+
+  //   double
+  // gyroreset=DriverStation.getAlliance().isPresent()&&DriverStation.getAlliance().get()==Alliance.Red?180:0;
+  //   drive.set
+
+  // }
 
   /**
    * Use this branch to build the commands from the autos that you want to run, and add the commands
