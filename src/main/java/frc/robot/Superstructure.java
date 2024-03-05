@@ -133,7 +133,6 @@ public class Superstructure {
         } else {
           led.setRGB(255, 0, 0);
         }
-        // TODO: add a signal for when we are detecting a note
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -239,7 +238,6 @@ public class Superstructure {
          */
         // arm.setposition(AMP);
         arm.setPosition(ArmConstants.AMP_SETPOINT);
-        led.setFlashing(233, 245, 7, LEDConstants.FLASH_INTERVAL);
         break;
 
       case SCORE_AMP:
