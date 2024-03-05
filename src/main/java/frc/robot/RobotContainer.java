@@ -150,8 +150,6 @@ public class RobotContainer {
   }
 
   public void updateSubsystems() {
-    // Update superstructure since it's not a subsystem.
-    superstructure.periodic();
     input.update();
   }
 

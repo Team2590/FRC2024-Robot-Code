@@ -35,7 +35,7 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
-    System.out.println("Shooting .... ");
+    // System.out.println("Shooting .... ");
     superstructure.shoot();
   }
 

@@ -12,6 +12,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -31,7 +33,7 @@ import org.littletonrobotics.junction.Logger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
   // TBD: declare variables to add subsystems into
   public static enum SuperstructureStates {
     DISABLED,
@@ -71,6 +73,7 @@ public class Superstructure {
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(
       Conveyor conveyor, Intake intake, Flywheel shooter, Arm arm, Climb climb, NemesisLED led) {
+    super("Superstructure");
     // assign args to local variables
     this.conveyor = conveyor;
     this.intake = intake;
@@ -93,6 +96,7 @@ public class Superstructure {
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
+  @Override
   public void periodic() {
     switch (systemState) {
       case DISABLED:
@@ -266,7 +270,6 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
     Logger.recordOutput(
         "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
-    Logger.recordOutput("autonomous enabled", DriverStation.isAutonomousEnabled());
   }
 
   public void stop() {
@@ -286,8 +289,6 @@ public class Superstructure {
   }
 
   public void primeShooter() {
-    System.out.println("-- primingShooter");
-    // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
   }
 
