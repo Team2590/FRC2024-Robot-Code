@@ -6,6 +6,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+/** Runnable that gets grounded note data from PhotonVision. */
 public class PhotonNoteRunnable implements Runnable {
   private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
   private static PhotonCamera NoteCam = new PhotonCamera(instance, "NoteCam");
@@ -42,6 +43,10 @@ public class PhotonNoteRunnable implements Runnable {
     return noteYOffset;
   }
 
+  /**
+   * Gets the Vertical (forward is +) translation from the center of the robot to the detected note.
+   * @return x offset of note
+   */
   public static double getXOffset() {
     return noteXOffset + camXOffset;
   }

@@ -15,10 +15,12 @@ public class Climb extends SubsystemBase {
     io.updateInputs(inputs);
   }
 
+  /** Run the climb motors */
   public void run() {
     io.setVoltage(6);
   }
 
+  /** Flip the climb hooks */
   public void flip() {
     if (io.getRotationCount() < -11) {
       io.stop();
@@ -27,10 +29,12 @@ public class Climb extends SubsystemBase {
     }
   }
 
+  /** Reset the rotation count on the climb motors */
   public void resetRotationCount() {
     io.resetRotationCount();
   }
 
+  /** Stop the motors */
   public void setStopped() {
     io.stop();
   }

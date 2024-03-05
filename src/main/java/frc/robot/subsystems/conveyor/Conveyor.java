@@ -13,9 +13,7 @@ public class Conveyor extends SubsystemBase {
   private final ConveyorIO io;
   private final ConveyorIOInputsAutoLogged inputs = new ConveyorIOInputsAutoLogged();
 
-  // TODO: update constants once we get the robot
-  // tunable constants
-
+  // motor speed constants
   private double conveyorSpeed = .15;
   private double diverterSpeed = .5;
 

@@ -112,10 +112,20 @@ public class PhotonRunnable implements Runnable {
     return RobotPose.toPose2d();
   }
 
+  /**
+   * Returns the distance between the robot and the best april tag in view.
+   * @return the distance
+   */
   public double getDistanceToTarget() {
     return distanceToTarget;
   }
 
+  /**
+   * Returns the distance between two given poses
+   * @param a - first pose
+   * @param b - second pose
+   * @return the distance
+   */
   public double distanceBetweenPoses(Pose2d a, Pose2d b) {
     Transform2d difference = a.minus(b);
     return Math.hypot(difference.getX(), difference.getY());
@@ -137,13 +147,16 @@ public class PhotonRunnable implements Runnable {
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
         VecBuilder.fill(.001, .003, .005));
+
   }
 
   /**
-   * Returns the distance to speaker based on alliance (meters).
-   *
-   * @return
+   * Returns the distance to speaker based on alliance (meters)
+   * @deprecated Use {@link PhotonRunnable#getDistanceToTarget()} instead
+   * 
+   * @return distance
    */
+  @Deprecated(forRemoval = true)
   public double getDistanceToSpeaker() {
     return distanceToSpeaker;
   }

@@ -50,6 +50,10 @@ public class PoseEstimator {
     return latestPose;
   }
 
+  /**
+   * Returns the distance between the robot and the best april tag in view.
+   * @return the distance
+   */
   public double distanceToTarget() {
     return photonEstimator.getDistanceToTarget();
   }

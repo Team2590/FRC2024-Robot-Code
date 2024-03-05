@@ -51,18 +51,22 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  /** Stop the intake */
   public void setStopped() {
     state = IntakeStates.STOPPED;
   }
-
+  
+  /** Intake a piece */
   public void setIntake() {
     state = IntakeStates.INTAKE;
   }
 
+  /** Outtake a piece */
   public void setOutake() {
     state = IntakeStates.OUTTAKE;
   }
 
+  /** Return the current state of the intake */
   public IntakeStates getState() {
     return state;
   }
