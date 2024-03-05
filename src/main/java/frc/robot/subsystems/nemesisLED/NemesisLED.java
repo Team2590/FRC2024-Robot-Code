@@ -188,13 +188,13 @@ public class NemesisLED extends SubsystemBase {
     // white secondary
     if (secondaryWhite) {
       for (int i = 0; i < ledBuffer.getLength(); i++) {
-        int hue = 255 / (Math.abs((i % 20) - 10));
+        int hue = (int)(255 * (Math.abs((i % 20) - 10) / 10.0));
         ledBuffer.setRGB(i, 255, hue, hue);
       }
     // black secondary
     } else {
       for (int i = 0; i < ledBuffer.getLength(); i++) {
-        int hue = 255 / (Math.abs((i % 20) - 10));
+        int hue = (int)(255 * (Math.abs((i % 20) - 10) / 10.0));
         ledBuffer.setRGB(i, hue, 0, 0);
       }
     }
