@@ -6,11 +6,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Controls the LEDs on the robot.
+ * 
+ * <p> LED Signals:
+ * <p> - Idle: Solid Red
+ * <p> - Entering Intake: Flashing Orange
+ * <p> - Note Stowed: Solid Orange
+ * <p> - In Shooter Range: Solid Green
+ * <p> - Amp: Solid Yellow
+ * <p> - Climb: RGB Flow
+ * <p> - Disabled: Nemesis Colors
  *
  * @author Dhruv Shah
+ * @author Ian Keller
  * @author Elan Ronen
  * @author Shashank Madala
- * @author Ian Keller
  * @see <a href=
  *     "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html">WPILIB
  *     LED Tutorial</a>

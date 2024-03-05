@@ -99,6 +99,7 @@ public final class Constants {
     // Fill in
     public static final int LEADER = 55;
     public static final int FOLLOWER = 56;
+    public static final double MAX_SHOOT_RANGE = 4.0; // guessed value
   }
 
   public final class ConveyorConstants {
