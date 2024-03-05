@@ -157,7 +157,6 @@ public class Superstructure {
          */
         arm.setHome();
         intake.setOutake();
-        // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
         intake.setStopped();
@@ -265,7 +264,6 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
     Logger.recordOutput(
         "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
-    Logger.recordOutput("autonomous enabled", DriverStation.isAutonomousEnabled());
   }
 
   public void stop() {
@@ -286,7 +284,6 @@ public class Superstructure {
 
   public void primeShooter() {
     System.out.println("-- primingShooter");
-    // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
   }
 
