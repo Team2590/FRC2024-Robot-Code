@@ -160,27 +160,19 @@ public class RobotContainer {
      * Driver input w/ superstructure
      */
 
-    boolean operatorButtonPressed = false;
     if (poseEstimator.distanceToTarget() <= Constants.FieldConstants.RUMBLE_THRESHOLD) {
-      input.setOperatorRumble(1);
     } else if (poseEstimator.distanceToTarget() > Constants.FieldConstants.RUMBLE_THRESHOLD) {
-      input.setOperatorRumble(0);
     }
 
     if (input.controllerAButton()) {
       superstructure.primeShooter();
-      input.setOperatorRumble(0);
-      operatorButtonPressed = true;
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
-      operatorButtonPressed = true;
     }
 
     if (input.controllerXButton()) {
-      operatorButtonPressed = true;
       superstructure.runConveyor();
     } else if (input.controllerYButton()) {
-      operatorButtonPressed = true;
       superstructure.stopConveyor();
     }
 
@@ -227,8 +219,6 @@ public class RobotContainer {
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
-    }
-      else if (operatorButtonPressed) {
     } else {
       teleopSpeaker = true;
       superstructure.idle();

@@ -109,6 +109,11 @@ public class Superstructure extends SubsystemBase {
          * TBD -- > Simmilar to IDLE state ?
          */
         // C:\Users\Nemesis\Documents\2024\FRC2024-Robot-Code\src\main\java\frc\robot\autos\StartPathCommand.java
+        intake.setStopped();
+        conveyor.setStopped();
+        shooter.setStopped();
+        arm.setHome();
+        climb.setStopped();
         break;
 
       case IDLE:
@@ -116,13 +121,11 @@ public class Superstructure extends SubsystemBase {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        if (conveyor.hasNote()) {
+        climb.setStopped();
+        if (conveyor.hasNote()){
           intake.setStopped();
-          conveyor.setStopped();
-          break;
         } else {
           shooter.setStopped();
-          climb.setStopped();
           arm.setHome();
         }
         break;
@@ -139,6 +142,7 @@ public class Superstructure extends SubsystemBase {
 
         // if (arm.getState() == ArmStates.HOME) {
         if (conveyor.hasNote()) {
+          intake.setStopped();
           break;
         }
         if (arm.getState() == ArmStates.HOME) {
