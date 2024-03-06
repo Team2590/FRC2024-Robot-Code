@@ -8,14 +8,11 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ResetPoseCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.Tracer;
-
-import org.littletonrobotics.junction.Logger;
 
 public class AutoCommandBuilder {
 
@@ -29,7 +26,7 @@ public class AutoCommandBuilder {
     this.drive = drive;
     this.superstructure = superstructure;
     this.commands = new SequentialCommandGroup();
-    this.commands.addCommands(Commands.run(() -> superstructure.primeShooter()));
+    this.commands.addCommands();
   }
 
   public AutoCommandBuilder resetPoseUsingPath(String pathName) {
@@ -38,11 +35,13 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder resetPose(Pose2d pose) {
-    commands.addCommands(Commands.runOnce(() -> {
-      Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(pose);
-      Tracer.trace("Resetting Pose, initial:" + pose + " to " + translatedPose);
-      RobotContainer.poseEstimator.resetPose(translatedPose);
-    }));
+    commands.addCommands(
+        Commands.runOnce(
+            () -> {
+              Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(pose);
+              Tracer.trace("Resetting Pose, initial:" + pose + " to " + translatedPose);
+              RobotContainer.poseEstimator.resetPose(translatedPose);
+            }));
     return this;
   }
 
@@ -71,8 +70,11 @@ public class AutoCommandBuilder {
     return this;
   }
 
-  public SequentialCommandGroup build() {
-    return commands;
+  public Command build() {
+    // Run primeShooter in parallel to our entire auto routine.
+    // This is a race command because primeShooter will keep running
+    // until all the commands in our routine are done.
+    return Commands.race(Commands.run(() -> superstructure.primeShooter()), commands);
   }
 
   private static final Command trace(String message) {
