@@ -13,6 +13,8 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.Tracer;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,7 +36,6 @@ public class SnapToTargetCommand extends Command {
 
   private Pose2d targetPose;
   private double currentError;
-  private int count;
 
   public SnapToTargetCommand(
       Drive drive,
@@ -52,8 +53,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void initialize() {
-    Logger.recordOutput("Auto/Trace", "Running SnapToTargetCommand");
-    count = 0;
+    Tracer.trace("SnapToTargetCommand.initialize()");
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
@@ -79,7 +79,6 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
-    // count++;
     // find angle
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;

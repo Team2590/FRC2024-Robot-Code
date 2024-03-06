@@ -3,6 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
+import frc.robot.util.Tracer;
+
 import org.littletonrobotics.junction.Logger;
 
 /** Runs the intake. */
@@ -26,7 +28,10 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
     Logger.recordOutput("Auto/Trace", "Running IntakeCommand");
-    superstructure.intake();
+    if (!superstructure.getConveyor().detectedShooterSide()) {
+      superstructure.intake();
+    }
+    
   }
 
   @Override
@@ -36,6 +41,6 @@ public class IntakeCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    Logger.recordOutput("Auto/Trace", "IntakeCommand Done.");
+    Tracer.trace("IntakeCommand Done.");
   }
 }

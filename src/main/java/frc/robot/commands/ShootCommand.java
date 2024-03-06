@@ -3,6 +3,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
+import frc.robot.util.Tracer;
+
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -36,21 +38,22 @@ public class ShootCommand extends Command {
 
   @Override
   public void execute() {
-    Logger.recordOutput("Auto/Trace", "Running ShootCommand");
+    Tracer.trace("ShootCommand.execute(), note_present:" + superstructure.note_present());
     superstructure.shoot();
   }
 
   @Override
   public boolean isFinished() {
-    // If the shooter side prox sensor of conveyor doesn't detect note, shoot is done.
-    boolean detectedShooterSideNote = superstructure.getConveyor().detectedShooterSide();
-    Logger.recordOutput("Auto/Trace", "Conveyer ShooterSideHasNote" + detectedShooterSideNote);
-    return timer.hasElapsed(timeToWait) || !detectedShooterSideNote;
+    boolean notePresent = superstructure.getConveyor().detectedShooterSide();
+    Tracer.trace("ShootCommand.isFinished(), notePresent:" + notePresent);
+     // If the note is not present anymore, we already shot or don't have the note anymore.
+     // This means we exit out of this command. 
+    return timer.hasElapsed(timeToWait) || !notePresent;
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    Logger.recordOutput("Auto/Trace", "ShootCommand Done.");
+    Tracer.trace("ShootCommand.end(), interrupted:" + interrupted);
   }
 }
