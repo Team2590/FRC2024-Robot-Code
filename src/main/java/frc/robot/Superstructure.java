@@ -32,7 +32,7 @@ import org.littletonrobotics.junction.Logger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure extends SubsystemBase{
+public class Superstructure extends SubsystemBase {
   // TBD: declare variables to add subsystems into
   public static enum SuperstructureStates {
     DISABLED,
@@ -116,13 +116,15 @@ public class Superstructure extends SubsystemBase{
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        if (conveyor.hasNote()){
-          systemState = SuperstructureStates.HAS_NOTE;
+        if (conveyor.hasNote()) {
+          intake.setStopped();
+          conveyor.setStopped();
           break;
+        } else {
+          shooter.setStopped();
+          climb.setStopped();
+          arm.setHome();
         }
-        shooter.setStopped();
-        climb.setStopped();
-        arm.setHome();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -136,15 +138,16 @@ public class Superstructure extends SubsystemBase{
          */
 
         // if (arm.getState() == ArmStates.HOME) {
+        if (conveyor.hasNote()) {
+          System.out.println("has a note, changing state");
+          break;
+        }
+        System.out.println("No note, continue");
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
         } else {
           arm.setHome();
-        }
-
-        if (conveyor.hasNote()) {
-          systemState = SuperstructureStates.HAS_NOTE;
         }
         break;
 
@@ -159,6 +162,7 @@ public class Superstructure extends SubsystemBase{
         intake.setOutake();
         break;
       case HAS_NOTE:
+        System.out.println("In has note, stop the intake");
         intake.setStopped();
         break;
       case PRIMING_SHOOTER:
