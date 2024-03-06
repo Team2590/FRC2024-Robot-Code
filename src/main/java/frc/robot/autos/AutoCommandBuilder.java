@@ -43,10 +43,13 @@ public class AutoCommandBuilder {
     } else {
       commands.addCommands(
           Commands.print("Running FollowPathCommand for " + pathName),
-          Commands.parallel(
+          Commands.deadline(
               paths.getFollowPathCommand(pathName),
-              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)));
+              Commands.run(
+                  () -> superstructure.intake())), // .until(superstructure::note_present)),
+          Commands.run(() -> superstructure.primeShooter()));
     }
+
     return this;
   }
 
@@ -73,7 +76,7 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 3));
+    commands.addCommands(new ShootCommand(superstructure, .5));
     return this;
   }
 

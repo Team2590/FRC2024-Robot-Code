@@ -1,7 +1,6 @@
 package frc.robot.autos;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
@@ -24,13 +23,15 @@ public class StartPathCommand extends SequentialCommandGroup {
             () -> {
               Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
               RobotContainer.poseEstimator.resetPose(translatedPose);
-            }),
+            })
         // Starting Running the shooter
-        Commands.parallel(
-            // Start up the intake system and follow path to first position in parallel.
-            new InstantCommand(() -> superstructure.intake(), superstructure.getIntake())
-                .until(superstructure::note_present),
-            // new InstantCommand(() -> superstructure.primeShooter(), superstructure.getShooter()),
-            paths.getFollowPathCommand(startingPath)));
+        // Commands.parallel(
+        //     // Start up the intake system and follow path to first position in parallel.
+        //     new InstantCommand(() -> superstructure.intake(), superstructure.getIntake())
+        //         .until(superstructure::note_present),
+        //     // new InstantCommand(() -> superstructure.primeShooter(),
+        // superstructure.getShooter()),
+        //     paths.getFollowPathCommand(startingPath))
+        );
   }
 }

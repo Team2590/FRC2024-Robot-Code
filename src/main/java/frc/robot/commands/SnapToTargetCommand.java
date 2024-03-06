@@ -26,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class SnapToTargetCommand extends Command {
 
-  private static final double WAIT_TIME_SECONDS = 2.0;
+  private static final double WAIT_TIME_SECONDS = 1.5;
 
   private final Drive drive;
   private final DoubleSupplier xSupplier;
@@ -118,7 +118,7 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 25;
+    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 18;
     // return false;
   }
 
