@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * <p> - Entering Intake: Flashing Orange
  * <p> - Note Stowed: Solid Orange
  * <p> - In Shooter Range: Solid Green
- * <p> - Amp: Solid Yellow
+ * <p> - Priming Amp - Flashing Yellow
+ * <p> - Amp Ready: Solid Yellow
  * <p> - Climb: RGB Flow
  * <p> - Disabled: Nemesis Colors
  *

@@ -238,6 +238,7 @@ public class Superstructure {
          */
         // arm.setposition(AMP);
         arm.setPosition(ArmConstants.AMP_SETPOINT);
+        led.setFlashing(233, 245, 7, LEDConstants.FLASH_INTERVAL);
         break;
 
       case SCORE_AMP:
