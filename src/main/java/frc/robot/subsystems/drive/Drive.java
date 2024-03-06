@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.LoggedTunableNumber;
@@ -42,7 +43,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
+  private static double MAX_LINEAR_SPEED;
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
   // Uncomment for Jynx
@@ -50,7 +51,7 @@ public class Drive extends SubsystemBase {
   // static final double TRACK_WIDTH_Y = Units.inchesToMeters(36);
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-  private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+  private static double MAX_ANGULAR_SPEED;
 
   public static final Lock odometryLock = new ReentrantLock();
   private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
@@ -98,6 +99,14 @@ public class Drive extends SubsystemBase {
 
     snapController.setTolerance(.2);
     noteController.setTolerance(noteControllerTolerance.get());
+    if (Constants.currentMode == Constants.Mode.DEMO) {
+      MAX_LINEAR_SPEED = 4;
+      MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+    } else {
+      // aka running normally
+      MAX_LINEAR_SPEED = 15.5;
+      MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+    }
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configureHolonomic(
