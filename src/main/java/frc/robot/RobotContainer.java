@@ -194,7 +194,6 @@ public class RobotContainer {
         superstructure.scoreAmp();
       }
     } else if (input.rightJoystickTrigger()) {
-      System.out.println("I am here");
       superstructure.intake();
     } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
       // I just put this button as a place holder

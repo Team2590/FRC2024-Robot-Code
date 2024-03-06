@@ -139,10 +139,8 @@ public class Superstructure extends SubsystemBase {
 
         // if (arm.getState() == ArmStates.HOME) {
         if (conveyor.hasNote()) {
-          System.out.println("has a note, changing state");
           break;
         }
-        System.out.println("No note, continue");
         if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
@@ -162,7 +160,6 @@ public class Superstructure extends SubsystemBase {
         intake.setOutake();
         break;
       case HAS_NOTE:
-        System.out.println("In has note, stop the intake");
         intake.setStopped();
         break;
       case PRIMING_SHOOTER:
