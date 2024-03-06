@@ -6,16 +6,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Controls the LEDs on the robot.
- * 
- * <p> LED Signals:
- * <p> - Idle: Solid Red
- * <p> - Entering Intake: Flashing Orange
- * <p> - Note Stowed: Solid Orange
- * <p> - In Shooter Range: Solid Green
- * <p> - Priming Amp - Flashing Yellow
- * <p> - Amp Ready: Solid Yellow
- * <p> - Climb: RGB Flow
- * <p> - Disabled: Nemesis Colors
+ *
+ * <p>LED Signals:
+ *
+ * <p>- Idle: Solid Red
+ *
+ * <p>- Entering Intake: Flashing Orange
+ *
+ * <p>- Note Stowed: Solid Orange
+ *
+ * <p>- In Shooter Range: Solid Green
+ *
+ * <p>- Priming Amp - Flashing Yellow
+ *
+ * <p>- Amp Ready: Solid Yellow
+ *
+ * <p>- Climb: RGB Flow
+ *
+ * <p>- Disabled: Nemesis Colors
  *
  * @author Dhruv Shah
  * @author Ian Keller
@@ -49,6 +57,7 @@ public class NemesisLED extends SubsystemBase {
 
   /**
    * Sets the leds to a solid color of the given rgb value
+   *
    * @param r - value of red
    * @param g - value of green
    * @param b - value of blue
@@ -63,6 +72,7 @@ public class NemesisLED extends SubsystemBase {
 
   /**
    * Sets the leds to a flashing color of the given rgb value at the given rate
+   *
    * @param r - value of red
    * @param g - value of green
    * @param b - value of blue
@@ -70,13 +80,19 @@ public class NemesisLED extends SubsystemBase {
    */
   public void setFlashing(int r, int g, int b, int flashInterval) {
     timer += 20;
-    if (timer >= flashInterval * 2) { timer = 0; }
-    if (timer < flashInterval ) { setRGB(r, g, b); }
-    else { off(); }
+    if (timer >= flashInterval * 2) {
+      timer = 0;
+    }
+    if (timer < flashInterval) {
+      setRGB(r, g, b);
+    } else {
+      off();
+    }
   }
 
   /**
    * Sets the leds to flashing 2 alternating colors of the given rgb values at the given rate
+   *
    * @param r1 - value of red of 1st color
    * @param g1 - value of green of 1st color
    * @param b1 - value of blue of 1st color
@@ -87,9 +103,14 @@ public class NemesisLED extends SubsystemBase {
    */
   public void setAlternating(int r1, int g1, int b1, int r2, int g2, int b2, int flashInterval) {
     timer += 20;
-    if (timer >= flashInterval * 2) { timer = 0; }
-    if (timer < flashInterval ) { setRGB(r1, g1, b1); }
-    else { setRGB(r2, g2, b2); }
+    if (timer >= flashInterval * 2) {
+      timer = 0;
+    }
+    if (timer < flashInterval) {
+      setRGB(r1, g1, b1);
+    } else {
+      setRGB(r2, g2, b2);
+    }
   }
 
   /** Set the leds to a static rainbow */
@@ -158,6 +179,7 @@ public class NemesisLED extends SubsystemBase {
 
   /**
    * Set the leds to one of the color constants
+   *
    * @param color
    */
   public void setColor(Color color) {
@@ -181,21 +203,23 @@ public class NemesisLED extends SubsystemBase {
   }
 
   /**
-   * Hoist the colors. 
+   * Hoist the colors.
+   *
    * <p>A gradient between red and either white or black
+   *
    * @param secondaryWhite - secondary color; true for white, false for black
    */
   public void setNemesis(boolean secondaryWhite) {
     // white secondary
     if (secondaryWhite) {
       for (int i = 0; i < ledBuffer.getLength(); i++) {
-        int hue = (int)(255 * (Math.abs((i % 20) - 10) / 10.0));
+        int hue = (int) (255 * (Math.abs((i % 20) - 10) / 10.0));
         ledBuffer.setRGB(i, 255, hue, hue);
       }
-    // black secondary
+      // black secondary
     } else {
       for (int i = 0; i < ledBuffer.getLength(); i++) {
-        int hue = (int)(255 * (Math.abs((i % 20) - 10) / 10.0));
+        int hue = (int) (255 * (Math.abs((i % 20) - 10) / 10.0));
         ledBuffer.setRGB(i, hue, 0, 0);
       }
     }
