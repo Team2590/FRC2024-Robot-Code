@@ -14,7 +14,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.Tracer;
-
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -111,7 +110,8 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
-    Logger.recordOutput("Auto/Trace", "SnapControllerAtSetPoint:" + snapControllerAtSetpoint);
+    Tracer.trace(
+        "SnapToTargerCommand.isFinished(), SnapControllerAtSetPoint:" + snapControllerAtSetpoint);
     return timer.hasElapsed(waitTimeSeconds) || snapControllerAtSetpoint;
   }
 

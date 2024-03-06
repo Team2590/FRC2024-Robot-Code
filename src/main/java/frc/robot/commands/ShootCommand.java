@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
 import frc.robot.util.Tracer;
 
-import org.littletonrobotics.junction.Logger;
-
 /**
  * Command for shooting using the Superstructure.
  *
@@ -46,8 +44,8 @@ public class ShootCommand extends Command {
   public boolean isFinished() {
     boolean notePresent = superstructure.getConveyor().detectedShooterSide();
     Tracer.trace("ShootCommand.isFinished(), notePresent:" + notePresent);
-     // If the note is not present anymore, we already shot or don't have the note anymore.
-     // This means we exit out of this command. 
+    // If the note is not present anymore, we already shot or don't have the note anymore.
+    // This means we exit out of this command.
     return timer.hasElapsed(timeToWait) || !notePresent;
   }
 

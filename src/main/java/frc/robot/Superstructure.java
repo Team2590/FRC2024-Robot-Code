@@ -25,6 +25,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
+import frc.robot.util.Tracer;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -366,7 +367,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void primeShooter() {
-    System.out.println("-- primingShooter");
+    Tracer.trace("Priming Shooter");
     shooter.shoot(flywheelSpeedInput.get());
     arm.setPosition(
         armInterpolation.getValue(
