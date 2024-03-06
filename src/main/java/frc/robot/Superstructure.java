@@ -103,7 +103,7 @@ public class Superstructure {
         conveyor.setStopped();
         shooter.setStopped();
         // arm.setStopped();
-        led.setNemesis(true);
+        led.setRGB(255, 0, 0);
         break;
       case RESET:
         /*

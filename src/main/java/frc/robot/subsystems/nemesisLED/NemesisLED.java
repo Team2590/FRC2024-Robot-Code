@@ -209,12 +209,36 @@ public class NemesisLED extends SubsystemBase {
    *
    * @param secondaryWhite - secondary color; true for white, false for black
    */
-  public void setNemesis(boolean secondaryWhite) {
+  public void setNemesisGradient(boolean secondaryWhite) {
     // white secondary
     if (secondaryWhite) {
       for (int i = 0; i < ledBuffer.getLength(); i++) {
         int hue = (int) (255 * (Math.abs((i % 20) - 10) / 10.0));
-        ledBuffer.setRGB(i, 255, hue, hue);
+        ledBuffer.setRGB(i, hue, 255, hue);
+      }
+      // black secondary
+    } else {
+      for (int i = 0; i < ledBuffer.getLength(); i++) {
+        int hue = (int) (255 * (Math.abs((i % 20) - 10) / 10.0));
+        ledBuffer.setRGB(i, hue, 0, 0);
+      }
+    }
+    led.setData(ledBuffer);
+  }
+
+  /**
+   * Hoist the colors.
+   *
+   * <p>A gradient between red and either white or black
+   *
+   * @param secondaryWhite - secondary color; true for white, false for black
+   */
+  public void setNemesis(boolean secondaryWhite) {
+    // white secondary
+    if (secondaryWhite) {
+      for (int i = 0; i < ledBuffer.getLength(); i++) {
+        int hue = i % 3 == 0 ? 255 : 0;
+        ledBuffer.setRGB(i, hue, 255, hue);
       }
       // black secondary
     } else {
