@@ -50,7 +50,7 @@ public class Conveyor extends SubsystemBase {
         break;
       case INTAKE:
         if (inputs.hasNote) {
-          io.stop();
+          state = ConveyorStates.STOPPED;
         } else {
           io.runPower(conveyorSpeed);
         }

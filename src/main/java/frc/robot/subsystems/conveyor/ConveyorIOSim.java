@@ -4,6 +4,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.AnalogInputSim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants.ConveyorConstants;
+import frc.robot.util.LoggedTunableNumber;
 
 /**
  * IO class for a simulated conveyor subsystem
@@ -18,6 +19,8 @@ public class ConveyorIOSim implements ConveyorIO {
   private final AnalogInputSim intakeProxSim = new AnalogInputSim(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInputSim shooterProxSim =
       new AnalogInputSim(ConveyorConstants.SHOOTER_PROX_ID);
+  
+      LoggedTunableNumber proxThreshold = new LoggedTunableNumber("Conveyor/threshold", 1);
 
   @Override
   public void updateInputs(ConveyorIOInputs inputs) {
@@ -46,7 +49,7 @@ public class ConveyorIOSim implements ConveyorIO {
    * @return if something is detected
    */
   private boolean detectedIntakeSide() {
-    return intakeProxSim.getVoltage() > ConveyorConstants.INTAKE_PROX_THRESHOLD;
+    return intakeProxSim.getVoltage() > proxThreshold.get();
   }
 
   /**
@@ -55,7 +58,7 @@ public class ConveyorIOSim implements ConveyorIO {
    * @return if something is detected
    */
   private boolean detectedShooterSide() {
-    return shooterProxSim.getVoltage() > ConveyorConstants.SHOOTER_PROX_THRESHOLD;
+    return shooterProxSim.getVoltage() > proxThreshold.get();
   }
 
   /**

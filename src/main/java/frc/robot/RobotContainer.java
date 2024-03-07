@@ -179,7 +179,7 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
-    if (input.leftJoystickTrigger()) {
+    if (input.leftJoystickButton(0)) {
       if (teleopSpeaker) {
         CommandScheduler.getInstance()
             .schedule(
@@ -193,9 +193,9 @@ public class RobotContainer {
       } else {
         superstructure.scoreAmp();
       }
-    } else if (input.rightJoystickTrigger()) {
+    } else if (input.leftJoystickButton(1)) {
       superstructure.intake();
-    } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
+    } else if (PhotonNoteRunnable.target != null && input.leftJoystickButton(2)) {
       // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
@@ -205,22 +205,22 @@ public class RobotContainer {
                       () -> -input.leftJoystickX(),
                       PhotonNoteRunnable.target::getYaw)
                   .until(() -> input.rightJoystickButton(2)));
-    } else if (input.rightJoystickButton(11)) {
+    } else if (input.leftJoystickButton(3)) {
       // manual arm w climb DOESNT WORK
       superstructure.climb();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
-    } else if (input.leftJoystickPOV() == 180) {
+    } else if (input.leftJoystickButton(4)) {
       superstructure.subwooferShot();
-    } else if (input.rightJoystickPOV() == 180) {
+    } else if (input.leftJoystickButton(5)) {
       // spit
       superstructure.outtake();
-    } else if (input.rightJoystickButton(3)) {
+    } else if (input.leftJoystickButton(6)) {
       // highkey does not work rn
       teleopSpeaker = false;
       input.setOperatorRumble(0);
       superstructure.primeAmp();
-    } else if (input.leftJoystickButton(4)) {
+    } else if (input.leftJoystickButton(7)) {
       superstructure.climb();
     } else {
       teleopSpeaker = true;

@@ -53,6 +53,12 @@ public class Superstructure {
     ARM_CLIMB
   }
 
+  public static enum Target {
+    SPEAKER,
+    AMP,
+    TRAP
+  }
+
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private final Conveyor conveyor;
   private final Intake intake;
@@ -61,6 +67,7 @@ public class Superstructure {
   private final Climb climb;
   private final NemesisLED led;
   public boolean readyToShoot = false;
+  private Target target;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
@@ -78,6 +85,7 @@ public class Superstructure {
     this.arm = arm;
     this.climb = climb;
     this.led = led;
+    this.target = Target.SPEAKER;
     climb.resetRotationCount();
 
     final double[] distance = {
@@ -100,7 +108,7 @@ public class Superstructure {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
-        // arm.setStopped();
+        arm.setStopped();
         break;
       case RESET:
         /*
@@ -116,13 +124,22 @@ public class Superstructure {
          */
         // arm.setPosition();
         // Anthony added this condition
-        if (!conveyor.hasNote()) {
+        if (this.target == Target.SPEAKER) {
+          if (conveyor.hasNote()) {
+            intake.setStopped();
+          } else {
+            shooter.setStopped();
+            arm.setHome();
+          }
+        } else if (this.target == Target.AMP) {
           shooter.setStopped();
+          if (conveyor.hasNote()) {
+            intake.setStopped();
+            // runConveyor();
+          } else {
+            arm.setHome();
+          }
         }
-        intake.setStopped();
-        conveyor.setStopped();
-        climb.setStopped();
-        arm.setHome();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -136,12 +153,12 @@ public class Superstructure {
          */
 
         // if (arm.getState() == ArmStates.HOME) {
-        if (arm.getState() == ArmStates.HOME) {
+        // if (arm.getState() == ArmStates.HOME) {
           intake.setIntake();
           conveyor.setIntaking();
-        } else {
-          arm.setHome();
-        }
+        // } else {
+          // arm.setHome();
+        // }
 
         if (conveyor.hasNote()) {
           intake.setStopped();
@@ -366,7 +383,7 @@ public class Superstructure {
   }
 
   public void runConveyor() {
-    conveyor.setManual(.25);
+    conveyor.setManual(.1);
     ;
   }
 
@@ -388,5 +405,9 @@ public class Superstructure {
 
   public Flywheel getShooter() {
     return shooter;
+  }
+
+  public void setTarget(Target tar) {
+    this.target = tar;
   }
 }
