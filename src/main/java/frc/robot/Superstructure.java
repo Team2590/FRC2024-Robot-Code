@@ -38,6 +38,9 @@ public class Superstructure extends SubsystemBase {
     DISABLED,
     RESET,
     IDLE,
+    IDLE_INTAKING,
+    IDLE_AMP,
+    IDLE_PRIMING,
     INTAKE,
     OUTTAKE,
     MANUAL_ARM,
@@ -53,8 +56,16 @@ public class Superstructure extends SubsystemBase {
     SCORE_TRAP,
     ARM_CLIMB
   }
+private static enum IDLE_STATES {
+  INTAKE,
+  AMP,
+  TRAP,
+  DEFAULT
+}
+
 
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
+  private IDLE_STATES idleState = IDLE_STATES.DEFAULT;
   private final Conveyor conveyor;
   private final Intake intake;
   private final Flywheel shooter;
@@ -129,6 +140,15 @@ public class Superstructure extends SubsystemBase {
           arm.setHome();
         }
         break;
+      case IDLE_INTAKING:
+          if (conveyor.hasNote()){
+            idleState = IDLE_STATES.DEFAULT;
+            intake.setStopped();
+          }
+        break;
+      case IDLE_AMP:
+        
+        break;
       case MANUAL_ARM:
         arm.manual(pwr);
         break;
@@ -141,11 +161,8 @@ public class Superstructure extends SubsystemBase {
          */
 
         // if (arm.getState() == ArmStates.HOME) {
-        if (conveyor.hasNote()) {
-          intake.setStopped();
-          break;
-        }
         if (arm.getState() == ArmStates.HOME) {
+          idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
           conveyor.setIntaking();
         } else {
@@ -229,6 +246,7 @@ public class Superstructure extends SubsystemBase {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
+        idleState = IDLE_STATES.AMP;
         arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
@@ -239,8 +257,10 @@ public class Superstructure extends SubsystemBase {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
+          if (!conveyor.hasNote()){
+            idleState = IDLE_STATES.DEFAULT;
+          }
         }
-
         break;
       case SCORE_TRAP:
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
@@ -276,7 +296,13 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void idle() {
-    systemState = SuperstructureStates.IDLE;
+    if (idleState == IDLE_STATES.INTAKE){
+      systemState = SuperstructureStates.IDLE_INTAKING;
+    } else if (idleState == IDLE_STATES.AMP){
+      systemState = SuperstructureStates.IDLE_AMP;
+    } else {
+      systemState = SuperstructureStates.IDLE;
+    }
   }
 
   public void intake() {
