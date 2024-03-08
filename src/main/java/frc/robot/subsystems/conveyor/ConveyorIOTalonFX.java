@@ -20,7 +20,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
       new TalonFX(Constants.ConveyorConstants.FEEDER_ID, Constants.CANBUS);
   private final TalonFX diverterMotor =
       new TalonFX(ConveyorConstants.DIVRETER_ID, Constants.CANBUS);
-  private final AnalogInput intakeProx = new AnalogInput(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInput shooterProx = new AnalogInput(ConveyorConstants.SHOOTER_PROX_ID);
 
   private final StatusSignal<Double> feederVelocity = feederMotor.getVelocity();
@@ -62,8 +61,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
         diverterVelocity,
         diverterAppliedVolts,
         diverterCurrent);
-    inputs.detectedIntakeSide = detectedIntakeSide();
-    inputs.intakeProxVolts = intakeProx.getVoltage();
     inputs.detectedShooterSide = detectedShooterSide();
     inputs.shooterProxVolts = shooterProx.getVoltage();
     inputs.hasNote = noteInConveyor();
@@ -99,10 +96,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
    *
    * @return if something is detected
    */
-  private boolean detectedIntakeSide() {
-    return intakeProx.getVoltage() > ConveyorConstants.INTAKE_PROX_THRESHOLD;
-  }
-
   /**
    * Checks if there is something detected by the shooter side prox sensor
    *
