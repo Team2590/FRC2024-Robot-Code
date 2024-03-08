@@ -118,6 +118,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
    * @return if there is a note in resting pos
    */
   private boolean noteInConveyor() {
-    return detectedIntakeSide() && detectedShooterSide();
+    return detectedShooterSide();
   }
 }
