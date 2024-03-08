@@ -36,6 +36,7 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
+  public static final String DRIVE_CANBUS = "";
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);
 
   public final class FieldConstants {
