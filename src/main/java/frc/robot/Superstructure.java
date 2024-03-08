@@ -109,6 +109,9 @@ private static enum IDLE_STATES {
   /** This is where you would call all of the periodic functions of the subsystems. */
   @Override
   public void periodic() {
+    if (intake.detectNote()) {
+      led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
+    }
     switch (systemState) {
       case DISABLED:
         // stop
@@ -178,11 +181,6 @@ private static enum IDLE_STATES {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
-
-        if (intake.detectNote()) {
-          led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
-        }
-
         break;
       case OUTTAKE:
         /*
