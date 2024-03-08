@@ -92,11 +92,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   }
 
   /**
-   * Checks if there is something detected by the intake side prox sensor
-   *
-   * @return if something is detected
-   */
-  /**
    * Checks if there is something detected by the shooter side prox sensor
    *
    * @return if something is detected
