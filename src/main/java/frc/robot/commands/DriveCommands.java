@@ -193,7 +193,7 @@ public class DriveCommands {
         xSupplier,
         ySupplier,
         () -> {
-          return Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10;
+          return (Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10) % (2 * Math.PI);
         });
   }
 }
