@@ -116,26 +116,14 @@ public class Conveyor extends SubsystemBase {
     return state;
   }
 
-  /**
-   * Checks if there is something detected by the intake side prox sensor
-   *
-   * @return if something is detected
-   */
-  public boolean detectedIntakeSide() {
-    return inputs.detectedShooterSide;
-  }
 
-  /**
-   * Checks if there is something detected by the shooter side prox sensor
-   *
-   * @return if something is detected
-   */
+
   public boolean detectedShooterSide() {
     return inputs.detectedShooterSide;
   }
 
   /**
-   * Uses the two prox sensors to determine if there is a note being stowed
+   * Uses the prox sensor to determine if there is a note being stowed
    *
    * @return if there is a note in resting pos
    */

@@ -15,14 +15,11 @@ public class ConveyorIOSim implements ConveyorIO {
   // movement is not that important)
   private final DCMotorSim feederSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
   private final DCMotorSim diverterSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
-  private final AnalogInputSim intakeProxSim = new AnalogInputSim(ConveyorConstants.INTAKE_PROX_ID);
   private final AnalogInputSim shooterProxSim =
       new AnalogInputSim(ConveyorConstants.SHOOTER_PROX_ID);
 
   @Override
   public void updateInputs(ConveyorIOInputs inputs) {
-    inputs.detectedIntakeSide = detectedIntakeSide();
-    inputs.intakeProxVolts = intakeProxSim.getVoltage();
     inputs.detectedShooterSide = detectedShooterSide();
     inputs.shooterProxVolts = shooterProxSim.getVoltage();
     inputs.hasNote = noteInConveyor();
@@ -41,15 +38,6 @@ public class ConveyorIOSim implements ConveyorIO {
   }
 
   /**
-   * Checks if there is something detected by the intake side prox sensor
-   *
-   * @return if something is detected
-   */
-  private boolean detectedIntakeSide() {
-    return intakeProxSim.getVoltage() > ConveyorConstants.INTAKE_PROX_THRESHOLD;
-  }
-
-  /**
    * Checks if there is something detected by the shooter side prox sensor
    *
    * @return if something is detected
@@ -59,11 +47,11 @@ public class ConveyorIOSim implements ConveyorIO {
   }
 
   /**
-   * Uses the two prox sensors to determine if there is a note being stowed
+   * Uses the prox sensor to determine if there is a note being stowed
    *
    * @return if there is a note in resting pos
    */
   private boolean noteInConveyor() {
-    return detectedIntakeSide() && detectedShooterSide();
+    return detectedShooterSide();
   }
 }
