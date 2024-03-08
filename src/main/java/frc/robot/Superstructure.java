@@ -125,6 +125,7 @@ private static enum IDLE_STATES {
         shooter.setStopped();
         arm.setHome();
         climb.setStopped();
+        idleState = IDLE_STATES.DEFAULT;
         break;
 
       case IDLE:
@@ -143,11 +144,14 @@ private static enum IDLE_STATES {
       case IDLE_INTAKING:
           if (conveyor.hasNote()){
             idleState = IDLE_STATES.DEFAULT;
-            intake.setStopped();
+            // intake.setStopped();
           }
         break;
       case IDLE_AMP:
-        
+        // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
+        if (!conveyor.hasNote()) {
+          idleState = IDLE_STATES.DEFAULT;
+        }
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -169,7 +173,6 @@ private static enum IDLE_STATES {
           arm.setHome();
         }
         break;
-
       case OUTTAKE:
         /*
          * OUTTAKE (On left Driver trigger)
@@ -192,7 +195,6 @@ private static enum IDLE_STATES {
         // Don't need any transition here, we want to stay in this state
         // until SHOOT is called.
         break;
-
       case PRIMED_SHOOTER:
         /*
          * PRIMED_SHOOTER
@@ -216,11 +218,19 @@ private static enum IDLE_STATES {
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
             conveyor.setShooting();
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
+            if (!conveyor.hasNote()){
+              idleState = IDLE_STATES.DEFAULT;
+            }
           }
         } else {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
+            if (!conveyor.hasNote()){
+              idleState = IDLE_STATES.DEFAULT;
+            }
           }
         }
 
@@ -237,6 +247,7 @@ private static enum IDLE_STATES {
         shooter.shoot(flywheelSpeedInput.get());
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
+          idleState = IDLE_STATES.DEFAULT;
         }
         break;
 
@@ -266,6 +277,7 @@ private static enum IDLE_STATES {
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
+          idleState = IDLE_STATES.DEFAULT;
         }
         break;
       case ARM_CLIMB:
