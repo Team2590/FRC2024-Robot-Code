@@ -8,14 +8,12 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ConveyorIO {
   @AutoLog
   public static class ConveyorIOInputs {
-    public boolean detectedIntakeSide = false;
     public boolean detectedShooterSide = false;
     public boolean hasNote = false;
     public double diverterRPM = 0;
     public double feederRPM = 0;
     public double diverterVolts = 0;
     public double feederVolts = 0;
-    public double intakeProxVolts = 0.0;
     public double shooterProxVolts = 0.0;
     public double[] currentAmps = new double[] {};
   }
