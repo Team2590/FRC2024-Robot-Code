@@ -117,7 +117,6 @@ public class Conveyor extends SubsystemBase {
   }
 
   /**
-   * Checks if there is something detected by the intake side prox sensor
    *
    * @return if something is detected
    */
@@ -132,7 +131,7 @@ public class Conveyor extends SubsystemBase {
   }
 
   /**
-   * Uses the two prox sensors to determine if there is a note being stowed
+   * Uses the prox sensor to determine if there is a note being stowed
    *
    * @return if there is a note in resting pos
    */
