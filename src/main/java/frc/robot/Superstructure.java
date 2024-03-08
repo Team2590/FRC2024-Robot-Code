@@ -13,6 +13,8 @@ package frc.robot;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -147,6 +149,11 @@ public class Superstructure {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
+
+        if (intake.detectNote()) {
+          led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
+        }
+
         break;
 
       case OUTTAKE:

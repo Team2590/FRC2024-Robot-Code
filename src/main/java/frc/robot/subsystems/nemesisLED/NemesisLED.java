@@ -3,6 +3,7 @@ package frc.robot.subsystems.nemesisLED;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LEDConstants;
 
 /**
  * Controls the LEDs. States: OFF, SOLID, FLASH (between white and other), ALTERNATE, CYCLE,
@@ -82,42 +83,33 @@ public class NemesisLED extends SubsystemBase {
     led.setData(ledBuffer);
   }
 
-  public enum Color {
-    Red(255, 0, 0),
-    Orange(255, 165, 0),
-    Yellow(255, 255, 0),
-    Green(0, 255, 0),
-    Blue(0, 0, 255),
-    Violet(238, 138, 238);
-
-    public final int r;
-    public final int g;
-    public final int b;
-
-    private Color(int r, int g, int b) {
-      this.r = r;
-      this.g = g;
-      this.b = b;
-    }
-  }
-
-  public void setColor(Color color) {
+  public void setColor(LEDConstants.Colors color) {
     setRGB(color.r, color.g, color.b);
   }
 
-  private int t = 0;
+  private int candyCaneFlowTime = 0;
   private final int buffer = 10;
 
   public void setCandyCaneFlow() {
-    t += 0.2;
+    candyCaneFlowTime += 0.2;
     for (var i = 0; i < ledBuffer.getLength(); i++) {
-      if ((i + t) % buffer > buffer / 2) {
+      if ((i + candyCaneFlowTime) % buffer > buffer / 2) {
         ledBuffer.setRGB(i, 0, 255, 0);
       } else {
         ledBuffer.setRGB(i, 255, 255, 255);
       }
     }
     led.setData(ledBuffer);
+  }
+
+  private int blinkingTime = 0;
+  public void setBlinking(LEDConstants.Colors color) {
+    if (blinkingTime % 10 == 0) {
+      setColor(color);
+    } else {
+      off();
+    }
+    blinkingTime += 1;
   }
 
   public void off() {
