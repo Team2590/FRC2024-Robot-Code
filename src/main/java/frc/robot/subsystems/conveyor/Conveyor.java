@@ -121,9 +121,6 @@ public class Conveyor extends SubsystemBase {
    *
    * @return if something is detected
    */
-  public boolean detectedIntakeSide() {
-    return inputs.detectedShooterSide;
-  }
 
   /**
    * Checks if there is something detected by the shooter side prox sensor

@@ -106,7 +106,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   }
 
   /**
-   * Uses the  prox sensor to determine if there is a note being stowed
+   * Uses the prox sensor to determine if there is a note being stowed
    *
    * @return if there is a note in resting pos
    */
