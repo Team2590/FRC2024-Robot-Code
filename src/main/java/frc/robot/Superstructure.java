@@ -369,11 +369,11 @@ public class Superstructure extends SubsystemBase {
   public void primeShooter() {
     Tracer.trace("Priming Shooter");
     shooter.shoot(flywheelSpeedInput.get());
-    arm.setPosition(
-        armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToTarget(
-                    Constants.FieldConstants.Targets.SPEAKER))
-            + offset.get());
+    if (note_present()) {
+      Tracer.trace("note_present, so setting priming arm position");
+      arm.setPosition(
+          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget()) + offset.get());
+    }
   }
 
   // public void clearNotes() {
