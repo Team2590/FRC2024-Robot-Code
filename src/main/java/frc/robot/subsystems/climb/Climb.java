@@ -27,6 +27,15 @@ public class Climb extends SubsystemBase {
     }
   }
 
+  public void autoFlip() {
+    run();
+    if (io.getRotationCount() < -11) {
+      io.stop();
+    } else {
+      autoFlip();
+    }
+  }
+
   public void resetRotationCount() {
     io.resetRotationCount();
   }
