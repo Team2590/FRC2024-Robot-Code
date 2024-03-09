@@ -23,7 +23,7 @@ import frc.robot.util.LoggedTunableNumber;
  */
 public class ArmIOTalonFX implements ArmIO {
 
-  TalonFX arm = new TalonFX(Constants.ArmConstants.ARM, Constants.CANBUS);
+  TalonFX arm = new TalonFX(Constants.ArmConstants.ARM);
   CANcoder armCancoder = new CANcoder(Constants.ArmConstants.ARM_CANCODER_ID, Constants.CANBUS);
   LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", 16);
   LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", 0);
