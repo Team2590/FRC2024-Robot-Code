@@ -222,6 +222,8 @@ public class RobotContainer {
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
+    } else if (input.controllerLeftBumperPressed()) {
+      superstructure.flip();
     } else {
       teleopSpeaker = true;
       superstructure.idle();

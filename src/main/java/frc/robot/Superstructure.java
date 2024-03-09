@@ -257,7 +257,7 @@ public class Superstructure {
         climb.run();
         break;
       case FLIPPING:
-        climb.flip();
+        climb.autoFlip();
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());
