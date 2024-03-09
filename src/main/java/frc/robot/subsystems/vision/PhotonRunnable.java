@@ -65,7 +65,7 @@ public class PhotonRunnable implements Runnable {
     if (photonPoseEstimator != null && photonCamera != null) {
       photonResults = photonCamera.getLatestResult();
       var timestamp = photonResults.getTimestampSeconds();
-      if (photonResults.hasTargets()) {
+      if (photonResults.hasTargets() && photonResults.targets.size() > 1) {
         if (photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
           for (PhotonTrackedTarget target : photonResults.getTargets()) {
             if (DriverStation.getAlliance().isPresent()
@@ -79,8 +79,7 @@ public class PhotonRunnable implements Runnable {
                       AprilTag.getTagPose(target.getFiducialId()));
             }
           }
-          if (photonResults.targets.size() > 1
-              || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
+          if (photonResults.targets.size() > 1) {
             photonPoseEstimator
                 .update(photonResults)
                 .ifPresent(

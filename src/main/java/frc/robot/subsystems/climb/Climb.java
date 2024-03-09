@@ -16,7 +16,7 @@ public class Climb extends SubsystemBase {
   }
 
   public void run() {
-    io.setVoltage(6);
+    io.setVoltage(4);
   }
 
   public void flip() {

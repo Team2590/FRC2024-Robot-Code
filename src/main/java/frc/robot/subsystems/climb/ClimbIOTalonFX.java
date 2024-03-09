@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimbConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ClimbIOTalonFX implements ClimbIO {
   private final TalonFX leader = new TalonFX(24);
@@ -25,6 +26,8 @@ public class ClimbIOTalonFX implements ClimbIO {
   @Override
   public void updateInputs(ClimbIOInputs inputs) {
     inputs.positionRotations = getRotationCount();
+    Logger.recordOutput("Arm/LeaderPosition", getLeaderRotationCount());
+    Logger.recordOutput("Arm/FollowerPosition", getFollowerRotationCount());
   }
 
   @Override
@@ -35,14 +38,14 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   @Override
   public void setVoltage(double voltage) {
-    if (Math.abs(Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower)))
+    if (Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower))
         > ClimbConstants.TOLERANCE) {
       follower.setControl(new VoltageOut(-voltage));
-      leader.setControl(new VoltageOut(voltage / 2));
-    } else if (Math.abs(Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader)))
+      leader.setControl(new VoltageOut(voltage / 4));
+    } else if (Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader))
         > ClimbConstants.TOLERANCE) {
       leader.setControl(new VoltageOut(voltage));
-      follower.setControl(new VoltageOut(-voltage / 2));
+      follower.setControl(new VoltageOut(-voltage / 4));
     } else {
       leader.setControl(new VoltageOut(voltage));
       follower.setControl(new VoltageOut(-voltage));
@@ -56,6 +59,14 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   public double getRotationCount() {
     return leader.getPosition().getValueAsDouble();
+  }
+
+  public double getLeaderRotationCount() {
+    return leader.getPosition().getValueAsDouble();
+  }
+
+  public double getFollowerRotationCount() {
+    return follower.getPosition().getValueAsDouble();
   }
 
   private double getRotationCount(TalonFX motor) {

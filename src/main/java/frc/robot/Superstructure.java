@@ -357,7 +357,11 @@ public class Superstructure extends SubsystemBase {
     if (note_present()) {
       Tracer.trace("note_present, so setting priming arm position");
       arm.setPosition(
-          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget()) + offset.get());
+          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
+              + offset.get());
+    } else {
+
+      intake();
     }
   }
 

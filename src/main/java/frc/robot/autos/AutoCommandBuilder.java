@@ -48,12 +48,12 @@ public class AutoCommandBuilder {
   public AutoCommandBuilder followPath(String pathName) {
     commands.addCommands(
         trace("FollowPath:" + pathName),
-        Commands.parallel(
-            paths.getFollowPathCommand(pathName),
-            Commands.either(
-                trace("Note Present, not starting Intake"),
-                new IntakeCommand(superstructure, 1.0),
-                () -> superstructure.note_present())));
+        // Commands.parallel(
+        paths.getFollowPathCommand(pathName));
+    // Commands.either(
+    //     trace("Note Present, not starting Intake"),
+    //     new IntakeCommand(superstructure, 1.0),
+    //     () -> superstructure.note_present())));
     return this;
   }
 
@@ -63,10 +63,14 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
+    return shoot(snapToSpeaker, 1.2);
+  }
+
+  public AutoCommandBuilder shoot(boolean snapToSpeaker, double waitTime) {
     if (snapToSpeaker) {
       commands.addCommands(new SnapToTargetCommand(drive, () -> 0, () -> 0, Targets.SPEAKER, 1.0));
     }
-    commands.addCommands(new ShootCommand(superstructure, 1.0));
+    commands.addCommands(new ShootCommand(superstructure, waitTime));
     return this;
   }
 

@@ -182,14 +182,25 @@ public class AutoRoutines {
     String pathToUseForResettingPose = instructions[0];
     builder.resetPoseUsingPath(pathToUseForResettingPose);
 
+    boolean isFirstShoot = true;
     for (int i = 1; i < instructions.length; i++) {
       String instruction = instructions[i];
       switch (instruction) {
         case SHOOT:
-          builder.shoot(false);
-          break;
+          // builder.shoot(false);
+          // if (i == 1) {
+
+          // }
+          // break;
         case SNAP_SHOOT:
-          builder.shoot(true);
+          if (isFirstShoot) {
+            // This is the first shoot command
+            builder.shoot(true, 1.5d);
+            isFirstShoot = false;
+          } else {
+            builder.shoot(true);
+          }
+
           break;
         case INTAKE:
           // intake automatically starts up after shoot but just in case if we need it.

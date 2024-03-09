@@ -73,7 +73,7 @@ public class Drive extends SubsystemBase {
   LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
-      new LoggedTunableNumber("SnapController/tolerance", .1);
+      new LoggedTunableNumber("SnapController/tolerance", .05);
 
   LoggedTunableNumber noteControllerP = new LoggedTunableNumber("NoteController/kP", .44);
   LoggedTunableNumber noteControllerD = new LoggedTunableNumber("NoteController/kD", .00001);
