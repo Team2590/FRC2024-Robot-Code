@@ -42,7 +42,7 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    boolean notePresent = superstructure.getConveyor().detectedShooterSide();
+    boolean notePresent = superstructure.note_present();
     Tracer.trace("ShootCommand.isFinished(), notePresent:" + notePresent);
     // If the note is not present anymore, we already shot or don't have the note anymore.
     // This means we exit out of this command.
