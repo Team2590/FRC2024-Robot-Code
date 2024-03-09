@@ -65,7 +65,7 @@ public class Superstructure {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
+      new LoggedTunableNumber("Flywheel/Flywheel Speed"); // 2300
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -88,7 +88,11 @@ public class Superstructure {
       .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
       .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
     };
-
+    if (Constants.currentMode == Constants.Mode.REAL) {
+      flywheelSpeedInput.initDefault(2300);
+    } else {
+      flywheelSpeedInput.initDefault(500);
+    }
     armInterpolation = new LookupTable(distance, armSetpoint);
   }
 
