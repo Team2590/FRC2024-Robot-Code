@@ -14,7 +14,6 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -58,13 +57,13 @@ public class Superstructure extends SubsystemBase {
     SCORE_TRAP,
     ARM_CLIMB
   }
-private static enum IDLE_STATES {
-  INTAKE,
-  AMP,
-  TRAP,
-  DEFAULT
-}
 
+  private static enum IDLE_STATES {
+    INTAKE,
+    AMP,
+    TRAP,
+    DEFAULT
+  }
 
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
   private IDLE_STATES idleState = IDLE_STATES.DEFAULT;
@@ -109,8 +108,12 @@ private static enum IDLE_STATES {
   /** This is where you would call all of the periodic functions of the subsystems. */
   @Override
   public void periodic() {
-    if (intake.detectNote()) {
-      led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
+    // if (intake.detectNote()) {
+    //   led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
+    if (conveyor.hasNote()) {
+      led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+    } else {
+      led.setColor(LEDConstants.Colors.Blue);
     }
     switch (systemState) {
       case DISABLED:
@@ -139,7 +142,7 @@ private static enum IDLE_STATES {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         climb.setStopped();
-        if (conveyor.hasNote()){
+        if (conveyor.hasNote()) {
           intake.setStopped();
         } else {
           shooter.setStopped();
@@ -147,13 +150,14 @@ private static enum IDLE_STATES {
         }
         break;
       case IDLE_INTAKING:
-          if (conveyor.hasNote()){
-            idleState = IDLE_STATES.DEFAULT;
-            // intake.setStopped();
-          }
+        if (conveyor.hasNote()) {
+          idleState = IDLE_STATES.DEFAULT;
+          // intake.setStopped();
+        }
         break;
       case IDLE_AMP:
-        // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
+        // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+        // appropriate
         if (!conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
         }
@@ -201,6 +205,9 @@ private static enum IDLE_STATES {
          * Run flywheel at desired velocity. Useful in auto routines.
          */
         shooter.shoot(flywheelSpeedInput.get());
+        arm.setPosition(
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
+                + offset.get());
         // Don't need any transition here, we want to stay in this state
         // until SHOOT is called.
         break;
@@ -211,7 +218,8 @@ private static enum IDLE_STATES {
          * adjust
          */
         // arm.getState() != ArmStates.AT_SETPOINT
-        if (shooter.getState() != ShooterStates.AT_SETPOINT) {
+        if (shooter.getState() != ShooterStates.AT_SETPOINT
+            || arm.getState() != ArmStates.AT_SETPOINT) {
           systemState = SuperstructureStates.PRIMING_SHOOTER;
         }
         break;
@@ -227,8 +235,9 @@ private static enum IDLE_STATES {
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
             conveyor.setShooting();
-            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
-            if (!conveyor.hasNote()){
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+            // appropriate
+            if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
             }
           }
@@ -236,8 +245,9 @@ private static enum IDLE_STATES {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
-            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be appropriate
-            if (!conveyor.hasNote()){
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+            // appropriate
+            if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
             }
           }
@@ -277,7 +287,7 @@ private static enum IDLE_STATES {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
-          if (!conveyor.hasNote()){
+          if (!conveyor.hasNote()) {
             idleState = IDLE_STATES.DEFAULT;
           }
         }
@@ -317,9 +327,9 @@ private static enum IDLE_STATES {
   }
 
   public void idle() {
-    if (idleState == IDLE_STATES.INTAKE){
+    if (idleState == IDLE_STATES.INTAKE) {
       systemState = SuperstructureStates.IDLE_INTAKING;
-    } else if (idleState == IDLE_STATES.AMP){
+    } else if (idleState == IDLE_STATES.AMP) {
       systemState = SuperstructureStates.IDLE_AMP;
     } else {
       systemState = SuperstructureStates.IDLE;
@@ -337,6 +347,8 @@ private static enum IDLE_STATES {
   public void primeShooter() {
     System.out.println("-- primingShooter");
     shooter.shoot(flywheelSpeedInput.get());
+    arm.setPosition(
+        armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget()) + offset.get());
   }
 
   // public void clearNotes() {

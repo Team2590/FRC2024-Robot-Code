@@ -16,10 +16,8 @@ import frc.robot.Constants.ConveyorConstants;
  */
 public class ConveyorIOTalonFX implements ConveyorIO {
   // motors + sensors
-  private final TalonFX feederMotor =
-      new TalonFX(Constants.ConveyorConstants.FEEDER_ID);
-  private final TalonFX diverterMotor =
-      new TalonFX(ConveyorConstants.DIVRETER_ID);
+  private final TalonFX feederMotor = new TalonFX(Constants.ConveyorConstants.FEEDER_ID);
+  private final TalonFX diverterMotor = new TalonFX(ConveyorConstants.DIVRETER_ID);
   private final AnalogInput shooterProx = new AnalogInput(ConveyorConstants.SHOOTER_PROX_ID);
 
   private final StatusSignal<Double> feederVelocity = feederMotor.getVelocity();

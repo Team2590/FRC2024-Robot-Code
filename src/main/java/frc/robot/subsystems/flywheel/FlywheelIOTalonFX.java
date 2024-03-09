@@ -30,8 +30,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final TalonFX leader = new TalonFX(Constants.ShooterConstants.LEADER);
-  private final TalonFX follower =
-      new TalonFX(Constants.ShooterConstants.FOLLOWER);
+  private final TalonFX follower = new TalonFX(Constants.ShooterConstants.FOLLOWER);
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();

@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -69,7 +68,7 @@ public class Intake extends SubsystemBase {
 
   public boolean detectNote() {
     if (intakeProx.getVoltage() > IntakeConstants.INTAKE_PROX_THRESHOLD) return true;
-    else return false; 
+    else return false;
   }
 
   public IntakeStates getState() {
