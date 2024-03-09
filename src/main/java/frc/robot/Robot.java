@@ -16,6 +16,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.autos.AutoCommandBuilder;
+import frc.robot.util.LocalADStarAK;
+
 import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -23,6 +25,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import com.pathplanner.lib.pathfinding.Pathfinding;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -67,6 +71,7 @@ public class Robot extends LoggedRobot {
         // if (usbDrive.exists()) {
         System.err.println("No USB found, not writing logs");
         Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        Pathfinding.setPathfinder(new LocalADStarAK());
         // }
         usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
@@ -75,6 +80,7 @@ public class Robot extends LoggedRobot {
       case SIM:
         // Running a physics simulator, log to NT
         Logger.addDataReceiver(new NT4Publisher());
+        Pathfinding.setPathfinder(new LocalADStarAK());
         break;
 
       case REPLAY:
