@@ -31,6 +31,10 @@ import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+
+
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
 
@@ -196,4 +200,13 @@ public class DriveCommands {
           return Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10;
         });
   }
+
+  //technically getpathconstrains 
+  public static Command flyToPose(Drive drive, Pose2d targetPose)
+  {
+    Command flyCommand = AutoBuilder.pathfindToPose(targetPose, drive.getPathConstraints(), 0.0);
+    return flyCommand;
+    
+  }
+
 }

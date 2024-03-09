@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants.Targets;
+import frc.robot.Constants.FieldConstants.Stage;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
@@ -222,7 +223,20 @@ public class RobotContainer {
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
-    } else {
+    } 
+    else if (input.leftJoystickButton(12)){
+      CommandScheduler.getInstance()
+        .schedule(DriveCommands.flyToPose(drive, Stage.centerChainA).until(() -> input.leftJoystickButton(12)));
+    }
+    else if (input.leftJoystickButton(13)){
+      CommandScheduler.getInstance()
+        .schedule(DriveCommands.flyToPose(drive, Stage.centerChainB).until(() -> input.leftJoystickButton(13)));
+    }
+    else if (input.leftJoystickButton(14)){
+      CommandScheduler.getInstance()
+        .schedule(DriveCommands.flyToPose(drive, Stage.centerChainC).until(() -> input.leftJoystickButton(14)));
+    }
+    else {
       teleopSpeaker = true;
       superstructure.idle();
     }
