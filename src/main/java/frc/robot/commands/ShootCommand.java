@@ -46,7 +46,7 @@ public class ShootCommand extends Command {
     Tracer.trace("ShootCommand.isFinished(), notePresent:" + notePresent);
     // If the note is not present anymore, we already shot or don't have the note anymore.
     // This means we exit out of this command.
-    return timer.hasElapsed(timeToWait) || !notePresent;
+    return timer.hasElapsed(timeToWait); // || !notePresent;
   }
 
   @Override

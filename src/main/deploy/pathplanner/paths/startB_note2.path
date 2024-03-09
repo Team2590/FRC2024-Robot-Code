@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.6456402107795283,
-        "y": 5.524942058890195
+        "x": 2.7190686223948486,
+        "y": 5.51
       },
       "prevControl": {
-        "x": 2.91240829115452,
-        "y": 5.544889178681714
+        "x": 2.9858367027698405,
+        "y": 5.529947119791519
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "note_1"
+      "linkedName": "endmidrootb"
     }
   ],
   "rotationTargets": [],
