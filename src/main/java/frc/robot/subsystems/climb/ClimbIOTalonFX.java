@@ -8,8 +8,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimbConstants;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX leader = new TalonFX(24, "Takeover");
-  private final TalonFX follower = new TalonFX(25, "Takeover");
+  private final TalonFX leader = new TalonFX(24);
+  private final TalonFX follower = new TalonFX(25);
   private final int tolerance = 5;
 
   public ClimbIOTalonFX() {

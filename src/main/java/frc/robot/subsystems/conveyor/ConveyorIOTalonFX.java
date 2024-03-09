@@ -16,11 +16,8 @@ import frc.robot.Constants.ConveyorConstants;
  */
 public class ConveyorIOTalonFX implements ConveyorIO {
   // motors + sensors
-  private final TalonFX feederMotor =
-      new TalonFX(Constants.ConveyorConstants.FEEDER_ID, Constants.CANBUS);
-  private final TalonFX diverterMotor =
-      new TalonFX(ConveyorConstants.DIVRETER_ID, Constants.CANBUS);
-  private final AnalogInput intakeProx = new AnalogInput(ConveyorConstants.INTAKE_PROX_ID);
+  private final TalonFX feederMotor = new TalonFX(Constants.ConveyorConstants.FEEDER_ID);
+  private final TalonFX diverterMotor = new TalonFX(ConveyorConstants.DIVRETER_ID);
   private final AnalogInput shooterProx = new AnalogInput(ConveyorConstants.SHOOTER_PROX_ID);
 
   private final StatusSignal<Double> feederVelocity = feederMotor.getVelocity();
@@ -62,8 +59,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
         diverterVelocity,
         diverterAppliedVolts,
         diverterCurrent);
-    inputs.detectedIntakeSide = detectedIntakeSide();
-    inputs.intakeProxVolts = intakeProx.getVoltage();
     inputs.detectedShooterSide = detectedShooterSide();
     inputs.shooterProxVolts = shooterProx.getVoltage();
     inputs.hasNote = noteInConveyor();
@@ -95,15 +90,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   }
 
   /**
-   * Checks if there is something detected by the intake side prox sensor
-   *
-   * @return if something is detected
-   */
-  private boolean detectedIntakeSide() {
-    return intakeProx.getVoltage() > ConveyorConstants.INTAKE_PROX_THRESHOLD;
-  }
-
-  /**
    * Checks if there is something detected by the shooter side prox sensor
    *
    * @return if something is detected
@@ -113,11 +99,11 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   }
 
   /**
-   * Uses the two prox sensors to determine if there is a note being stowed
+   * Uses the prox sensor to determine if there is a note being stowed
    *
    * @return if there is a note in resting pos
    */
   private boolean noteInConveyor() {
-    return detectedIntakeSide() && detectedShooterSide();
+    return detectedShooterSide();
   }
 }
