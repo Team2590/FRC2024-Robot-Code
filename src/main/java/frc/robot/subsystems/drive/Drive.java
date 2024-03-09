@@ -14,6 +14,7 @@
 package frc.robot.subsystems.drive;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -43,6 +44,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   private static final double MAX_LINEAR_SPEED = Units.feetToMeters(15.5);
+  private static final double MAX_LINEAR_ACCELERATION = Units.feetToMeters(3);
   private static final double TRACK_WIDTH_X = Units.inchesToMeters(18.75);
   private static final double TRACK_WIDTH_Y = Units.inchesToMeters(18.75);
   // Uncomment for Jynx
@@ -51,6 +53,11 @@ public class Drive extends SubsystemBase {
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
+  private static final double MAX_ANGULAR_ACCELERATION = MAX_ANGULAR_SPEED / DRIVE_BASE_RADIUS;
+  private static final PathConstraints constraints = new PathConstraints(MAX_LINEAR_SPEED, 
+                                                                MAX_LINEAR_ACCELERATION, 
+                                                               MAX_ANGULAR_SPEED, 
+                                                                MAX_ANGULAR_ACCELERATION);
 
   public static final Lock odometryLock = new ReentrantLock();
   private double[] lastModulePositionsMeters = new double[] {0.0, 0.0, 0.0, 0.0};
@@ -247,6 +254,7 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
+
   /** Runs forwards at the commanded voltage. */
   public void runCharacterizationVolts(double volts) {
     for (int i = 0; i < 4; i++) {
@@ -295,6 +303,17 @@ public class Drive extends SubsystemBase {
     return MAX_ANGULAR_SPEED;
   }
 
+  public double getMaxLinearAccelerationMetersPerSec(){
+    return MAX_LINEAR_ACCELERATION;
+  }
+
+  public double getMaxAngularAccelerationMetersPerSec(){
+    return MAX_ANGULAR_ACCELERATION;
+  }
+
+  public PathConstraints getPathConstraints(){
+    return constraints;
+  }
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
