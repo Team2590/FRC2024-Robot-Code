@@ -116,8 +116,6 @@ public class Conveyor extends SubsystemBase {
     return state;
   }
 
-
-
   public boolean detectedShooterSide() {
     return inputs.detectedShooterSide;
   }

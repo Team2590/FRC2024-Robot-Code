@@ -228,6 +228,10 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return operatorController.getPOV();
   }
 
+  public boolean controllerButton(int button) {
+    return operatorController.getRawButton(button);
+  }
+
   public void setOperatorRumble(double intensity) {
     operatorController.setRumble(RumbleType.kBothRumble, intensity);
   }

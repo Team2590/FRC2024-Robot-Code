@@ -220,7 +220,10 @@ public class RobotContainer {
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
+    } else if (input.controllerButton(7)) {
+      superstructure.resetRobot();
     } else {
+
       if (superstructure.getState() == SuperstructureStates.PRIMING_AMP
           || superstructure.getState() == SuperstructureStates.IDLE_AMP) {
         teleopSpeaker = false;

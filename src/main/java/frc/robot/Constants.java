@@ -124,13 +124,13 @@ public final class Constants {
     public static final int INTAKE_PROX_CHANNEL = 0;
     public static final double INTAKE_PROX_THRESHOLD = 0.19;
   }
-  
+
   public final class ClimbConstants {
     // max rotations = (distance/2pi*wheelRadius) * gearRatio
     public static final double MAX_ROTATIONS = -150;
-    public static final int TOLERANCE = 5;
+    public static final int TOLERANCE = 1;
   }
-  
+
   public final class LEDConstants {
     public static final Colors DETECT_NOTE_COLOR = Colors.Red;
 
@@ -140,21 +140,20 @@ public final class Constants {
       Yellow(255, 255, 0),
       Green(0, 255, 0),
       Blue(0, 0, 255),
-      Indigo(75,0,130),
+      Indigo(75, 0, 130),
       Violet(238, 138, 238),
       White(255, 255, 255);
-  
+
       public final int r;
       public final int g;
       public final int b;
-  
+
       private Colors(int r, int g, int b) {
         this.r = r;
         this.g = g;
         this.b = b;
       }
     }
-
   }
 
   public static enum Mode {

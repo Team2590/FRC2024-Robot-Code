@@ -154,6 +154,7 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.DEFAULT;
           // intake.setStopped();
         }
+        climb.setStopped();
         break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
@@ -161,6 +162,7 @@ public class Superstructure extends SubsystemBase {
         if (!conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
         }
+        climb.setStopped();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -338,6 +340,10 @@ public class Superstructure extends SubsystemBase {
 
   public void intake() {
     systemState = SuperstructureStates.INTAKE;
+  }
+
+  public void resetRobot() {
+    systemState = SuperstructureStates.RESET;
   }
 
   public boolean note_present() {
