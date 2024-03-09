@@ -28,11 +28,12 @@ public class Climb extends SubsystemBase {
   }
 
   public void autoFlip() {
-    run();
-    if (io.getRotationCount() < -11) {
-      io.stop();
-    } else {
+    System.out.println("Auto flip running");
+    if (io.getRotationCount() > -11) {
+      run();
       autoFlip();
+    } else {
+      io.stop();
     }
   }
 

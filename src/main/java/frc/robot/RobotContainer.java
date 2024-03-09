@@ -222,11 +222,13 @@ public class RobotContainer {
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
-    } else if (input.controllerLeftBumperPressed()) {
-      superstructure.flip();
     } else {
       teleopSpeaker = true;
       superstructure.idle();
+    }
+
+    if (input.controllerLeftBumper()) {
+      superstructure.flip();
     }
 
     // Logger.recordOutput("shoot speaker?", teleopSpeaker);
