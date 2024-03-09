@@ -12,7 +12,9 @@ package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -31,12 +33,15 @@ import org.littletonrobotics.junction.Logger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
   // TBD: declare variables to add subsystems into
   public static enum SuperstructureStates {
     DISABLED,
     RESET,
     IDLE,
+    IDLE_INTAKING,
+    IDLE_AMP,
+    IDLE_PRIMING,
     INTAKE,
     OUTTAKE,
     MANUAL_ARM,
@@ -53,7 +58,15 @@ public class Superstructure {
     ARM_CLIMB
   }
 
+  private static enum IDLE_STATES {
+    INTAKE,
+    AMP,
+    TRAP,
+    DEFAULT
+  }
+
   private SuperstructureStates systemState = SuperstructureStates.DISABLED;
+  private IDLE_STATES idleState = IDLE_STATES.DEFAULT;
   private final Conveyor conveyor;
   private final Intake intake;
   private final Flywheel shooter;
@@ -93,7 +106,15 @@ public class Superstructure {
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
+  @Override
   public void periodic() {
+    // if (intake.detectNote()) {
+    //   led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
+    if (conveyor.hasNote()) {
+      led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+    } else {
+      led.setColor(LEDConstants.Colors.Blue);
+    }
     switch (systemState) {
       case DISABLED:
         // stop
@@ -107,6 +128,12 @@ public class Superstructure {
          * TBD -- > Simmilar to IDLE state ?
          */
         // C:\Users\Nemesis\Documents\2024\FRC2024-Robot-Code\src\main\java\frc\robot\autos\StartPathCommand.java
+        intake.setStopped();
+        conveyor.setStopped();
+        shooter.setStopped();
+        arm.setHome();
+        climb.setStopped();
+        idleState = IDLE_STATES.DEFAULT;
         break;
 
       case IDLE:
@@ -114,15 +141,28 @@ public class Superstructure {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        // arm.setPosition();
-        // Anthony added this condition
-        if (!conveyor.hasNote()) {
-          shooter.setStopped();
-        }
-        intake.setStopped();
-        conveyor.setStopped();
         climb.setStopped();
-        arm.setHome();
+        if (conveyor.hasNote()) {
+          intake.setStopped();
+        } else {
+          shooter.setStopped();
+          arm.setHome();
+        }
+        break;
+      case IDLE_INTAKING:
+        if (conveyor.hasNote()) {
+          idleState = IDLE_STATES.DEFAULT;
+          // intake.setStopped();
+        }
+        climb.setStopped();
+        break;
+      case IDLE_AMP:
+        // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+        // appropriate
+        if (!conveyor.hasNote()) {
+          idleState = IDLE_STATES.DEFAULT;
+        }
+        climb.setStopped();
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -137,18 +177,17 @@ public class Superstructure {
 
         // if (arm.getState() == ArmStates.HOME) {
         if (arm.getState() == ArmStates.HOME) {
+          idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
           conveyor.setIntaking();
         } else {
           arm.setHome();
         }
-
         if (conveyor.hasNote()) {
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
         break;
-
       case OUTTAKE:
         /*
          * OUTTAKE (On left Driver trigger)
@@ -158,10 +197,9 @@ public class Superstructure {
          */
         arm.setHome();
         intake.setOutake();
-        // conveyor.setOuttaking();
         break;
       case HAS_NOTE:
-        // EMPTY STATE -- > "Helper Transition" to Speaker shooting || AMP/TRAP
+        intake.setStopped();
         break;
       case PRIMING_SHOOTER:
         /*
@@ -169,10 +207,12 @@ public class Superstructure {
          * Run flywheel at desired velocity. Useful in auto routines.
          */
         shooter.shoot(flywheelSpeedInput.get());
+        arm.setPosition(
+            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
+                + offset.get());
         // Don't need any transition here, we want to stay in this state
         // until SHOOT is called.
         break;
-
       case PRIMED_SHOOTER:
         /*
          * PRIMED_SHOOTER
@@ -180,7 +220,8 @@ public class Superstructure {
          * adjust
          */
         // arm.getState() != ArmStates.AT_SETPOINT
-        if (shooter.getState() != ShooterStates.AT_SETPOINT) {
+        if (shooter.getState() != ShooterStates.AT_SETPOINT
+            || arm.getState() != ArmStates.AT_SETPOINT) {
           systemState = SuperstructureStates.PRIMING_SHOOTER;
         }
         break;
@@ -196,11 +237,21 @@ public class Superstructure {
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
             conveyor.setShooting();
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+            // appropriate
+            if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
+            }
           }
         } else {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+            // appropriate
+            if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
+            }
           }
         }
 
@@ -217,6 +268,7 @@ public class Superstructure {
         shooter.shoot(flywheelSpeedInput.get());
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
+          idleState = IDLE_STATES.DEFAULT;
         }
         break;
 
@@ -226,6 +278,7 @@ public class Superstructure {
          * Moves arm to AMP setpoint
          */
         // arm.setposition(AMP);
+        idleState = IDLE_STATES.AMP;
         arm.setPosition(ArmConstants.AMP_SETPOINT);
         break;
 
@@ -236,13 +289,16 @@ public class Superstructure {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
+          if (!conveyor.hasNote()) {
+            idleState = IDLE_STATES.DEFAULT;
+          }
         }
-
         break;
       case SCORE_TRAP:
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
+          idleState = IDLE_STATES.DEFAULT;
         }
         break;
       case ARM_CLIMB:
@@ -266,7 +322,6 @@ public class Superstructure {
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
     Logger.recordOutput(
         "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
-    Logger.recordOutput("autonomous enabled", DriverStation.isAutonomousEnabled());
   }
 
   public void stop() {
@@ -274,11 +329,21 @@ public class Superstructure {
   }
 
   public void idle() {
-    systemState = SuperstructureStates.IDLE;
+    if (idleState == IDLE_STATES.INTAKE) {
+      systemState = SuperstructureStates.IDLE_INTAKING;
+    } else if (idleState == IDLE_STATES.AMP) {
+      systemState = SuperstructureStates.IDLE_AMP;
+    } else {
+      systemState = SuperstructureStates.IDLE;
+    }
   }
 
   public void intake() {
     systemState = SuperstructureStates.INTAKE;
+  }
+
+  public void resetRobot() {
+    systemState = SuperstructureStates.RESET;
   }
 
   public boolean note_present() {
@@ -287,8 +352,9 @@ public class Superstructure {
 
   public void primeShooter() {
     System.out.println("-- primingShooter");
-    // systemState = SuperstructureStates.PRIMING_SHOOTER;
     shooter.shoot(flywheelSpeedInput.get());
+    arm.setPosition(
+        armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget()) + offset.get());
   }
 
   // public void clearNotes() {

@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -11,6 +13,7 @@ public class Intake extends SubsystemBase {
   private double power = 1.0;
   private final IntakeIO io;
   private IntakeStates state;
+  private AnalogInput intakeProx = new AnalogInput(IntakeConstants.INTAKE_PROX_CHANNEL);
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -61,6 +64,11 @@ public class Intake extends SubsystemBase {
 
   public void setOutake() {
     state = IntakeStates.OUTTAKE;
+  }
+
+  public boolean detectNote() {
+    if (intakeProx.getVoltage() > IntakeConstants.INTAKE_PROX_THRESHOLD) return true;
+    else return false;
   }
 
   public IntakeStates getState() {

@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.Constants.LEDConstants.Colors;
 import frc.robot.util.LoggedTunableNumber;
 
 /**
@@ -107,7 +108,10 @@ public final class Constants {
     public static final int SHOOTER_PROX_ID = 1;
     // public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for, .55
     public static final double SHOOTER_PROX_THRESHOLD =
-        RobotBase.isReal() ? 0.55 : -.55; // value was tested for, .55
+        RobotBase.isReal() ? 0.80 : -.80; // value was tested for, .80
+    public static final double INTAKE_PROX_THRESHOLD =
+        RobotBase.isReal() ? 0.80 : -.80; // value was tested for. .80
+
     public static final double DIVERTER_GEAR_RATIO = 1;
     public static final double FEEDER_GEAR_RATIO = 1;
     public static final InvertedValue diverterDirection = InvertedValue.CounterClockwise_Positive;
@@ -117,12 +121,39 @@ public final class Constants {
   public final class IntakeConstants {
     // Fill in
     public static final int INTAKE_ID = 14;
+    public static final int INTAKE_PROX_CHANNEL = 0;
+    public static final double INTAKE_PROX_THRESHOLD = 0.19;
   }
 
   public final class ClimbConstants {
     // max rotations = (distance/2pi*wheelRadius) * gearRatio
     public static final double MAX_ROTATIONS = -150;
-    public static final int TOLERANCE = 5;
+    public static final int TOLERANCE = 1;
+  }
+
+  public final class LEDConstants {
+    public static final Colors DETECT_NOTE_COLOR = Colors.Red;
+
+    public enum Colors {
+      Red(255, 0, 0),
+      Orange(255, 165, 0),
+      Yellow(255, 255, 0),
+      Green(0, 255, 0),
+      Blue(0, 0, 255),
+      Indigo(75, 0, 130),
+      Violet(238, 138, 238),
+      White(255, 255, 255);
+
+      public final int r;
+      public final int g;
+      public final int b;
+
+      private Colors(int r, int g, int b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+      }
+    }
   }
 
   public static enum Mode {
