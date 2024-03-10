@@ -208,7 +208,9 @@ public class Superstructure extends SubsystemBase {
          */
         shooter.shoot(flywheelSpeedInput.get());
         arm.setPosition(
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
+            armInterpolation.getValue(
+                    RobotContainer.poseEstimator.distanceToTarget(
+                        Constants.FieldConstants.Targets.SPEAKER))
                 + offset.get());
         // Don't need any transition here, we want to stay in this state
         // until SHOOT is called.
@@ -228,7 +230,9 @@ public class Superstructure extends SubsystemBase {
 
       case SHOOT:
         double armDistanceSetPoint =
-            armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget());
+            armInterpolation.getValue(
+                RobotContainer.poseEstimator.distanceToTarget(
+                    Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint + offset.get());
         shooter.shoot(flywheelSpeedInput.get());
@@ -321,7 +325,8 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput("Superstructure/IntakeState", intake.getState());
     Logger.recordOutput("Superstructure/ConveyorState", conveyor.getState());
     Logger.recordOutput(
-        "Odometry/DistanceToTarget", RobotContainer.poseEstimator.distanceToTarget());
+        "Odometry/DistanceToTarget",
+        RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER));
   }
 
   public void stop() {
@@ -354,7 +359,10 @@ public class Superstructure extends SubsystemBase {
     System.out.println("-- primingShooter");
     shooter.shoot(flywheelSpeedInput.get());
     arm.setPosition(
-        armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget()) + offset.get());
+        armInterpolation.getValue(
+                RobotContainer.poseEstimator.distanceToTarget(
+                    Constants.FieldConstants.Targets.SPEAKER))
+            + offset.get());
   }
 
   // public void clearNotes() {
