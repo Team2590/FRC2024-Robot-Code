@@ -104,7 +104,7 @@ public class NemesisLED extends SubsystemBase {
   private int blinkingTime = 0;
 
   public void setBlinking(LEDConstants.Colors color) {
-    if (blinkingTime % 60 == 0) {
+    if (blinkingTime % 5 == 0) {
       setColor(color);
     } else {
       off();

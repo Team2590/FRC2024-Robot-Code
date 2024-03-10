@@ -137,25 +137,28 @@ public class Superstructure extends SubsystemBase {
         climb.setStopped();
         if (conveyor.hasNote()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
-              && shooter.getState() == ShooterStates.AT_SETPOINT){
-                led.setBlinking(LEDConstants.PRIMED_SUPERSTRUCTURE);
-              } else{
-          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
-          intake.setStopped();
-              }
+              && shooter.getState() == ShooterStates.AT_SETPOINT) {
+            led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
+          } else {
+            led.setColor(LEDConstants.HAS_NOTE_COLOR);
+            intake.setStopped();
+          }
         } else {
           shooter.setStopped();
           arm.setHome();
+          led.off();
         }
         break;
       case IDLE_INTAKING:
-      if (intake.detectNote()) {
-        led.setBlinking(LEDConstants.DETECT_NOTE_COLOR);
-      }
+        if (intake.detectNote()) {
+          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+        }
         if (conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
-          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+          led.setColor(LEDConstants.HAS_NOTE_COLOR);
           // intake.setStopped();
+        } else {
+          led.off();
         }
         climb.setStopped();
         break;
