@@ -93,14 +93,10 @@ public class Superstructure extends SubsystemBase {
     this.led = led;
     climb.resetRotationCount();
 
-    final double[] distance = {
-      0, 1.398, 1.41, 1.421, 1.573, 1.722, 1.887, 2.042, 2.210, 2.398, 2.530, 2.745, 2.881, 3.048,
-      3.088, 3.133, 3.298, 3.3539, 3.3681, 3.3806, 3.3900, 3.5000, 3.7000, 3.9000, 4.1000
-    };
-    final double[] armSetpoint = {
-      .16, .16, .142, .140, .130, .118, .1135, .108, .1, .095, .09, .085, .081, .077, .076, .075,
-      .073, .072, .0718, .0715, .0714, .07, .068, .06675, .06575
-    };
+    final double[] distance = {0, 1.174, 1.52, 1.705, 2.08, 2.39, 2.78, 3.358, 3.75, 4.205, 4.598};
+    // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
+    final double[] armSetpoint = {.16, .16, .145, .135, .115, .105, .09, .073, .065, .059, .059};
+    // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
   }
@@ -240,15 +236,20 @@ public class Superstructure extends SubsystemBase {
                 RobotContainer.poseEstimator.distanceToTarget(
                     Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint + offset.get());
+        arm.setPosition(armDistanceSetPoint);
         shooter.shoot(flywheelSpeedInput.get());
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
-                System.out.println("ARM AT SETPOINT " + (arm.getState()==ArmStates.AT_SETPOINT));
-                System.out.println("SHOOTER AT SETPOINT " + (shooter.getState() == ShooterStates.AT_SETPOINT));
-                System.out.println("SNAPCONTROLLER AT SETPOINT " + (RobotContainer.getDrive().snapControllerAtSetpoint()) + " WITH ERROR " + RobotContainer.getDrive().getSnapControllerError());
+            System.out.println("ARM AT SETPOINT " + (arm.getState() == ArmStates.AT_SETPOINT));
+            System.out.println(
+                "SHOOTER AT SETPOINT " + (shooter.getState() == ShooterStates.AT_SETPOINT));
+            System.out.println(
+                "SNAPCONTROLLER AT SETPOINT "
+                    + (RobotContainer.getDrive().snapControllerAtSetpoint())
+                    + " WITH ERROR "
+                    + RobotContainer.getDrive().getSnapControllerError());
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
