@@ -240,6 +240,9 @@ public class Superstructure extends SubsystemBase {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
+                System.out.println("ARM AT SETPOINT " + (arm.getState()==ArmStates.AT_SETPOINT));
+                System.out.println("SHOOTER AT SETPOINT " + (shooter.getState() == ShooterStates.AT_SETPOINT));
+                System.out.println("SNAPCONTROLLER AT SETPOINT " + (RobotContainer.getDrive().snapControllerAtSetpoint()) + " WITH ERROR " + RobotContainer.getDrive().getSnapControllerError());
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
