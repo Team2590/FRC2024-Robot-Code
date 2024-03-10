@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -183,13 +184,13 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
           conveyor.setIntaking();
-          Tracer.trace("SuperStructure.INTAKE: arm at HOME, starting intake" );
+          Tracer.trace("SuperStructure.INTAKE: arm at HOME, starting intake");
         } else {
-          Tracer.trace("SuperStructure.INTAKE: telling arm to go home" );
+          Tracer.trace("SuperStructure.INTAKE: telling arm to go home");
           arm.setHome();
         }
         if (conveyor.hasNote()) {
-          Tracer.trace("SuperStructure.INTAKE: Have note, stopping intake" );
+          Tracer.trace("SuperStructure.INTAKE: Have note, stopping intake");
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
@@ -375,7 +376,7 @@ public class Superstructure extends SubsystemBase {
     if (note_present()) {
       Tracer.trace("note_present=true, setting priming arm position");
       arm.setPosition(
-          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
+          armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget(Targets.SPEAKER))
               + offset.get());
     } else {
       Tracer.trace("primeShooter: intake()");

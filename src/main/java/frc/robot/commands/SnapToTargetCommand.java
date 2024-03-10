@@ -112,7 +112,7 @@ public class SnapToTargetCommand extends Command {
     boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
     Tracer.trace(
         "SnapToTargerCommand.isFinished(), SnapControllerAtSetPoint:" + snapControllerAtSetpoint);
-    return timer.hasElapsed(waitTimeSeconds) || snapControllerAtSetpoint;
+    return /*timer.hasElapsed(waitTimeSeconds) ||*/ Math.abs(currentError) <= .05;
   }
 
   @Override

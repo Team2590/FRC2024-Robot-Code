@@ -57,7 +57,8 @@ public class ShootCommand extends Command {
     // If the note is not present anymore, we already shot or don't have the note anymore.
     // This means we exit out of this command.
     // return timer.hasElapsed(timeToWait) || !notePresent;
-    return (!isNotePresentAtStart && !notePresent) ||  cycle > CYCLES_TO_WAIT || timer.hasElapsed(DEFAULT_SECONDS_TO_WAIT);
+    return // (!isNotePresentAtStart && !notePresent) ||
+    timer.hasElapsed(timeToWait);
   }
 
   @Override

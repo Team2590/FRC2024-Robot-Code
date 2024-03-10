@@ -36,7 +36,7 @@ public class NemesisLED extends SubsystemBase {
   }
 
   public void setRGB(int r, int g, int b) {
-    System.out.println("This is running"); 
+    System.out.println("This is running");
     for (int i = 0; i < length; i++) {
       ledBuffer.setRGB(i, g, r, b);
     }
