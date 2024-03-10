@@ -161,7 +161,7 @@ public class RobotContainer {
      */
 
     if (poseEstimator.distanceToTarget() <= Constants.FieldConstants.RUMBLE_THRESHOLD) {
-      input.setOperatorRumble(1);
+      input.setOperatorRumble(0);
     } else if (poseEstimator.distanceToTarget() > Constants.FieldConstants.RUMBLE_THRESHOLD) {
       input.setOperatorRumble(0);
     }
@@ -224,7 +224,7 @@ public class RobotContainer {
       superstructure.climb();
     } else {
       teleopSpeaker = true;
-      superstructure.idle();
+      // superstructure.idle();
     }
 
     if (input.controllerLeftBumper()) {
