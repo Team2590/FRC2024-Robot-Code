@@ -37,7 +37,6 @@ public class SnapToTargetCommand extends Command {
 
   private Pose2d targetPose;
   private double currentError;
-  private int count;
 
   public SnapToTargetCommand(
       Drive drive,
@@ -55,7 +54,6 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void initialize() {
-    count = 0;
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
@@ -81,9 +79,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
-    // count++;
     // find angle
-    count++;
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX());
@@ -118,8 +114,7 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 25;
-    // return false;
+    return Math.abs(currentError) <= errorTolerance;
   }
 
   @Override
