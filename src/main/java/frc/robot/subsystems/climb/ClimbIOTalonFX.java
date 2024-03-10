@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climb;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,6 +27,8 @@ public class ClimbIOTalonFX implements ClimbIO {
   @Override
   public void updateInputs(ClimbIOInputs inputs) {
     inputs.positionRotations = getRotationCount();
+    Logger.recordOutput("Arm/LeaderPosition", getLeaderRotationCount());
+    Logger.recordOutput("Arm/FollowerPosition", getFollowerRotationCount());
   }
 
   @Override
@@ -35,14 +39,14 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   @Override
   public void setVoltage(double voltage) {
-    if (Math.abs(Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower)))
+    if (Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower))
         > ClimbConstants.TOLERANCE) {
       follower.setControl(new VoltageOut(-voltage));
-      leader.setControl(new VoltageOut(voltage / 2));
-    } else if (Math.abs(Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader)))
+      leader.setControl(new VoltageOut(voltage / 4));
+    } else if (Math.abs(getRotationCount(follower)) - Math.abs(getRotationCount(leader))
         > ClimbConstants.TOLERANCE) {
       leader.setControl(new VoltageOut(voltage));
-      follower.setControl(new VoltageOut(-voltage / 2));
+      follower.setControl(new VoltageOut(-voltage / 4));
     } else {
       leader.setControl(new VoltageOut(voltage));
       follower.setControl(new VoltageOut(-voltage));
@@ -52,6 +56,14 @@ public class ClimbIOTalonFX implements ClimbIO {
   public void stop() {
     leader.stopMotor();
     follower.stopMotor();
+  }
+
+  public double getLeaderRotationCount() {
+    return leader.getPosition().getValueAsDouble();
+  }
+
+  public double getFollowerRotationCount() {
+    return follower.getPosition().getValueAsDouble();
   }
 
   public double getRotationCount() {
