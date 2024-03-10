@@ -11,12 +11,17 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.PhotonRunnable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,8 +55,42 @@ public class PoseEstimator {
     return latestPose;
   }
 
-  public double distanceToTarget() {
-    return photonEstimator.getDistanceToTarget();
+  public double distanceToTarget(FieldConstants.Targets target) {
+    Pose2d targetPose = new Pose2d();
+    if (DriverStation.getAlliance().isPresent()) {
+      switch (target) {
+        case SPEAKER:
+          targetPose =
+              DriverStation.getAlliance().get() == Alliance.Red
+                  ? AprilTag.getTagPose(4)
+                  : AprilTag.getTagPose(7);
+          break;
+        case AMP:
+          targetPose =
+              DriverStation.getAlliance().get() == Alliance.Red
+                  ? AprilTag.getTagPose(5)
+                  : AprilTag.getTagPose(6);
+          break;
+        case STAGE:
+          targetPose =
+              DriverStation.getAlliance().get() == Alliance.Red
+                  ? GeomUtil.triangleCenter(
+                      AprilTag.getTagPose(11), AprilTag.getTagPose(12), AprilTag.getTagPose(13))
+                  : GeomUtil.triangleCenter(
+                      AprilTag.getTagPose(14), AprilTag.getTagPose(15), AprilTag.getTagPose(16));
+          break;
+        default:
+          targetPose = new Pose2d();
+          break;
+      }
+    }
+
+    return distanceBetweenPoses(RobotContainer.poseEstimator.getLatestPose(), targetPose);
+  }
+
+  public double distanceBetweenPoses(Pose2d a, Pose2d b) {
+    Transform2d difference = a.minus(b);
+    return Math.hypot(difference.getX(), difference.getY());
   }
 
   /** Resets the odometry to a known pose. */

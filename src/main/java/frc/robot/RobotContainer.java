@@ -161,10 +161,6 @@ public class RobotContainer {
      * Driver input w/ superstructure
      */
 
-    if (poseEstimator.distanceToTarget() <= Constants.FieldConstants.RUMBLE_THRESHOLD) {
-    } else if (poseEstimator.distanceToTarget() > Constants.FieldConstants.RUMBLE_THRESHOLD) {
-    }
-
     if (input.controllerAButton()) {
       superstructure.primeShooter();
     } else if (input.controllerBButton()) {
