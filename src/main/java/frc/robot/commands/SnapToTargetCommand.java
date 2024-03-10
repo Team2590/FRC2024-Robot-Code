@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FieldConstants.Targets;
@@ -26,14 +25,11 @@ import org.littletonrobotics.junction.Logger;
  */
 public class SnapToTargetCommand extends Command {
 
-  private static final double WAIT_TIME_SECONDS = 2.0;
-
   private final Drive drive;
   private final DoubleSupplier xSupplier;
   private final DoubleSupplier ySupplier;
   private final Targets target;
   private final double errorTolerance;
-  private final Timer timer = new Timer();
 
   private Pose2d targetPose;
   private double currentError;
@@ -54,7 +50,6 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void initialize() {
-    timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
       case SPEAKER:
@@ -118,8 +113,5 @@ public class SnapToTargetCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    timer.stop();
-    drive.stop(); // added dt stop
-  }
+  public void end(boolean interrupted) {}
 }
