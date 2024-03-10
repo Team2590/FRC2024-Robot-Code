@@ -73,7 +73,7 @@ public class Drive extends SubsystemBase {
   LoggedTunableNumber snapControllerP = new LoggedTunableNumber("SnapController/kP", .34);
   LoggedTunableNumber snapControllerD = new LoggedTunableNumber("SnapController/kD", .00001);
   LoggedTunableNumber snapControllerTolerance =
-      new LoggedTunableNumber("SnapController/tolerance", .1);
+      new LoggedTunableNumber("SnapController/tolerance", .05);
 
   LoggedTunableNumber noteControllerP = new LoggedTunableNumber("NoteController/kP", .44);
   LoggedTunableNumber noteControllerD = new LoggedTunableNumber("NoteController/kD", .00001);
@@ -96,7 +96,7 @@ public class Drive extends SubsystemBase {
     modules[2] = new Module(blModuleIO, 2);
     modules[3] = new Module(brModuleIO, 3);
 
-    snapController.setTolerance(.2);
+    snapController.setTolerance(snapControllerTolerance.get());
     noteController.setTolerance(noteControllerTolerance.get());
 
     // Configure AutoBuilder for PathPlanner
@@ -331,5 +331,9 @@ public class Drive extends SubsystemBase {
   public boolean snapControllerAtSetpoint() {
     Logger.recordOutput("SnapController/Error", snapController.getPositionError());
     return snapController.atSetpoint();
+  }
+
+  public double getSnapControllerError(){
+    return snapController.getPositionError();
   }
 }
