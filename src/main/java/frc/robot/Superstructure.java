@@ -181,10 +181,13 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
           conveyor.setIntaking();
+          Tracer.trace("SuperStructure.INTAKE: arm at HOME, starting intake" );
         } else {
+          Tracer.trace("SuperStructure.INTAKE: telling arm to go home" );
           arm.setHome();
         }
         if (conveyor.hasNote()) {
+          Tracer.trace("SuperStructure.INTAKE: Have note, stopping intake" );
           intake.setStopped();
           systemState = SuperstructureStates.HAS_NOTE;
         }
@@ -355,12 +358,12 @@ public class Superstructure extends SubsystemBase {
     Tracer.trace("Priming Shooter");
     shooter.shoot(flywheelSpeedInput.get());
     if (note_present()) {
-      Tracer.trace("note_present, so setting priming arm position");
+      Tracer.trace("note_present=true, setting priming arm position");
       arm.setPosition(
           armInterpolation.getValue(RobotContainer.poseEstimator.distanceToTarget())
               + offset.get());
     } else {
-
+      Tracer.trace("primeShooter: intake()");
       intake();
     }
   }
