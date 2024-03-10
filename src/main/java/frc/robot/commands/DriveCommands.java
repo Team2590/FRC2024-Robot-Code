@@ -128,16 +128,17 @@ public class DriveCommands {
           // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
           double theta = Math.atan2(difference.getY(), difference.getX());
           double currentAngle = drive.getGyroYaw().getRadians() % (2 * Math.PI); // CHANGED
-          Logger.recordOutput("SnapController/RealCurrentAngle", drive.getGyroYaw().getRadians());
-          Logger.recordOutput("SnapController/CurrentAngle", currentAngle);
+          // Logger.recordOutput("SnapController/RealCurrentAngle",
+          // drive.getGyroYaw().getRadians());
+          // Logger.recordOutput("SnapController/CurrentAngle", currentAngle);
           double currentError = theta - currentAngle;
           if (currentError > Math.PI) {
             currentAngle += 2 * Math.PI;
           } else if (currentError < -Math.PI) {
             currentAngle -= 2 * Math.PI;
           }
-          Logger.recordOutput("SnapController/Target", target);
-          Logger.recordOutput("SnapController/TargetPose", targetPose);
+          // Logger.recordOutput("SnapController/Target", target);
+          // Logger.recordOutput("SnapController/TargetPose", targetPose);
           // run the motors
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
