@@ -101,10 +101,23 @@ public class NemesisLED extends SubsystemBase {
     led.setData(ledBuffer);
   }
 
+  // times are multiplied by 20ms
   private int blinkingTime = 0;
+  private int blinkOnTime = 5;
+  private boolean blinkCheck = false;
 
   public void setBlinking(LEDConstants.Colors color) {
-    if (blinkingTime % 5 == 0) {
+    // if (blinkingTime % 5 == 0 || blinkingTime % 4 == 0 || blinkingTime % 3 == 0) {
+    //   setColor(color);
+    // } else {
+    //   off();
+    // }
+    
+    if(blinkingTime % blinkOnTime == 0){
+      blinkCheck = !blinkCheck;
+    }
+
+    if (blinkCheck){
       setColor(color);
     } else {
       off();
