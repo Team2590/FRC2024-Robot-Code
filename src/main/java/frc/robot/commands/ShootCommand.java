@@ -13,7 +13,7 @@ import frc.robot.util.Tracer;
  */
 public class ShootCommand extends Command {
 
-  private static final double DEFAULT_SECONDS_TO_WAIT = 0.5;
+  private static final double DEFAULT_SECONDS_TO_WAIT = 1;
   private static final int CYCLES_TO_WAIT = 3;
 
   private final Timer timer = new Timer();
@@ -54,6 +54,8 @@ public class ShootCommand extends Command {
   public boolean isFinished() {
     boolean notePresent = superstructure.note_present();
     Tracer.trace("ShootCommand.isFinished(), notePresent:" + notePresent);
+    Tracer.trace("ShootCommand.isFinished(), cycle:" + cycle);
+    Tracer.trace("ShootCommand.isFinished(), timer:" + timer.hasElapsed(DEFAULT_SECONDS_TO_WAIT));
     // If the note is not present anymore, we already shot or don't have the note anymore.
     // This means we exit out of this command.
     // return timer.hasElapsed(timeToWait) || !notePresent;
