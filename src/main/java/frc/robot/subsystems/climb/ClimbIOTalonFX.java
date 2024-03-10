@@ -57,16 +57,16 @@ public class ClimbIOTalonFX implements ClimbIO {
     follower.stopMotor();
   }
 
+  public double getRotationCount() {
+    return leader.getPosition().getValueAsDouble();
+  }
+
   public double getLeaderRotationCount() {
     return leader.getPosition().getValueAsDouble();
   }
 
   public double getFollowerRotationCount() {
     return follower.getPosition().getValueAsDouble();
-  }
-
-  public double getRotationCount() {
-    return leader.getPosition().getValueAsDouble();
   }
 
   private double getRotationCount(TalonFX motor) {

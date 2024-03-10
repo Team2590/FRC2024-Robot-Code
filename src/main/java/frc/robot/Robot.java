@@ -15,7 +15,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.autos.AutoCommandBuilder;
+import frc.robot.util.Tracer;
 import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -64,10 +64,10 @@ public class Robot extends LoggedRobot {
         // Running on a real robot, log to a USB stick ("/U/logs")
         File usbDrive = new File("/U/");
         // Only set up usb logging if the folder exists.
-        // if (usbDrive.exists()) {
-        System.err.println("No USB found, not writing logs");
-        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
-        // }
+        if (usbDrive.exists()) {
+          // System.err.println("No USB found, not writing logs");
+          Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        }
         usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
         break;
@@ -124,6 +124,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    Tracer.enableTrace = true;
+    Tracer.trace("---  Starting Auto ---- ");
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     if (autonomousCommand == null) {
@@ -135,10 +137,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {
-
-    Logger.recordOutput("Current Path", AutoCommandBuilder.getName());
-  }
+  public void autonomousPeriodic() {}
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -149,7 +148,9 @@ public class Robot extends LoggedRobot {
     // this line or comment it out.
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
+      Tracer.trace("--- Stopping Auto  --- ");
     }
+    Tracer.enableTrace = false;
   }
 
   /** This function is called periodically during operator control. */

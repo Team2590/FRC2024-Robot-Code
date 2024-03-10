@@ -66,8 +66,8 @@ public class Flywheel extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    // Logger.processInputs("Flywheel", inputs);
-    // Logger.recordOutput("Flywheel/CurrentState", state);
+    Logger.processInputs("Flywheel", inputs);
+    Logger.recordOutput("Flywheel/CurrentState", state);
 
     switch (state) {
       case MANUAL:
