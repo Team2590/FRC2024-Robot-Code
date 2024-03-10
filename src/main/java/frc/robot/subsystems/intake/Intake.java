@@ -13,6 +13,7 @@ public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private IntakeStates state;
   private AnalogInput intakeProx = new AnalogInput(IntakeConstants.INTAKE_PROX_CHANNEL);
+  private boolean detectedNoteForAuto = false;
 
   public Intake(IntakeIO io) {
     this.io = io;
@@ -51,6 +52,7 @@ public class Intake extends SubsystemBase {
         System.out.println("Reached conveyor default case");
         break;
     }
+    detectNoteForAuton();
   }
 
   public void setStopped() {
@@ -68,6 +70,17 @@ public class Intake extends SubsystemBase {
   public boolean detectNote() {
     if (intakeProx.getVoltage() > IntakeConstants.INTAKE_PROX_THRESHOLD) return true;
     else return false;
+  }
+
+  public boolean detectNoteForAuton() {
+    if (!detectedNoteForAuto) {
+      detectedNoteForAuto = detectNote();
+    }
+    return detectedNoteForAuto;
+  }
+
+  public void resetDetectedNoteForAuton() {
+    detectedNoteForAuto = false;
   }
 
   public IntakeStates getState() {
