@@ -137,8 +137,9 @@ public class DriveCommands {
           } else if (currentError < -Math.PI) {
             currentAngle -= 2 * Math.PI;
           }
-          // Logger.recordOutput("SnapController/Target", target);
-          // Logger.recordOutput("SnapController/TargetPose", targetPose);
+          Logger.recordOutput("SnapController/CurrentError", currentError);
+          Logger.recordOutput("SnapController/Target", target);
+          Logger.recordOutput("SnapController/TargetPose", targetPose);
           // run the motors
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
