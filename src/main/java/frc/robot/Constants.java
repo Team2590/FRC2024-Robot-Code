@@ -55,22 +55,39 @@ public final class Constants {
   }
 
   public final class VisionConstants {
-    // april tag camera
-    public static final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
-    public static final double CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
-    public static final double CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
-    public static final double CAMERA_ROLL = 0;
+    // LEFT april tag camera
+    public static final double LEFT_CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
+    public static final double LEFT_CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
+    public static final double LEFT_CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
+    public static final double LEFT_CAMERA_ROLL = 0;
     // downward pitch is positive
-    public static final double CAMERA_PITCH = Units.degreesToRadians(-1 * 27);
+    public static final double LEFT_CAMERA_PITCH = Units.degreesToRadians(-1 * 27);
     // counterclockwise yaw is positive
-    public static final double CAMERA_YAW = Units.degreesToRadians(-1 * 180);
-    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
-    public static final Transform3d RobotToCam =
+    public static final double LEFT_CAMERA_YAW = Units.degreesToRadians(-1 * 180);
+    public static final Transform3d LeftRobotToCam =
         new Transform3d(
-            -CAMERA_X_DISTANCE_FROM_CENTER_METERS,
-            CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
-            CAMERA_HEIGHT_METERS,
-            new Rotation3d(CAMERA_ROLL, CAMERA_PITCH, CAMERA_YAW));
+            -LEFT_CAMERA_X_DISTANCE_FROM_CENTER_METERS,
+            LEFT_CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
+            LEFT_CAMERA_HEIGHT_METERS,
+            new Rotation3d(LEFT_CAMERA_ROLL, LEFT_CAMERA_PITCH, LEFT_CAMERA_YAW));
+
+    // RIGHT april tag camera
+    public static final double RIGHT_CAMERA_HEIGHT_METERS = Units.inchesToMeters(18.75);
+    public static final double RIGHT_CAMERA_X_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(10.948);
+    public static final double RIGHT_CAMERA_Y_DISTANCE_FROM_CENTER_METERS = Units.inchesToMeters(0);
+    public static final double RIGHT_CAMERA_ROLL = 0;
+    // downward pitch is positive
+    public static final double RIGHT_CAMERA_PITCH = Units.degreesToRadians(-1 * 27);
+    // counterclockwise yaw is positive
+    public static final double RIGHT_CAMERA_YAW = Units.degreesToRadians(-1 * 180);
+    public static final Transform3d RightRobotToCam =
+        new Transform3d(
+            -RIGHT_CAMERA_X_DISTANCE_FROM_CENTER_METERS,
+            RIGHT_CAMERA_Y_DISTANCE_FROM_CENTER_METERS,
+            RIGHT_CAMERA_HEIGHT_METERS,
+            new Rotation3d(RIGHT_CAMERA_ROLL, RIGHT_CAMERA_PITCH, RIGHT_CAMERA_YAW));
+
+    public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
 
     // note camera
     public static final double NOTE_CAMERA_HEIGHT_METERS = Units.inchesToMeters(13.155);

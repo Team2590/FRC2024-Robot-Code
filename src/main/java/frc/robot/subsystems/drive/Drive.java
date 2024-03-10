@@ -333,7 +333,7 @@ public class Drive extends SubsystemBase {
     return snapController.atSetpoint();
   }
 
-  public double getSnapControllerError(){
+  public double getSnapControllerError() {
     return snapController.getPositionError();
   }
 }
