@@ -36,12 +36,14 @@ public class ShootCommand extends Command {
   public void initialize() {
     timer.restart();
     Tracer.trace("ShootCommand.isInitialize:" + superstructure.note_present());
-    isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
+    isNoteDetectedAtIntake =
+        superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
   }
 
   @Override
   public void execute() {
-    isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
+    isNoteDetectedAtIntake =
+        superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     Tracer.trace("ShootCommand.execute(), Intake.detectNote:" + isNoteDetectedAtIntake);
     superstructure.shoot();
     if (!superstructure.note_present()) {

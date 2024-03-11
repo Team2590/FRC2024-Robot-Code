@@ -285,10 +285,10 @@ public class Superstructure extends SubsystemBase {
         shooter.shoot(flywheelSpeedInput.get());
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
-            if (!conveyor.hasNote()) {
-              idleState = IDLE_STATES.DEFAULT;
-              detectedNote = false;
-            }
+          if (!conveyor.hasNote()) {
+            idleState = IDLE_STATES.DEFAULT;
+            detectedNote = false;
+          }
         }
         break;
 
@@ -309,10 +309,10 @@ public class Superstructure extends SubsystemBase {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
-            if (!conveyor.hasNote()) {
-              idleState = IDLE_STATES.DEFAULT;
-              detectedNote = false;
-            }
+          if (!conveyor.hasNote()) {
+            idleState = IDLE_STATES.DEFAULT;
+            detectedNote = false;
+          }
         }
         break;
       case SCORE_TRAP:
@@ -448,7 +448,7 @@ public class Superstructure extends SubsystemBase {
     systemState = SuperstructureStates.MANUAL_ARM;
   }
 
-  public boolean getNoteDetected(){
+  public boolean getNoteDetected() {
     return detectedNote;
   }
 
