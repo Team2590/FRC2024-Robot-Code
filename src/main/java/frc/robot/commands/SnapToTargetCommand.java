@@ -109,7 +109,7 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return Math.abs(currentError) <= errorTolerance;
+    return Math.abs(currentError) <= .05;
   }
 
   @Override
