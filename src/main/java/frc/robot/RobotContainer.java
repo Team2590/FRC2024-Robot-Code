@@ -32,6 +32,8 @@ import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -160,11 +162,22 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-
+    Logger.recordOutput("Odometry/HorizontalOffset", poseEstimator.getHorizontalOffset());
     if (input.controllerAButton()) {
-      superstructure.primeShooter();
+      // superstructure.primeShooter();
+      CommandScheduler.getInstance().schedule(
+        DriveCommands.alignToTarget(
+                drive, poseEstimator.getHorizontalOffset())
+            .until(() -> input.controllerRightBumper()));
     } else if (input.controllerBButton()) {
-      superstructure.stopShooter();
+            CommandScheduler.getInstance()
+            .schedule(DriveCommands.SnapToTarget(
+              drive,
+              () -> -input.leftJoystickY(),
+              () -> -input.leftJoystickX(),
+              Targets.STAGE)
+          .until(() -> input.leftJoystickTrigger()));
+      // superstructure.stopShooter();
     }
 
     if (input.controllerXButton()) {

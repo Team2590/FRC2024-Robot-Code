@@ -266,4 +266,8 @@ public class PoseEstimator {
   public void setPose(Pose2d pose) {
     this.latestPose = pose;
   }
+
+  public double getHorizontalOffset(){
+    return photonEstimator.getHorzontalOffset();
+  }
 }
