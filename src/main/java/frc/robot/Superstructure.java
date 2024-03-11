@@ -104,6 +104,8 @@ public class Superstructure extends SubsystemBase {
   /** This is where you would call all of the periodic functions of the subsystems. */
   @Override
   public void periodic() {
+    Logger.recordOutput(
+        "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
     switch (systemState) {
       case DISABLED:
         // stop
@@ -241,15 +243,7 @@ public class Superstructure extends SubsystemBase {
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
-              && RobotContainer.getDrive().snapControllerAtSetpoint()) {
-            System.out.println("ARM AT SETPOINT " + (arm.getState() == ArmStates.AT_SETPOINT));
-            System.out.println(
-                "SHOOTER AT SETPOINT " + (shooter.getState() == ShooterStates.AT_SETPOINT));
-            System.out.println(
-                "SNAPCONTROLLER AT SETPOINT "
-                    + (RobotContainer.getDrive().snapControllerAtSetpoint())
-                    + " WITH ERROR "
-                    + RobotContainer.getDrive().getSnapControllerError());
+              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate

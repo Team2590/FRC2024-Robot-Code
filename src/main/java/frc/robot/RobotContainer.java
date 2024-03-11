@@ -8,6 +8,8 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.SnapToTargetCommand;
+import frc.robot.commands.SnapToTargetCommandTeleop;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -54,6 +56,7 @@ public class RobotContainer {
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
+  public static SnapToTargetCommandTeleop snapCommand;
   private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
@@ -130,6 +133,13 @@ public class RobotContainer {
         arm = new Arm(new ArmIOTalonFX());
         break;
     }
+    snapCommand =
+        new SnapToTargetCommandTeleop(
+            drive,
+            () -> -input.leftJoystickY(),
+            () -> -input.leftJoystickX(),
+            Targets.SPEAKER,
+            0.00);
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
@@ -175,14 +185,7 @@ public class RobotContainer {
 
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
-        CommandScheduler.getInstance()
-            .schedule(
-                DriveCommands.SnapToTarget(
-                        drive,
-                        () -> -input.leftJoystickY(),
-                        () -> -input.leftJoystickX(),
-                        Targets.SPEAKER)
-                    .until(() -> input.leftJoystickTrigger()));
+        CommandScheduler.getInstance().schedule(snapCommand);
         superstructure.shoot();
       } else {
         superstructure.scoreAmp();
