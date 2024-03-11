@@ -139,7 +139,7 @@ public class Flywheel extends SubsystemBase {
   }
 
   public ShooterStates getState() {
-    return ShooterStates.AT_SETPOINT;
-    // return state;
+    // return ShooterStates.AT_SETPOINT;
+    return state;
   }
 }

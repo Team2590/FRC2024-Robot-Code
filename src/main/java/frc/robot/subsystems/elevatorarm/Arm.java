@@ -136,7 +136,7 @@ public class Arm extends SubsystemBase {
   }
 
   public ArmStates getState() {
-    return ArmStates.AT_SETPOINT;
-    // return state;
+    // return ArmStates.AT_SETPOINT;
+    return state;
   }
 }
