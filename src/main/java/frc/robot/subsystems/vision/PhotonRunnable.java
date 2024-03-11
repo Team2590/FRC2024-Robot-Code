@@ -87,14 +87,14 @@ public class PhotonRunnable implements Runnable {
   }
 
   private void updateHorizontalOffset() {
-    for (PhotonTrackedTarget t : photonResults.targets){
+    for (PhotonTrackedTarget t : photonResults.targets) {
       if (t.getFiducialId() == 5 || t.getFiducialId() == 6 || t.getFiducialId() >= 11) {
-      horizontalOffset = t.getBestCameraToTarget().getY();
+        horizontalOffset = t.getBestCameraToTarget().getY();
       }
     }
   }
 
-  public double getHorzontalOffset(){
+  public double getHorzontalOffset() {
     return horizontalOffset;
   }
 

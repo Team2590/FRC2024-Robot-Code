@@ -28,11 +28,8 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
-
-import java.util.List;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -201,26 +198,24 @@ public class DriveCommands {
         });
   }
 
-
-  
   /**
    * Aligns to the target, based on the april tags seen; will only align to amp or stage
+   *
    * @param drive - drive instance
    * @param targets - list of targets seen; can be taken straight from vision
    * @return the command
    */
-  public static Command alignToTarget(
-    Drive drive, double lateralOffset) {
-      return Commands.run((() -> {
-            drive.runVelocity(
-                new ChassisSpeeds(
+  public static Command alignToTarget(Drive drive, double lateralOffset) {
+    return Commands.run(
+        (() -> {
+          drive.runVelocity(
+              new ChassisSpeeds(
                   0,
                   drive.linearMovementController.calculate(lateralOffset, 0)
-                      * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
-                      0));
-                  // drive.snapController.calculate(drive.getGyroYaw().getDegrees(), degreeSetpoint)));
-          }),
-      drive);
-    }
+                      * drive.getMaxLinearSpeedMetersPerSec(),
+                  0));
+          // drive.snapController.calculate(drive.getGyroYaw().getDegrees(), degreeSetpoint)));
+        }),
+        drive);
+  }
 }

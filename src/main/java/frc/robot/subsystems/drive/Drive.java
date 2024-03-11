@@ -81,8 +81,10 @@ public class Drive extends SubsystemBase {
   LoggedTunableNumber noteControllerTolerance =
       new LoggedTunableNumber("NoteController/tolerance", .1);
 
-  LoggedTunableNumber linearMovementControllerP = new LoggedTunableNumber("linearMovementController/kP", .44);
-  LoggedTunableNumber linearMovementControllerD = new LoggedTunableNumber("linearMovementController/kD", .00001);
+  LoggedTunableNumber linearMovementControllerP =
+      new LoggedTunableNumber("linearMovementController/kP", .44);
+  LoggedTunableNumber linearMovementControllerD =
+      new LoggedTunableNumber("linearMovementController/kD", .00001);
   LoggedTunableNumber linearMovementControllerTolerance =
       new LoggedTunableNumber("linearMovementController/tolerance", .1);
 
@@ -335,10 +337,11 @@ public class Drive extends SubsystemBase {
     }
 
     if (linearMovementControllerP.hasChanged(hashCode())
-    || linearMovementControllerD.hasChanged(hashCode())
-    || linearMovementControllerTolerance.hasChanged(hashCode())) {
-  linearMovementController.setPID(linearMovementControllerP.get(), 0.0, linearMovementControllerD.get());
-  linearMovementController.setTolerance(linearMovementControllerTolerance.get());
+        || linearMovementControllerD.hasChanged(hashCode())
+        || linearMovementControllerTolerance.hasChanged(hashCode())) {
+      linearMovementController.setPID(
+          linearMovementControllerP.get(), 0.0, linearMovementControllerD.get());
+      linearMovementController.setTolerance(linearMovementControllerTolerance.get());
     }
   }
 

@@ -267,7 +267,7 @@ public class PoseEstimator {
     this.latestPose = pose;
   }
 
-  public double getHorizontalOffset(){
+  public double getHorizontalOffset() {
     return photonEstimator.getHorzontalOffset();
   }
 }
