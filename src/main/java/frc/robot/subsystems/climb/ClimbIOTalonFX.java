@@ -80,12 +80,12 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   @Override
-  public void stopLeader(){
+  public void stopLeader() {
     leader.stopMotor();
   }
 
   @Override
-  public void stopFollower(){
+  public void stopFollower() {
     follower.stopMotor();
   }
 }

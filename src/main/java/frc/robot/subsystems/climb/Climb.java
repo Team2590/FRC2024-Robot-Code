@@ -1,8 +1,7 @@
 package frc.robot.subsystems.climb;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class Climb extends SubsystemBase {
   private ClimbIO io;
@@ -30,23 +29,22 @@ public class Climb extends SubsystemBase {
 
     // If both motors are above the threshold, stop both.
     if (leaderOutOfBounds && followerOutOfBounds) {
-        io.stop();
+      io.stop();
     } else {
-        // If only one motor is out of bounds, stop that specific motor.
-        if (leaderOutOfBounds) {
-            io.stopLeader();
-        }
-        if (followerOutOfBounds) {
-            io.stopFollower();
-        }
+      // If only one motor is out of bounds, stop that specific motor.
+      if (leaderOutOfBounds) {
+        io.stopLeader();
+      }
+      if (followerOutOfBounds) {
+        io.stopFollower();
+      }
 
-        // If neither motor is out of bounds, proceed to run them.
-        if (!leaderOutOfBounds && !followerOutOfBounds) {
-            io.setVoltage(4);
-        }
+      // If neither motor is out of bounds, proceed to run them.
+      if (!leaderOutOfBounds && !followerOutOfBounds) {
+        io.setVoltage(4);
+      }
     }
-}
-
+  }
 
   public void resetRotationCount() {
     io.resetRotationCount();
