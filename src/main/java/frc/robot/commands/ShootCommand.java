@@ -45,7 +45,12 @@ public class ShootCommand extends Command {
     isNoteDetectedAtIntake =
         superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     Tracer.trace("ShootCommand.execute(), Intake.detectNote:" + isNoteDetectedAtIntake);
-    superstructure.shoot();
+    if (timeToWait != DEFAULT_SECONDS_TO_WAIT){
+      superstructure.shoot(1800);
+    }
+    else{
+      superstructure.shoot();
+    }
     if (!superstructure.note_present()) {
       cycle++;
     }

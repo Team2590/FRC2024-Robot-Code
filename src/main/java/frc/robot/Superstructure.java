@@ -80,8 +80,8 @@ public class Superstructure extends SubsystemBase {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
-  private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
+  private int flywheelSpeedSetpoint = Constants.ShooterConstants.SETPOINT;// 2300
+  
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -217,7 +217,7 @@ public class Superstructure extends SubsystemBase {
          * PRIMING_SHOOTER (For Auto Routines)
          * Run flywheel at desired velocity. Useful in auto routines.
          */
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(flywheelSpeedSetpoint);
         arm.setPosition(
             armInterpolation.getValue(
                     RobotContainer.poseEstimator.distanceToTarget(
@@ -246,7 +246,7 @@ public class Superstructure extends SubsystemBase {
                     Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(flywheelSpeedSetpoint);
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
@@ -282,7 +282,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(flywheelSpeedSetpoint);
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
           if (!conveyor.hasNote()) {
@@ -374,7 +374,7 @@ public class Superstructure extends SubsystemBase {
 
   public void primeShooter() {
     Tracer.trace("Priming Shooter");
-    shooter.shoot(flywheelSpeedInput.get());
+    shooter.shoot(flywheelSpeedSetpoint);
     if (note_present()) {
       Tracer.trace("note_present=true, setting priming arm position");
       arm.setPosition(
@@ -399,6 +399,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void shoot() {
+    flywheelSpeedSetpoint = Constants.ShooterConstants.SETPOINT;
+    systemState = SuperstructureStates.SHOOT;
+  }
+
+  public void shoot(int setpoint){
+    flywheelSpeedSetpoint = setpoint;
     systemState = SuperstructureStates.SHOOT;
   }
 
