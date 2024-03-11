@@ -85,9 +85,9 @@ public class SnapToTargetCommandTeleop extends Command {
     } else if (currentError < -Math.PI) {
       currentAngle -= 2 * Math.PI;
     }
-    Logger.recordOutput("SnapController/Error", currentError);
-    Logger.recordOutput("SnapController/Target", target);
-    Logger.recordOutput("SnapController/TargetPose", targetPose);
+    // Logger.recordOutput("SnapController/Error", currentError);
+    // Logger.recordOutput("SnapController/Target", target);
+    // Logger.recordOutput("SnapController/TargetPose", targetPose);
 
     System.out.printf(
         "----> SnapToTargetComand: currentError[%f], currentAngle[%f], currentAngleDegree[%f]\n",

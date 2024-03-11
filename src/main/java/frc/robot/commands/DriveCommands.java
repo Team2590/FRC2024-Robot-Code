@@ -137,9 +137,9 @@ public class DriveCommands {
           } else if (currentError < -Math.PI) {
             currentAngle -= 2 * Math.PI;
           }
-          Logger.recordOutput("SnapController/CurrentError", currentError);
-          Logger.recordOutput("SnapController/Target", target);
-          Logger.recordOutput("SnapController/TargetPose", targetPose);
+          // Logger.recordOutput("SnapController/CurrentError", currentError);
+          // Logger.recordOutput("SnapController/Target", target);
+          // Logger.recordOutput("SnapController/TargetPose", targetPose);
           // run the motors
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -169,11 +169,11 @@ public class DriveCommands {
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier yError) {
     return Commands.run(
         (() -> {
-          Logger.recordOutput(
-              "Drive/NoteController/PID Output",
-              drive.noteController.calculate(-yError.getAsDouble(), 0)
-                  * drive.getMaxLinearSpeedMetersPerSec());
-          Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
+          // Logger.recordOutput(
+          //     "Drive/NoteController/PID Output",
+          //     drive.noteController.calculate(-yError.getAsDouble(), 0)
+          //         * drive.getMaxLinearSpeedMetersPerSec());
+          // Logger.recordOutput("Drive/NoteController/YError", yError.getAsDouble());
           drive.runVelocity(
               new ChassisSpeeds(
                   // joystick magnitude
