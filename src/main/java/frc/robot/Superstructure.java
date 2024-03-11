@@ -76,6 +76,7 @@ public class Superstructure extends SubsystemBase {
   private final Climb climb;
   private final NemesisLED led;
   public boolean readyToShoot = false;
+  public boolean detectedNote = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
@@ -148,15 +149,14 @@ public class Superstructure extends SubsystemBase {
         }
         break;
       case IDLE_INTAKING:
-        if (intake.detectNote()) {
+        if (intake.detectNote() || detectedNote) {
+          detectedNote = true;
           led.setColor(LEDConstants.DETECT_NOTE_COLOR);
         }
         if (conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
           led.setColor(LEDConstants.HAS_NOTE_COLOR);
           // intake.setStopped();
-        } else {
-          led.off();
         }
         climb.setStopped();
         break;
@@ -180,6 +180,10 @@ public class Superstructure extends SubsystemBase {
          */
 
         // if (arm.getState() == ArmStates.HOME) {
+        if (intake.detectNote()) {
+          detectedNote = true;
+          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+        }
         if (arm.getState() == ArmStates.HOME) {
           idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
@@ -247,19 +251,12 @@ public class Superstructure extends SubsystemBase {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && RobotContainer.getDrive().snapControllerAtSetpoint()) {
-            System.out.println("ARM AT SETPOINT " + (arm.getState() == ArmStates.AT_SETPOINT));
-            System.out.println(
-                "SHOOTER AT SETPOINT " + (shooter.getState() == ShooterStates.AT_SETPOINT));
-            System.out.println(
-                "SNAPCONTROLLER AT SETPOINT "
-                    + (RobotContainer.getDrive().snapControllerAtSetpoint())
-                    + " WITH ERROR "
-                    + RobotContainer.getDrive().getSnapControllerError());
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
             if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
+              detectedNote = false;
             }
           }
         } else {
@@ -270,6 +267,7 @@ public class Superstructure extends SubsystemBase {
             // appropriate
             if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
+              detectedNote = false;
             }
           }
         }
@@ -287,7 +285,10 @@ public class Superstructure extends SubsystemBase {
         shooter.shoot(flywheelSpeedInput.get());
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
-          idleState = IDLE_STATES.DEFAULT;
+            if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
+              detectedNote = false;
+            }
         }
         break;
 
@@ -308,9 +309,10 @@ public class Superstructure extends SubsystemBase {
          */
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
-          if (!conveyor.hasNote()) {
-            idleState = IDLE_STATES.DEFAULT;
-          }
+            if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
+              detectedNote = false;
+            }
         }
         break;
       case SCORE_TRAP:
@@ -444,6 +446,10 @@ public class Superstructure extends SubsystemBase {
     }
     pwr = new DutyCycleOut(0.1);
     systemState = SuperstructureStates.MANUAL_ARM;
+  }
+
+  public boolean getNoteDetected(){
+    return detectedNote;
   }
 
   public void armClimb() {
