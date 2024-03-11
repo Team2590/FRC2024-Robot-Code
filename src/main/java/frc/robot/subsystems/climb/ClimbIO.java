@@ -5,7 +5,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimbIO {
   @AutoLog
   public class ClimbIOInputs {
-    public double positionRotations = 0.0;
+    public double leaderPositionRotations = 0.0;
+    public double followerPositionRotations = 0.0;
   }
 
   public void updateInputs(ClimbIOInputs inputs);
@@ -19,4 +20,8 @@ public interface ClimbIO {
   public double getRotationCount();
 
   public void resetRotationCount();
+
+  public void stopLeader();
+
+  public void stopFollower();
 }
