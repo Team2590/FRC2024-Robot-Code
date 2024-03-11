@@ -201,6 +201,9 @@ public class RobotContainer {
                   .until(() -> input.rightJoystickButton(2)));
     } else if (input.rightJoystickButton(11)) {
       // manual arm w climb DOESNT WORK
+      superstructure.flip();
+      // superstructure.climb();
+    } else if (input.rightJoystickButton(16)) {
       superstructure.climb();
     } else if (input.rightJoystickButton(5)) {
       drive.zeroGyro();
