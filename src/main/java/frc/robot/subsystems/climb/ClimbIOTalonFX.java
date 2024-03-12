@@ -1,26 +1,39 @@
 package frc.robot.subsystems.climb;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants.ClimbConstants;
+import frc.robot.util.LoggedTunableNumber;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ClimbIOTalonFX implements ClimbIO {
+  Slot0Configs slot0;
+  TalonFXConfiguration config;
   private final TalonFX leader = new TalonFX(24);
   private final TalonFX follower = new TalonFX(25);
   private final int tolerance = 5;
+  private final PositionVoltage m_voltagePosition = new PositionVoltage(0, 0, true, 0, 0, false, false, false);
+  LoggedTunableNumber kP = new LoggedTunableNumber("Climb/kP", 0.1);
 
   public ClimbIOTalonFX() {
-    var config = new TalonFXConfiguration();
+    config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.Slot0.kP = .1;
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);
+    follower.setControl(new Follower(leader.getDeviceID(), true));
+
+    leader.setPosition(0);
   }
 
   @Override
@@ -87,5 +100,17 @@ public class ClimbIOTalonFX implements ClimbIO {
   @Override
   public void stopFollower() {
     follower.stopMotor();
+  }
+
+  @Override
+  public void setPosition(double position){
+    leader.setControl(m_voltagePosition.withPosition(position));
+  }
+
+  public void updateTunableNumbers() {
+    if (kP.hasChanged(0)) {
+      slot0.kP = kP.get();
+      leader.getConfigurator().apply(config);
+    }
   }
 }

@@ -24,4 +24,6 @@ public interface ClimbIO {
   public void stopLeader();
 
   public void stopFollower();
+
+  public void setPosition(double position);
 }
