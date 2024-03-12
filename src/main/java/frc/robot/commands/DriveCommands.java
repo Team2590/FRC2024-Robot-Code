@@ -29,7 +29,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
