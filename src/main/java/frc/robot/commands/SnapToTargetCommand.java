@@ -15,7 +15,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Snaps to target command.

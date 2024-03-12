@@ -8,7 +8,6 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.commands.SnapToTargetCommandTeleop;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
@@ -185,7 +184,14 @@ public class RobotContainer {
 
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
-        CommandScheduler.getInstance().schedule(snapCommand);
+        CommandScheduler.getInstance()
+            .schedule(
+                DriveCommands.SnapToTarget(
+                        drive,
+                        () -> -input.leftJoystickY(),
+                        () -> -input.leftJoystickX(),
+                        Targets.SPEAKER)
+                    .until(() -> input.leftJoystickTrigger()));
         superstructure.shoot();
       } else {
         superstructure.scoreAmp();
