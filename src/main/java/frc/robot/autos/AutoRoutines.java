@@ -34,9 +34,9 @@ public class AutoRoutines {
     //     ezAuto.apply(
     //         "startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT, "note1_n4", "n4_return",
     // SNAP_SHOOT));
-    // autoChooser.addOption(
-    //     "3_startB_n2_n1",
-    //     ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n1", SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startB_n2_n1",
+        ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n1", SNAP_SHOOT));
     // autoChooser.addOption(
     //     "3_startB_n2_n5",
     //     ezAuto.apply(

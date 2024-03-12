@@ -80,8 +80,8 @@ public class Superstructure extends SubsystemBase {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
-  private int flywheelSpeedSetpoint = Constants.ShooterConstants.SETPOINT;// 2300
-  
+  private int flywheelSpeedSetpoint = Constants.ShooterConstants.SETPOINT; // 2300
+
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -403,7 +403,7 @@ public class Superstructure extends SubsystemBase {
     systemState = SuperstructureStates.SHOOT;
   }
 
-  public void shoot(int setpoint){
+  public void shoot(int setpoint) {
     flywheelSpeedSetpoint = setpoint;
     systemState = SuperstructureStates.SHOOT;
   }
