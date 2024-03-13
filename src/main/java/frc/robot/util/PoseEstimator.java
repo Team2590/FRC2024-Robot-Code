@@ -97,12 +97,13 @@ public class PoseEstimator {
     double theta = Math.atan2(difference.getY(), difference.getX());
     double currentAngle = RobotContainer.getDrive().getGyroYaw().getRadians() % (2 * Math.PI);
     double currentError = theta - currentAngle;
-    if (currentError > Math.PI) {
-      currentAngle += 2 * Math.PI;
-    } else if (currentError < -Math.PI) {
-      currentAngle -= 2 * Math.PI;
-    }
-    return currentError;
+    // if (currentError > Math.PI) {
+    //   currentError += 2 * Math.PI;
+    // } else if (currentError < -Math.PI) {
+    //   currentError -= 2 * Math.PI;
+    // }
+
+    return currentError % (2 * Math.PI);
   }
 
   public double distanceBetweenPoses(Pose2d a, Pose2d b) {
