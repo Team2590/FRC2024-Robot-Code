@@ -13,6 +13,7 @@
 
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,10 +31,6 @@ import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
-
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -201,12 +198,10 @@ public class DriveCommands {
         });
   }
 
-  //technically getpathconstrains 
-  public static Command flyToPose(Drive drive, Pose2d targetPose)
-  {
-    Command flyCommand = AutoBuilder.pathfindToPose(targetPose, drive.getPathConstraints(), 0.0);
+  // technically getpathconstrains
+  public static Command flyToPose(Drive drive, Pose2d targetPose) {
+    Pose2d target = GeomUtil.flipPoseBasedOnAlliance(targetPose);
+    Command flyCommand = AutoBuilder.pathfindToPose(target, drive.getPathConstraints(), 0.0);
     return flyCommand;
-    
   }
-
 }
