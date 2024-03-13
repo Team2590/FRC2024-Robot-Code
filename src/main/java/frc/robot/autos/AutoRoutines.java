@@ -100,7 +100,7 @@ public class AutoRoutines {
         "4_startB_close",
         ezAuto.apply(
             "startB",
-            SHOOT,
+            SNAP_SHOOT,
             "startB_note1",
             SNAP_SHOOT,
             "note1_n2",
@@ -112,7 +112,7 @@ public class AutoRoutines {
         "4_startA_n1_n2_n3",
         ezAuto.apply(
             "startA",
-            SHOOT,
+            SNAP_SHOOT,
             "startA_note1",
             SNAP_SHOOT,
             "note1_n2",
@@ -164,18 +164,6 @@ public class AutoRoutines {
     return autoChooser;
   }
 
-  /** Creates a single note auto. */
-  // private static Command oneNoteAuto(
-  //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
-  //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(true)
-  //       .startPath("startB_note1")
-  //       .shoot(true)
-  //       .followPath("n2-n3")
-  //       .shoot(true)
-  //       .build();
-  // }
-
   /**
    * Easy way to configure an Auto Routine, just pass in the paths.
    *
@@ -199,6 +187,12 @@ public class AutoRoutines {
         case INTAKE:
           // intake automatically starts up after shoot but just in case if we need it.
           builder.intake();
+          break;
+        case "startA":
+        case "StartA":
+        case "startB":
+        case "startC":
+          builder.resetPoseUsingPath(path);
           break;
         default:
           // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.

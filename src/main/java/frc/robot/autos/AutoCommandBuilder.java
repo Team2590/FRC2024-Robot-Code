@@ -1,14 +1,17 @@
 package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.FieldConstants.Targets;
+import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.GeomUtil;
 
 public class AutoCommandBuilder {
 
@@ -16,9 +19,7 @@ public class AutoCommandBuilder {
   private final Drive drive;
   private final Superstructure superstructure;
   private final SequentialCommandGroup commands;
-  private boolean startPathSpecified = false;
-
-  private static String curr_path_name = "none";
+  private boolean isPoseReset = false;
 
   public AutoCommandBuilder(PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
     this.paths = paths;
@@ -27,25 +28,30 @@ public class AutoCommandBuilder {
     this.commands = new SequentialCommandGroup();
   }
 
-  public AutoCommandBuilder startPath(String pathName) {
-    curr_path_name = pathName;
-    startPathSpecified = true;
+  public AutoCommandBuilder resetPoseUsingPath(String pathName) {
+    Pose2d poseFromPath = paths.getStartingPose(pathName);
+    return resetPose(poseFromPath);
+  }
+
+  public AutoCommandBuilder resetPose(Pose2d pose) {
     commands.addCommands(
-        Commands.print("Running Start Path for " + pathName),
-        new StartPathCommand(paths, pathName, superstructure));
+        Commands.runOnce(
+            () -> {
+              Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(pose);
+              RobotContainer.poseEstimator.resetPose(translatedPose);
+            }));
+    isPoseReset = true;
     return this;
   }
 
   public AutoCommandBuilder followPath(String pathName) {
-    curr_path_name = pathName;
-    if (!startPathSpecified) {
-      // If the first path wasn't specified, make this the first path.
-      startPath(pathName);
-    } else {
-      commands.addCommands(
-          Commands.print("Running FollowPathCommand for " + pathName),
-          paths.getFollowPathCommand(pathName));
+    if (!isPoseReset) {
+      // If the pose wasn't reset, use the first path to reset.
+      resetPoseUsingPath(pathName);
     }
+    commands.addCommands(
+        Commands.print("Running FollowPathCommand for " + pathName),
+        paths.getFollowPathCommand(pathName));
     return this;
   }
 
@@ -64,10 +70,6 @@ public class AutoCommandBuilder {
 
     commands.addCommands(new ShootCommand(superstructure, 3));
     return this;
-  }
-
-  public static String getName() {
-    return curr_path_name;
   }
 
   public Command build() {
