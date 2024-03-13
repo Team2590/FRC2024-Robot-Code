@@ -45,7 +45,7 @@ public class PathPlannerPaths {
   }
 
   private PathPlannerPath getPath(String pathName) {
-    PathPlannerPath path = paths.get(pathName);
+    PathPlannerPath path = paths.get(pathName.toLowerCase());
     if (path == null) {
       throw new RuntimeException("Can't find path for " + pathName);
     }
@@ -54,7 +54,7 @@ public class PathPlannerPaths {
 
   private static void addPath(Map<String, PathPlannerPath> paths, String pathName) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-    paths.put(pathName, path);
+    paths.put(pathName.toLowerCase(), path);
   }
 
   /**

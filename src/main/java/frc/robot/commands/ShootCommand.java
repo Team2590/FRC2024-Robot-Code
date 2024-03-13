@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
+// import frc.robot.util.Tracer;
 
 /**
  * Command for shooting using the Superstructure.
@@ -11,8 +12,6 @@ import frc.robot.Superstructure;
  * time has elapsed.
  */
 public class ShootCommand extends Command {
-
-  private static final double DEFAULT_SECONDS_TO_WAIT = 0.5;
 
   private final Timer timer = new Timer();
   private final double timeToWait;
@@ -24,32 +23,29 @@ public class ShootCommand extends Command {
     addRequirements(superstructure.getShooter());
   }
 
-  public ShootCommand(Superstructure superstructure) {
-    this(superstructure, DEFAULT_SECONDS_TO_WAIT);
-  }
-
   @Override
   public void initialize() {
     timer.restart();
+    // isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
   }
 
   @Override
   public void execute() {
-    System.out.println("Shooting .... ");
+    // isNoteDetectedAtIntake =
+    //     superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     superstructure.shoot();
   }
 
   @Override
   public boolean isFinished() {
-    // return !(superstructure.note_present()) || (timer.hasElapsed(timeToWait));
-    return timer.hasElapsed(timeToWait);
-    // TODO create a condition to figure out when shooting is done- conveyor, !hasnote
+    boolean notePresent = superstructure.note_present();
+    return !notePresent || timer.hasElapsed(timeToWait);
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    // start intake immediately after shooting
-    // superstructure.intake();
+    // Tracer.trace("ShootCommand.end(), interrupted:" + interrupted);
+    // superstructure.getIntake().resetDetectedNoteForAuton();
   }
 }
