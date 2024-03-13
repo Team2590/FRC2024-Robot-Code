@@ -34,7 +34,7 @@ import frc.robot.util.LoggedTunableNumber;
  */
 public final class Constants {
 
-  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+  public static final Mode currentMode = Mode.KANG; // RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);

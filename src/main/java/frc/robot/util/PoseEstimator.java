@@ -284,7 +284,7 @@ public class PoseEstimator {
     this.latestPose = pose;
   }
 
-  public PhotonRunnable getPhotonRunnable(){
+  public PhotonRunnable getPhotonRunnable() {
     return photonEstimator;
   }
 }

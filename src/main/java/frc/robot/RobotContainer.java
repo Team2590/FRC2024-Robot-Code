@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -52,6 +54,7 @@ public class RobotContainer {
   private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
   private final UserInput input;
+  Joystick joystick;
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
@@ -132,6 +135,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOTalonFX());
         break;
     }
+    joystick = new Joystick(3);
     snapCommand =
         new SnapToTargetCommandTeleop(
             drive,
@@ -169,16 +173,21 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
+    Logger.recordOutput(
+        "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
+    Logger.recordOutput(
+        "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
 
-    if (input.controllerAButton()) {
+    if (joystick.getTrigger()) {
+
       CommandScheduler.getInstance()
-      .schedule(
-          DriveCommands.alignClimb(
-                  drive,
-                  () -> -input.leftJoystickY(),
-                  poseEstimator.getPhotonRunnable().getStageAprilTag(),
-                  poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-              .until(() -> input.controllerAButton()));
+          .schedule(
+              DriveCommands.alignClimb(
+                      drive,
+                      () -> -joystick.getY(),
+                      poseEstimator.getPhotonRunnable().getStageAprilTag(),
+                      poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+                  .until(() -> joystick.getTrigger()));
       // superstructure.primeShooter();
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();

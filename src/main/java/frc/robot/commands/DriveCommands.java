@@ -198,41 +198,42 @@ public class DriveCommands {
         });
   }
 
-  public static Command alignClimb(Drive drive, DoubleSupplier xSupplier, int aprilTag, double lateralOffset){
+  public static Command alignClimb(
+      Drive drive, DoubleSupplier xSupplier, int aprilTag, double lateralOffset) {
     double angleSetpoint;
-    switch (aprilTag){
+    switch (aprilTag) {
       case (12):
-      angleSetpoint = 240;
-      break;
+        angleSetpoint = 240;
+        break;
       case (15):
-      angleSetpoint = 120;
-      break;
+        angleSetpoint = 120;
+        break;
       case (11):
-      angleSetpoint = 120;
-      break;
+        angleSetpoint = 120;
+        break;
       case (16):
-      angleSetpoint = 240;
-      break;
+        angleSetpoint = 240;
+        break;
       case (13):
-      angleSetpoint = 0;
-      break;
+        angleSetpoint = 0;
+        break;
       case (14):
-      angleSetpoint = 0;
-      break;
+        angleSetpoint = 0;
+        break;
       default:
-      angleSetpoint = 0;
+        angleSetpoint = 0;
     }
     return Commands.run(
-      (() -> {
-        drive.runVelocity(
-            new ChassisSpeeds(
-                // joystick magnitude
-                xSupplier.getAsDouble()
+        (() -> {
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  // joystick magnitude
+                  xSupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * .25,
+                  drive.linearMovementController.calculate(lateralOffset, 0)
                       * drive.getMaxLinearSpeedMetersPerSec(),
-                      drive.linearMovementController.calculate(lateralOffset, 0)
-                      * drive.getMaxLinearSpeedMetersPerSec(),
-                drive.snapController.calculate(RobotContainer.poseEstimator.getLatestPose().getRotation().getDegrees(), angleSetpoint)));
-      }),
-      drive);
+                  drive.snapController.calculate(drive.getGyroYaw().getDegrees(), angleSetpoint)
+                      * .25));
+        }),
+        drive);
   }
 }

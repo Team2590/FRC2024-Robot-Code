@@ -36,7 +36,7 @@ public class PhotonRunnable implements Runnable {
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
   public final AprilTagFieldLayout layout;
-  private double horizontalOffset;
+  private double horizontalOffset = 0;
 
   public PhotonRunnable(String name, Transform3d cameraTransform3d) {
     this.photonCamera = new PhotonCamera(name);
@@ -113,18 +113,18 @@ public class PhotonRunnable implements Runnable {
   }
 
   private void updateHorizontalOffset() {
-      for (PhotonTrackedTarget t : photonResults.targets) {
-        if (t.getFiducialId() >= 11) {
-          horizontalOffset = t.getBestCameraToTarget().getY();
-        }
+    for (PhotonTrackedTarget t : photonResults.targets) {
+      if (t.getFiducialId() >= 11) {
+        horizontalOffset = t.getBestCameraToTarget().getY();
       }
     }
+  }
 
-  public double getHorizontalOffsetToStage(){
+  public double getHorizontalOffsetToStage() {
     return horizontalOffset;
   }
 
-  public int getStageAprilTag(){
+  public int getStageAprilTag() {
     int tag = -1;
     for (PhotonTrackedTarget t : photonResults.targets) {
       if (t.getFiducialId() >= 11) {
