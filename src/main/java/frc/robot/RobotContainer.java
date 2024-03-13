@@ -171,7 +171,15 @@ public class RobotContainer {
      */
 
     if (input.controllerAButton()) {
-      superstructure.primeShooter();
+      CommandScheduler.getInstance()
+      .schedule(
+          DriveCommands.alignClimb(
+                  drive,
+                  () -> -input.leftJoystickY(),
+                  poseEstimator.getPhotonRunnable().getStageAprilTag(),
+                  poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+              .until(() -> input.controllerAButton()));
+      // superstructure.primeShooter();
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
     }

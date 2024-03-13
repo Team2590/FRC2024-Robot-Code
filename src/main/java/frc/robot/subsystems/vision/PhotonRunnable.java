@@ -21,6 +21,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** Runnable that gets AprilTag data from PhotonVision. */
 public class PhotonRunnable implements Runnable {
@@ -35,6 +36,7 @@ public class PhotonRunnable implements Runnable {
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
   public final AprilTagFieldLayout layout;
+  private double horizontalOffset;
 
   public PhotonRunnable(String name, Transform3d cameraTransform3d) {
     this.photonCamera = new PhotonCamera(name);
@@ -79,6 +81,7 @@ public class PhotonRunnable implements Runnable {
                     }
                   });
         }
+        updateHorizontalOffset();
       }
     }
   }
@@ -107,5 +110,27 @@ public class PhotonRunnable implements Runnable {
         timestamp,
         grabLatestEstimatedPose().estimatedPose.toPose2d(),
         VecBuilder.fill(.001, .003, .005));
+  }
+
+  private void updateHorizontalOffset() {
+      for (PhotonTrackedTarget t : photonResults.targets) {
+        if (t.getFiducialId() >= 11) {
+          horizontalOffset = t.getBestCameraToTarget().getY();
+        }
+      }
+    }
+
+  public double getHorizontalOffsetToStage(){
+    return horizontalOffset;
+  }
+
+  public int getStageAprilTag(){
+    int tag = -1;
+    for (PhotonTrackedTarget t : photonResults.targets) {
+      if (t.getFiducialId() >= 11) {
+        tag = t.getFiducialId();
+      }
+    }
+    return tag;
   }
 }
