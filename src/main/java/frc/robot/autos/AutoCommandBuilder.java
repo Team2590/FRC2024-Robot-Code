@@ -44,9 +44,7 @@ public class AutoCommandBuilder {
     } else {
       commands.addCommands(
           Commands.print("Running FollowPathCommand for " + pathName),
-          Commands.parallel(
-              paths.getFollowPathCommand(pathName),
-              Commands.run(() -> superstructure.intake()).until(superstructure::note_present)));
+          paths.getFollowPathCommand(pathName));
     }
     return this;
   }
