@@ -362,11 +362,11 @@ public class Superstructure extends SubsystemBase {
   public void primeShooter() {
     System.out.println("-- primingShooter");
     shooter.shoot(flywheelSpeedInput.get());
-    arm.setPosition(
-        armInterpolation.getValue(
-                RobotContainer.poseEstimator.distanceToTarget(
-                    Constants.FieldConstants.Targets.SPEAKER))
-            + offset.get());
+    // arm.setPosition(
+    //     armInterpolation.getValue(
+    //             RobotContainer.poseEstimator.distanceToTarget(
+    //                 Constants.FieldConstants.Targets.SPEAKER))
+    //         + offset.get());
   }
 
   // public void clearNotes() {

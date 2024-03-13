@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -82,7 +83,7 @@ public class AutoCommandBuilder {
   }
   // TODO Add a method to keep the shooter primed while moving.
 
-  public SequentialCommandGroup build() {
-    return commands;
+  public Command build() {
+    return Commands.race(Commands.run(() -> superstructure.primeShooter()), commands);
   }
 }
