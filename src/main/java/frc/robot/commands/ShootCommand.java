@@ -21,15 +21,25 @@ public class ShootCommand extends Command {
   private final Superstructure superstructure;
   private boolean isNoteDetectedAtIntake = false;
   private int cycle = 0;
+  private int shooterPoint;
 
   public ShootCommand(Superstructure superstructure, double timeToWait) {
     this.superstructure = superstructure;
     this.timeToWait = timeToWait;
     addRequirements(superstructure.getShooter());
+    shooterPoint = 2300;
   }
 
   public ShootCommand(Superstructure superstructure) {
     this(superstructure, DEFAULT_SECONDS_TO_WAIT);
+    shooterPoint = 2300;
+  }
+
+  public ShootCommand(Superstructure superstructure, double timeToWait, int setpoint) {
+    this.superstructure = superstructure;
+    this.timeToWait = timeToWait;
+    addRequirements(superstructure.getShooter());
+    shooterPoint = setpoint;
   }
 
   @Override
@@ -37,6 +47,8 @@ public class ShootCommand extends Command {
     timer.restart();
     // Tracer.trace("ShootCommand.isInitialize:" + superstructure.note_present());
     // isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
+    // if(!superstructure.getIntake().detectNote() && superstructure.note_present())
+    //   shooterPoint=900;
   }
 
   @Override
@@ -44,7 +56,7 @@ public class ShootCommand extends Command {
     // isNoteDetectedAtIntake =
     //     superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     // Tracer.trace("ShootCommand.execute(), Intake.detectNote:" + isNoteDetectedAtIntake);
-    superstructure.shoot();
+    superstructure.shoot(shooterPoint);
     if (!superstructure.note_present()) {
       cycle++;
     }

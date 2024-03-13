@@ -77,8 +77,7 @@ public class Superstructure extends SubsystemBase {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
-  private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel/Flywheel Speed", 2300.0); // 2300
+  private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -106,6 +105,7 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput(
         "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
+    Logger.recordOutput("FlywheelSetpoint", flywheelSpeedInput);
     switch (systemState) {
       case DISABLED:
         // stop
@@ -210,7 +210,7 @@ public class Superstructure extends SubsystemBase {
          * PRIMING_SHOOTER (For Auto Routines)
          * Run flywheel at desired velocity. Useful in auto routines.
          */
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(flywheelSpeedInput);
         arm.setPosition(
             armInterpolation.getValue(
                     RobotContainer.poseEstimator.distanceToTarget(
@@ -239,7 +239,7 @@ public class Superstructure extends SubsystemBase {
                     Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         arm.setPosition(armDistanceSetPoint);
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(flywheelSpeedInput);
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
@@ -273,7 +273,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
-        shooter.shoot(flywheelSpeedInput.get());
+        shooter.shoot(Constants.ShooterConstants.SETPOINT);
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
           idleState = IDLE_STATES.DEFAULT;
@@ -322,6 +322,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case FLIPPING:
         climb.flip();
+        break;
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());
@@ -368,7 +369,7 @@ public class Superstructure extends SubsystemBase {
     //                 Constants.FieldConstants.Targets.SPEAKER))
     //         + offset.get());
     if (note_present()) {
-      shooter.shoot(flywheelSpeedInput.get());
+      shooter.shoot(flywheelSpeedInput);
     } else {
       intake();
     }
@@ -387,6 +388,12 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void shoot() {
+    flywheelSpeedInput = 2300;
+    systemState = SuperstructureStates.SHOOT;
+  }
+
+  public void shoot(int setpoint) {
+    flywheelSpeedInput = setpoint;
     systemState = SuperstructureStates.SHOOT;
   }
 

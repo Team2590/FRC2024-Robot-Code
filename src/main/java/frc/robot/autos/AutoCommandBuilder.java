@@ -72,7 +72,26 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 3));
+    commands.addCommands(new ShootCommand(superstructure, 1));
+    return this;
+  }
+
+  public AutoCommandBuilder shoot(boolean snapToSpeaker, int setpoint) {
+    if (snapToSpeaker) {
+      commands.addCommands(
+          new SnapToTargetCommand(
+              drive,
+              () -> 0,
+              () -> 0,
+              Targets.SPEAKER,
+              1.0d // TODO: Figure out the best error tolerance.
+              ));
+      // Commands.race(
+      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
+      //     Commands.waitSeconds(2.0)));
+    }
+
+    commands.addCommands(new ShootCommand(superstructure, 1, setpoint));
     return this;
   }
 
