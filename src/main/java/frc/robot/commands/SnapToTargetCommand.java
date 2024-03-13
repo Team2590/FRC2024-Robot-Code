@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,7 +13,9 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
+// import frc.robot.util.Tracer;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Snaps to target command.
@@ -25,36 +26,33 @@ import java.util.function.DoubleSupplier;
  */
 public class SnapToTargetCommand extends Command {
 
-  private static final double WAIT_TIME_SECONDS = 2.0;
-
   private final Drive drive;
   private final DoubleSupplier xSupplier;
   private final DoubleSupplier ySupplier;
   private final Targets target;
-  private final double errorTolerance;
   private final Timer timer = new Timer();
+  private final double waitTimeSeconds;
 
   private Pose2d targetPose;
   private double currentError;
-  private int count;
 
   public SnapToTargetCommand(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       FieldConstants.Targets target,
-      double errorTolerance) {
+      double waitTimeSeconds) {
     addRequirements(drive);
     this.drive = drive;
     this.xSupplier = xSupplier;
     this.ySupplier = ySupplier;
     this.target = target;
-    this.errorTolerance = errorTolerance;
+    this.waitTimeSeconds = waitTimeSeconds;
   }
 
   @Override
   public void initialize() {
-    count = 0;
+    // Tracer.trace("SnapToTargetCommand.initialize()");
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
@@ -80,9 +78,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
-    // count++;
     // find angle
-    count++;
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX());
@@ -97,9 +93,6 @@ public class SnapToTargetCommand extends Command {
     // Logger.recordOutput("SnapController/Target", target);
     // Logger.recordOutput("SnapController/TargetPose", targetPose);
 
-    System.out.printf(
-        "----> SnapToTargetComand: currentError[%f], currentAngle[%f], currentAngleDegree[%f]\n",
-        currentError, currentAngle, Units.radiansToDegrees(currentAngle));
     // run the motors
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -116,14 +109,17 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 25;
-    // return false;
+    boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
+    // Tracer.trace(
+    //     "SnapToTargerCommand.isFinished(), SnapControllerAtSetPoint:" +
+    // snapControllerAtSetpoint);
+    return timer.hasElapsed(waitTimeSeconds); /*  Math.abs(currentError) <= .05; */
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
     drive.stop(); // added dt stop
+    Logger.recordOutput("Auto/Trace", "SnapToTargetCommand Done.");
   }
 }
