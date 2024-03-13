@@ -195,7 +195,6 @@ public class AutoRoutines {
           builder.resetPoseUsingPath(path);
           break;
         default:
-          // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
           builder.followPath(path);
           break;
       }

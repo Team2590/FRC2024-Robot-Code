@@ -16,6 +16,7 @@ public class ShootCommand extends Command {
   private final Timer timer = new Timer();
   private final double timeToWait;
   private final Superstructure superstructure;
+  private boolean isNoteDetectedAtIntake = false;
 
   public ShootCommand(Superstructure superstructure, double timeToWait) {
     this.superstructure = superstructure;
@@ -26,26 +27,29 @@ public class ShootCommand extends Command {
   @Override
   public void initialize() {
     timer.restart();
-    // isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
+    isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();;
   }
 
   @Override
   public void execute() {
-    // isNoteDetectedAtIntake =
-    //     superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     superstructure.shoot();
   }
 
   @Override
   public boolean isFinished() {
-    boolean notePresent = superstructure.note_present();
+     boolean notePresent = superstructure.note_present();
+    if (isNoteDetectedAtIntake && !notePresent) {
+      // The intake detected the note but it hasn't made it's way to the conveyor
+      // so we wait
+      return false;
+    }
+    // note not present means the we shot the note.
     return !notePresent || timer.hasElapsed(timeToWait);
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    // Tracer.trace("ShootCommand.end(), interrupted:" + interrupted);
-    // superstructure.getIntake().resetDetectedNoteForAuton();
+    superstructure.getIntake().resetDetectNoteForAuton();
   }
 }
