@@ -59,17 +59,7 @@ public class AutoCommandBuilder {
 
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
     if (snapToSpeaker) {
-      commands.addCommands(
-          new SnapToTargetCommand(
-              drive,
-              () -> 0,
-              () -> 0,
-              Targets.SPEAKER,
-              0.00001d // TODO: Figure out the best error tolerance.
-              ));
-      // Commands.race(
-      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-      //     Commands.waitSeconds(2.0)));
+      commands.addCommands(new SnapToTargetCommand(drive, () -> 0, () -> 0, Targets.SPEAKER, .05));
     }
 
     commands.addCommands(new ShootCommand(superstructure, 3));
@@ -79,7 +69,6 @@ public class AutoCommandBuilder {
   public static String getName() {
     return curr_path_name;
   }
-  // TODO Add a method to keep the shooter primed while moving.
 
   public Command build() {
     return Commands.race(Commands.run(() -> superstructure.primeShooter()), commands);

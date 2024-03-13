@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,18 +24,15 @@ import java.util.function.DoubleSupplier;
  */
 public class SnapToTargetCommand extends Command {
 
-  private static final double WAIT_TIME_SECONDS = 2.0;
-
   private final Drive drive;
   private final DoubleSupplier xSupplier;
   private final DoubleSupplier ySupplier;
   private final Targets target;
-  private final double errorTolerance;
   private final Timer timer = new Timer();
+  private final double errorTolerance;
 
   private Pose2d targetPose;
   private double currentError;
-  private int count;
 
   public SnapToTargetCommand(
       Drive drive,
@@ -54,7 +50,6 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void initialize() {
-    count = 0;
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
@@ -80,9 +75,7 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public void execute() {
-    // count++;
     // find angle
-    count++;
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX());
@@ -93,13 +86,7 @@ public class SnapToTargetCommand extends Command {
     } else if (currentError < -Math.PI) {
       currentAngle -= 2 * Math.PI;
     }
-    // Logger.recordOutput("SnapController/Error", currentError);
-    // Logger.recordOutput("SnapController/Target", target);
-    // Logger.recordOutput("SnapController/TargetPose", targetPose);
 
-    System.out.printf(
-        "----> SnapToTargetComand: currentError[%f], currentAngle[%f], currentAngleDegree[%f]\n",
-        currentError, currentAngle, Units.radiansToDegrees(currentAngle));
     // run the motors
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -116,14 +103,13 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // Wait a few seconds or if we are within error tolerance to stop running this command.
-    return timer.hasElapsed(WAIT_TIME_SECONDS) || count > 25;
-    // return false;
+    // boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
+    return Math.abs(currentError) <= errorTolerance;
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    drive.stop(); // added dt stop
+    drive.stop();
   }
 }
