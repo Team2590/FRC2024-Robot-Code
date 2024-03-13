@@ -24,7 +24,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
     return instance == null ? instance = new UserInput() : instance;
   }
 
-  private final BandedJoystick leftJoystick;
+  public final BandedJoystick leftJoystick;
   private final BandedJoystick rightJoystick;
   private final Smoother.Wrapper leftXInput;
   private final Smoother.Wrapper leftYInput;

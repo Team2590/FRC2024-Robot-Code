@@ -1,9 +1,16 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
@@ -114,6 +121,14 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOTalonFX());
         arm = new Arm(new ArmIOTalonFX());
         climb = new Climb(new ClimbIOTalonFX());
+        new JoystickButton(input.leftJoystick, 8)
+            .whileTrue(
+                AutoBuilder.pathfindToPose(
+                    new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
+                    new PathConstraints(
+                        4.0, 4.0, Units.degreesToRadians(360), Units.degreesToRadians(540)),
+                    0,
+                    2.0));
         break;
 
       default:
@@ -227,7 +242,15 @@ public class RobotContainer {
       input.setOperatorRumble(0);
       superstructure.primeAmp();
     } else if (input.leftJoystickButton(4)) {
-      superstructure.climb();
+      System.out.println("I am here");
+      AutoBuilder.pathfindToPose(
+              new Pose2d(14.0, 6.5, Rotation2d.fromDegrees(0)),
+              new PathConstraints(
+                  4.0, 4.0, Units.degreesToRadians(360), Units.degreesToRadians(540)),
+              0,
+              2.0)
+          .schedule();
+      // superstructure.climb();
     } else if (input.controllerButton(7)) {
       superstructure.resetRobot();
     } else {

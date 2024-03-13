@@ -88,10 +88,13 @@ public class PoseEstimator {
   }
 
   public double currentErrorToSpeaker() {
-    Pose2d targetPose =
-        DriverStation.getAlliance().get() == Alliance.Red
-            ? AprilTag.getTagPose(4)
-            : AprilTag.getTagPose(7);
+    Pose2d targetPose = new Pose2d();
+    if (DriverStation.getAlliance().isPresent()) {
+      targetPose =
+          DriverStation.getAlliance().get() == Alliance.Red
+              ? AprilTag.getTagPose(4)
+              : AprilTag.getTagPose(7);
+    }
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX());
