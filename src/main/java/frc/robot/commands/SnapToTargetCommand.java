@@ -104,7 +104,7 @@ public class SnapToTargetCommand extends Command {
   @Override
   public boolean isFinished() {
     // boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
-    return Math.abs(currentError) <= errorTolerance;
+    return Math.abs(currentError) <= errorTolerance || timer.hasElapsed(3.0);
   }
 
   @Override
