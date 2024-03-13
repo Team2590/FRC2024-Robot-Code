@@ -361,7 +361,7 @@ public class Superstructure extends SubsystemBase {
 
   public void primeShooter() {
     System.out.println("-- primingShooter");
-    
+
     // arm.setPosition(
     //     armInterpolation.getValue(
     //             RobotContainer.poseEstimator.distanceToTarget(
