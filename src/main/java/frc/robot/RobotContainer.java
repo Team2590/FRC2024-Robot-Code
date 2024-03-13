@@ -138,7 +138,7 @@ public class RobotContainer {
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
             Targets.SPEAKER,
-            0.00);
+            0.05);
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
