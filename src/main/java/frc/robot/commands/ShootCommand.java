@@ -27,7 +27,8 @@ public class ShootCommand extends Command {
   @Override
   public void initialize() {
     timer.restart();
-    isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();;
+    isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
+    System.out.println("---- initialize:" + isNoteDetectedAtIntake);
   }
 
   @Override
@@ -37,14 +38,21 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
-     boolean notePresent = superstructure.note_present();
+    boolean notePresent = superstructure.note_present();
     if (isNoteDetectedAtIntake && !notePresent) {
       // The intake detected the note but it hasn't made it's way to the conveyor
       // so we wait
+      System.out.println(
+          "--- waiting for note, notePresent:"
+              + notePresent
+              + " , isNoteDetectedAtIntake:"
+              + isNoteDetectedAtIntake);
       return false;
     }
     // note not present means the we shot the note.
-    return !notePresent || timer.hasElapsed(timeToWait);
+    // return !notePresent; // || timer.hasElapsed(timeToWait);
+    System.out.println("----- ShootCommand:" + superstructure.note_present());
+    return !superstructure.note_present();
   }
 
   @Override

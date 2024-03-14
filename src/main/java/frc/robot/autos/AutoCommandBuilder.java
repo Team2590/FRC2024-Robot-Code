@@ -34,6 +34,8 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder resetPose(Pose2d pose) {
+    superstructure.getIntake().resetDetectNoteForAuton();
+
     commands.addCommands(
         Commands.runOnce(
             () -> {
