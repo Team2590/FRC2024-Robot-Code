@@ -48,7 +48,7 @@ public class AutoRoutines {
             "startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n4", "n4_return", SNAP_SHOOT));
     autoChooser.addOption(
         "3_startB_n2_n3",
-        ezAuto.apply("startB", SNAP_SHOOT, "startB_note2", SNAP_SHOOT, "note2_n3", SNAP_SHOOT));
+        ezAuto.apply("startB", SHOOT, "startB_note2", SNAP_SHOOT, "note2_n3", SNAP_SHOOT));
     autoChooser.addOption(
         "3_startB_n2_n7",
         ezAuto.apply(
@@ -188,13 +188,24 @@ public class AutoRoutines {
       Superstructure superstructure,
       String... instructions) {
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
+    boolean firstShot = true;
     for (String path : instructions) {
       switch (path) {
         case SHOOT:
-          builder.shoot(false);
+          if (firstShot) {
+            builder.shoot(false, 1800);
+          } else {
+            builder.shoot(false);
+          }
+          firstShot = false;
           break;
         case SNAP_SHOOT:
-          builder.shoot(true);
+          if (firstShot) {
+            builder.shoot(true, 1800);
+          } else {
+            builder.shoot(true);
+          }
+          firstShot = false;
           break;
         case INTAKE:
           // intake automatically starts up after shoot but just in case if we need it.

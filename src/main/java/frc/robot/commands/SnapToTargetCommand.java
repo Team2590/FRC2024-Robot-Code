@@ -13,7 +13,9 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
+// import frc.robot.util.Tracer;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Snaps to target command.
@@ -29,7 +31,7 @@ public class SnapToTargetCommand extends Command {
   private final DoubleSupplier ySupplier;
   private final Targets target;
   private final Timer timer = new Timer();
-  private final double errorTolerance;
+  private final double waitTimeSeconds;
 
   private Pose2d targetPose;
   private double currentError;
@@ -39,17 +41,18 @@ public class SnapToTargetCommand extends Command {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       FieldConstants.Targets target,
-      double errorTolerance) {
+      double waitTimeSeconds) {
     addRequirements(drive);
     this.drive = drive;
     this.xSupplier = xSupplier;
     this.ySupplier = ySupplier;
     this.target = target;
-    this.errorTolerance = errorTolerance;
+    this.waitTimeSeconds = waitTimeSeconds;
   }
 
   @Override
   public void initialize() {
+    // Tracer.trace("SnapToTargetCommand.initialize()");
     timer.restart();
     boolean isRed = DriverStation.getAlliance().get() == Alliance.Red;
     switch (target) {
@@ -103,13 +106,17 @@ public class SnapToTargetCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    // boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
-    return Math.abs(currentError) <= errorTolerance;
+    boolean snapControllerAtSetpoint = drive.snapControllerAtSetpoint();
+    // Tracer.trace(
+    //     "SnapToTargerCommand.isFinished(), SnapControllerAtSetPoint:" +
+    // snapControllerAtSetpoint);
+    return timer.hasElapsed(waitTimeSeconds); /*  Math.abs(currentError) <= .05; */
   }
 
   @Override
   public void end(boolean interrupted) {
     timer.stop();
-    drive.stop();
+    drive.stop(); // added dt stop
+    Logger.recordOutput("Auto/Trace", "SnapToTargetCommand Done.");
   }
 }
