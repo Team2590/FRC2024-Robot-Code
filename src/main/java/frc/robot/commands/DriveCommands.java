@@ -197,4 +197,43 @@ public class DriveCommands {
           return Math.abs(yaw) <= 1 ? 0 : -yaw / 50 - Math.signum(yaw) / 10;
         });
   }
+
+  public static Command alignClimb(
+      Drive drive, DoubleSupplier xSupplier, int aprilTag, double lateralOffset) {
+    double angleSetpoint;
+    switch (aprilTag) {
+      case (12):
+        angleSetpoint = 240;
+        break;
+      case (15):
+        angleSetpoint = 120;
+        break;
+      case (11):
+        angleSetpoint = 120;
+        break;
+      case (16):
+        angleSetpoint = 240;
+        break;
+      case (13):
+        angleSetpoint = 0;
+        break;
+      case (14):
+        angleSetpoint = 0;
+        break;
+      default:
+        angleSetpoint = 0;
+    }
+    return Commands.run(
+        (() -> {
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  // joystick magnitude
+                  xSupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * .25,
+                  drive.linearMovementController.calculate(lateralOffset, 0)
+                      * drive.getMaxLinearSpeedMetersPerSec(),
+                  drive.snapController.calculate(drive.getGyroYaw().getDegrees(), angleSetpoint)
+                      * .25));
+        }),
+        drive);
+  }
 }
