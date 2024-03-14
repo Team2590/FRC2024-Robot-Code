@@ -13,9 +13,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.RobotContainer;
+import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -36,7 +38,10 @@ public class PhotonRunnable implements Runnable {
   private static PhotonPipelineResult photonResults;
   private Transform3d cameraTransform;
   public final AprilTagFieldLayout layout;
+
+  // for climb aligning
   private double horizontalOffset = 0;
+  private int lastAprilTagId;
 
   public PhotonRunnable(String name, Transform3d cameraTransform3d) {
     this.photonCamera = new PhotonCamera(name);
@@ -60,6 +65,7 @@ public class PhotonRunnable implements Runnable {
     if (photonPoseEstimator != null && photonCamera != null) {
       photonResults = photonCamera.getLatestResult();
       var timestamp = photonResults.getTimestampSeconds();
+      updateHorizontalOffset();
       if (photonResults.hasTargets()) {
         if (photonResults.targets.size() > 1
             || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
@@ -81,7 +87,6 @@ public class PhotonRunnable implements Runnable {
                     }
                   });
         }
-        updateHorizontalOffset();
       }
     }
   }
@@ -112,25 +117,29 @@ public class PhotonRunnable implements Runnable {
         VecBuilder.fill(.001, .003, .005));
   }
 
+  /** Updates the horizontal offset to the stage */
   private void updateHorizontalOffset() {
-    for (PhotonTrackedTarget t : photonResults.targets) {
-      if (t.getFiducialId() >= 11) {
-        horizontalOffset = t.getBestCameraToTarget().getY();
-      }
+    if (getStageAprilTag() >= 11) {
+      horizontalOffset =
+          RobotContainer.poseEstimator
+              .getLatestPose()
+              .minus(AprilTag.getTagPose(getStageAprilTag()))
+              .getY();
     }
   }
 
+  /** Gets the horizontal offset to the stage */
   public double getHorizontalOffsetToStage() {
     return horizontalOffset;
   }
 
+  /** Gets the current stage tag, or the last one if doesn't see one */
   public int getStageAprilTag() {
-    int tag = -1;
     for (PhotonTrackedTarget t : photonResults.targets) {
       if (t.getFiducialId() >= 11) {
-        tag = t.getFiducialId();
+        lastAprilTagId = t.getFiducialId();
       }
     }
-    return tag;
+    return lastAprilTagId;
   }
 }

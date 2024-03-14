@@ -175,6 +175,7 @@ public class RobotContainer {
      */
     Logger.recordOutput(
         "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
+
     Logger.recordOutput(
         "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
 
@@ -187,6 +188,9 @@ public class RobotContainer {
                       () -> -joystick.getY(),
                       poseEstimator.getPhotonRunnable().getStageAprilTag(),
                       poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+                  // drive,
+                  // () -> -joystick.getY(),
+                  // poseEstimator.getPhotonRunnable().getStageAprilTag())
                   .until(() -> joystick.getTrigger()));
       // superstructure.primeShooter();
     } else if (input.controllerBButton()) {
