@@ -17,12 +17,31 @@ public class Climb extends SubsystemBase {
   }
 
   public void run() {
-    io.setVoltage(4);
+    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 149;
+    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 149;
+
+    // If both motors are above the threshold, stop both.
+    if (leaderOutOfBounds && followerOutOfBounds) {
+      io.stop();
+    } else {
+      // If only one motor is out of bounds, stop that specific motor.
+      if (leaderOutOfBounds) {
+        io.stopLeader();
+      }
+      if (followerOutOfBounds) {
+        io.stopFollower();
+      }
+
+      // If neither motor is out of bounds, proceed to run them.
+      if (!leaderOutOfBounds && !followerOutOfBounds) {
+        io.setVoltage(4);
+      }
+    }
   }
 
   public void flip() {
-    Logger.recordOutput("Climb/ClimberRotation", inputs.leaderPositionRotations);
-    Logger.recordOutput("Climb/ClimberRotation", inputs.followerPositionRotations);
+    Logger.recordOutput("Climb/ClimberRotationL", inputs.leaderPositionRotations);
+    Logger.recordOutput("Climb/ClimberRotationF", inputs.followerPositionRotations);
 
     boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 9.25;
     boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 9.25;
