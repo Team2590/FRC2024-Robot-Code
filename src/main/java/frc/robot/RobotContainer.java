@@ -54,7 +54,6 @@ public class RobotContainer {
   private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
   private final UserInput input;
-  Joystick joystick;
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
@@ -135,7 +134,6 @@ public class RobotContainer {
         arm = new Arm(new ArmIOTalonFX());
         break;
     }
-    joystick = new Joystick(3);
     snapCommand =
         new SnapToTargetCommandTeleop(
             drive,
@@ -173,25 +171,21 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    Logger.recordOutput(
-        "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
+    // Logger.recordOutput(
+    //     "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
 
-    Logger.recordOutput(
-        "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
+    // Logger.recordOutput(
+    //     "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
 
-    if (joystick.getTrigger()) {
-
+    if (input.leftJoystickButton(4)) {
       CommandScheduler.getInstance()
           .schedule(
               DriveCommands.alignClimb(
                       drive,
-                      () -> -joystick.getY(),
+                      () -> -input.leftJoystickY(),
                       poseEstimator.getPhotonRunnable().getStageAprilTag(),
                       poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-                  // drive,
-                  // () -> -joystick.getY(),
-                  // poseEstimator.getPhotonRunnable().getStageAprilTag())
-                  .until(() -> joystick.getTrigger()));
+                  .until(() -> input.leftJoystickButton(4)));
       // superstructure.primeShooter();
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
