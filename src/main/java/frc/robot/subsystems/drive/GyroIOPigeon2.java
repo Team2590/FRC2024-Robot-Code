@@ -45,8 +45,8 @@ public class GyroIOPigeon2 implements GyroIO {
     }
   }
 
+  /** angle is in degrees */
   public void setGyro(double angle) {
-
     pigeon.setYaw(angle);
   }
 

@@ -29,5 +29,10 @@ public interface GyroIO {
 
   public default void reset() {}
 
+  /**
+   * Setpoint is in degrees
+   *
+   * @param setpoint
+   */
   public default void setGyro(double setpoint) {}
 }
