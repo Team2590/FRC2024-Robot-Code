@@ -98,7 +98,6 @@ public class AutoCommandBuilder {
   public static String getName() {
     return curr_path_name;
   }
-  // TODO Add a method to keep the shooter primed while moving.
 
   public Command build() {
     return Commands.race(Commands.run(() -> superstructure.primeShooter()), commands);

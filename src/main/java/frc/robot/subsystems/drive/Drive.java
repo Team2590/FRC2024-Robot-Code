@@ -61,6 +61,7 @@ public class Drive extends SubsystemBase {
 
   public final PIDController snapController = new PIDController(.34, 0.0, 0.0);
   public final PIDController noteController = new PIDController(.44, 0.0, .00001);
+  public final PIDController linearMovementController = new PIDController(.44, 0.0, .00001);
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
   private Pose2d pose = new Pose2d();
@@ -79,6 +80,13 @@ public class Drive extends SubsystemBase {
   LoggedTunableNumber noteControllerD = new LoggedTunableNumber("NoteController/kD", .00001);
   LoggedTunableNumber noteControllerTolerance =
       new LoggedTunableNumber("NoteController/tolerance", .1);
+
+  LoggedTunableNumber linearMovementControllerP =
+      new LoggedTunableNumber("linearMovementController/kP", .44);
+  LoggedTunableNumber linearMovementControllerD =
+      new LoggedTunableNumber("linearMovementController/kD", .00001);
+  LoggedTunableNumber linearMovementControllerTolerance =
+      new LoggedTunableNumber("linearMovementController/tolerance", .1);
 
   // public static Drive getInstance(){
   //   return instance == null ? instance = new Drive() : instance;

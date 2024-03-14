@@ -233,6 +233,8 @@ public class Superstructure extends SubsystemBase {
         break;
 
       case SHOOT:
+        Logger.recordOutput(
+            "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
         double armDistanceSetPoint =
             armInterpolation.getValue(
                 RobotContainer.poseEstimator.distanceToTarget(
@@ -361,13 +363,6 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void primeShooter() {
-    System.out.println("-- primingShooter");
-
-    // arm.setPosition(
-    //     armInterpolation.getValue(
-    //             RobotContainer.poseEstimator.distanceToTarget(
-    //                 Constants.FieldConstants.Targets.SPEAKER))
-    //         + offset.get());
     if (note_present()) {
       shooter.shoot(flywheelSpeedInput);
     } else {

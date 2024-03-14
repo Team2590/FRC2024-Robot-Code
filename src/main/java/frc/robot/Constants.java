@@ -123,7 +123,7 @@ public final class Constants {
     // Fill in
     public static final int INTAKE_ID = 14;
     public static final int INTAKE_PROX_CHANNEL = 0;
-    public static final double INTAKE_PROX_THRESHOLD = 0.19;
+    public static final double INTAKE_PROX_THRESHOLD = 0.1;
   }
 
   public final class ClimbConstants {

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -138,7 +140,7 @@ public class RobotContainer {
             () -> -input.leftJoystickY(),
             () -> -input.leftJoystickX(),
             Targets.SPEAKER,
-            0.00);
+            0.05);
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
@@ -169,9 +171,22 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
+    // Logger.recordOutput(
+    //     "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
 
-    if (input.controllerAButton()) {
-      superstructure.primeShooter();
+    // Logger.recordOutput(
+    //     "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
+
+    if (input.leftJoystickButton(4)) {
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.alignClimb(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      poseEstimator.getPhotonRunnable().getStageAprilTag(),
+                      poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+                  .until(() -> input.leftJoystickButton(4)));
+      // superstructure.primeShooter();
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
     }

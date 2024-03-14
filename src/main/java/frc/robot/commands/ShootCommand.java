@@ -13,10 +13,8 @@ import frc.robot.Superstructure;
  */
 public class ShootCommand extends Command {
 
-  private static final double DEFAULT_SECONDS_TO_WAIT = 3.0;
-  private static final int CYCLES_TO_WAIT = 3;
-
   private final Timer timer = new Timer();
+  private static final double DEFAULT_SECONDS_TO_WAIT = 3.0;
   private final double timeToWait;
   private final Superstructure superstructure;
   private boolean isNoteDetectedAtIntake = false;
@@ -45,7 +43,6 @@ public class ShootCommand extends Command {
   @Override
   public void initialize() {
     timer.restart();
-    // Tracer.trace("ShootCommand.isInitialize:" + superstructure.note_present());
     // isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
     // if(!superstructure.getIntake().detectNote() && superstructure.note_present())
     //   shooterPoint=900;
@@ -65,14 +62,7 @@ public class ShootCommand extends Command {
   @Override
   public boolean isFinished() {
     boolean notePresent = superstructure.note_present();
-    // Tracer.trace("ShootCommand.isFinished(), noteDetectedAtIntake:" + isNoteDetectedAtIntake);
-    // Tracer.trace("ShootCommand.isFinished(), cycle:" + cycle);
-    // Tracer.trace("ShootCommand.isFinished(), timer:" + timer.hasElapsed(timeToWait));
-    // If the note is not present anymore, we already shot or don't have the note anymore.
-    // This means we exit out of this command.
-    // return timer.hasElapsed(timeToWait) || !notePresent;
-    return // (!isNotePresentAtStart && !notePresent) ||
-    !notePresent || timer.hasElapsed(timeToWait);
+    return !notePresent || timer.hasElapsed(timeToWait);
   }
 
   @Override

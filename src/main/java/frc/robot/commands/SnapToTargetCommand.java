@@ -89,9 +89,6 @@ public class SnapToTargetCommand extends Command {
     } else if (currentError < -Math.PI) {
       currentAngle -= 2 * Math.PI;
     }
-    // Logger.recordOutput("SnapController/Error", currentError);
-    // Logger.recordOutput("SnapController/Target", target);
-    // Logger.recordOutput("SnapController/TargetPose", targetPose);
 
     // run the motors
     drive.runVelocity(

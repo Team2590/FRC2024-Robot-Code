@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -84,13 +83,6 @@ public class SnapToTargetCommandTeleop extends Command {
     } else if (currentError < -Math.PI) {
       currentAngle -= 2 * Math.PI;
     }
-    // Logger.recordOutput("SnapController/Error", currentError);
-    // Logger.recordOutput("SnapController/Target", target);
-    // Logger.recordOutput("SnapController/TargetPose", targetPose);
-
-    System.out.printf(
-        "----> SnapToTargetComand: currentError[%f], currentAngle[%f], currentAngleDegree[%f]\n",
-        currentError, currentAngle, Units.radiansToDegrees(currentAngle));
     // run the motors
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
