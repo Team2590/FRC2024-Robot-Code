@@ -34,7 +34,7 @@ public class Climb extends SubsystemBase {
 
       // If neither motor is out of bounds, proceed to run them.
       if (!leaderOutOfBounds && !followerOutOfBounds) {
-        io.setVoltage(4);
+        io.setVoltage(6);
       }
     }
   }
@@ -60,7 +60,7 @@ public class Climb extends SubsystemBase {
 
       // If neither motor is out of bounds, proceed to run them.
       if (!leaderOutOfBounds && !followerOutOfBounds) {
-        io.setVoltage(1);
+        io.setVoltage(2);
       }
     }
   }
