@@ -124,9 +124,10 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    // robotContainer.getDrive().gyroIO.setGyro(58.24); // startA
+    // robotContainer.getDrive().gyroIO.setGyro(0); // startB
+    // robotContainer.getDrive().gyroIO.setGyro(-58.24); // start C
     autonomousCommand = robotContainer.getAutonomousCommand();
-    robotContainer.getDrive().gyroIO.setGyro(-58.24);
-
     if (autonomousCommand == null) {
       System.err.println("No autonomous command set");
       return;
