@@ -363,10 +363,14 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void primeShooter() {
-    if (note_present()) {
-      shooter.shoot(flywheelSpeedInput);
+    if (DriverStation.isAutonomousEnabled()) {
+      if (note_present()) {
+        shooter.shoot(flywheelSpeedInput);
+      } else {
+        intake();
+      }
     } else {
-      intake();
+      shooter.shoot(flywheelSpeedInput);
     }
   }
 
@@ -444,6 +448,11 @@ public class Superstructure extends SubsystemBase {
 
   public void flip() {
     systemState = SuperstructureStates.FLIPPING;
+  }
+
+  public void runIntake() {
+    intake.setIntake();
+    // conveyor.setIntaking();
   }
 
   public SuperstructureStates getState() {

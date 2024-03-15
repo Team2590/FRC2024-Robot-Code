@@ -23,7 +23,7 @@ public class StartPathCommand extends SequentialCommandGroup {
             () -> {
               Pose2d translatedPose = GeomUtil.flipPoseBasedOnAlliance(startingPose);
               RobotContainer.poseEstimator.resetPose(translatedPose);
-              RobotContainer.getDrive().gyroIO.setGyro(translatedPose.getRotation().getDegrees());
+              // RobotContainer.getDrive().gyroIO.setGyro(translatedPose.getRotation().getDegrees());
             })
         // Starting Running the shooter
         // Commands.parallel(
