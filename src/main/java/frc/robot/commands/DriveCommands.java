@@ -29,6 +29,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
 import frc.robot.util.GeomUtil;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -223,16 +224,24 @@ public class DriveCommands {
       default:
         angleSetpoint = 0;
     }
+
     return Commands.run(
         (() -> {
+          double theta = drive.getGyroYaw().getDegrees() % 360;
+          double currentError = theta - angleSetpoint;
+          // if (currentError > 180) {
+          //   theta += 360;
+          // } else if (currentError < -180) {
+          //   theta -= 360;
+          // }
+          Logger.recordOutput("Odometry/current theta in stage", theta);
           drive.runVelocity(
               new ChassisSpeeds(
                   // joystick magnitude
                   xSupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * .25,
                   drive.linearMovementController.calculate(lateralOffset, 0)
                       * drive.getMaxLinearSpeedMetersPerSec(),
-                  drive.snapController.calculate(drive.getGyroYaw().getDegrees(), angleSetpoint)
-                      * .25));
+                  drive.snapController.calculate(theta, angleSetpoint) * .25));
         }),
         drive);
   }

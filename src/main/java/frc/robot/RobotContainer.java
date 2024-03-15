@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -168,6 +167,8 @@ public class RobotContainer {
   }
 
   public void updateUserInput() {
+    Logger.recordOutput("Odometry/Gyro", drive.getGyroYaw().getDegrees());
+
     /*
      * Driver input w/ superstructure
      */
@@ -175,18 +176,24 @@ public class RobotContainer {
     //     "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
 
     // Logger.recordOutput(
-    //     "Climb/HorizontalOffset", poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
+    //     "Climb/HorizontalOffset",
+    // poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
 
     if (input.leftJoystickButton(4)) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.alignClimb(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      poseEstimator.getPhotonRunnable().getStageAprilTag(),
-                      poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-                  .until(() -> input.leftJoystickButton(4)));
+      // CommandScheduler.getInstance()
+      //     .schedule(
+      //         DriveCommands.alignClimb(
+      //                 drive,
+      //                 () -> -input.leftJoystickY(),
+      //                 poseEstimator.getPhotonRunnable().getStageAprilTag(),
+      //                 poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+      //             .until(() -> input.leftJoystickButton(4)));
+      superstructure.flip();
       // superstructure.primeShooter();
+    }
+
+    if (input.controllerAButton()) {
+      superstructure.primeShooter();
     } else if (input.controllerBButton()) {
       superstructure.stopShooter();
     }
@@ -235,15 +242,28 @@ public class RobotContainer {
       superstructure.subwooferShot();
     } else if (input.rightJoystickPOV() == 180) {
       // spit
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.alignClimb(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      poseEstimator.getPhotonRunnable().getStageAprilTag(),
+                      poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+                  .until(() -> input.leftJoystickButton(4)));
+    } else if (input.rightJoystickPOV() == 90) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(3)) {
       // highkey does not work rn
       teleopSpeaker = false;
       input.setOperatorRumble(0);
       superstructure.primeAmp();
-    } else if (input.leftJoystickButton(4)) {
+    } else if (input.rightJoystickButton(4)) {
       superstructure.climb();
-    } else if (input.controllerButton(7)) {
+    }
+    // else if (input.leftJoystickButton(4)) {
+    //   superstructure.climb();
+    // }
+    else if (input.controllerButton(7)) {
       superstructure.resetRobot();
     } else {
 

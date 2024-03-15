@@ -125,6 +125,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
+    robotContainer.getDrive().gyroIO.setGyro(-58.24);
 
     if (autonomousCommand == null) {
       System.err.println("No autonomous command set");

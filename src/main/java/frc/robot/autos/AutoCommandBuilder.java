@@ -91,7 +91,7 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 0.7, setpoint));
+    commands.addCommands(new ShootCommand(superstructure, 0.85, setpoint));
     return this;
   }
 
