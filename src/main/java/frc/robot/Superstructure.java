@@ -155,8 +155,6 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.DEFAULT;
           led.setColor(LEDConstants.HAS_NOTE_COLOR);
           // intake.setStopped();
-        } else {
-          led.off();
         }
         climb.setStopped();
         break;
