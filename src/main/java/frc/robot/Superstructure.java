@@ -144,6 +144,7 @@ public class Superstructure extends SubsystemBase {
         } else {
           shooter.setStopped();
           arm.setHome();
+          led.off();
         }
         break;
       case IDLE_INTAKING:
@@ -248,7 +249,6 @@ public class Superstructure extends SubsystemBase {
             // appropriate
             if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
-              led.off();
             }
           }
         } else {
@@ -259,7 +259,6 @@ public class Superstructure extends SubsystemBase {
             // appropriate
             if (!conveyor.hasNote()) {
               idleState = IDLE_STATES.DEFAULT;
-              led.off();
             }
           }
         }
@@ -278,7 +277,6 @@ public class Superstructure extends SubsystemBase {
         if (shooter.getState() == ShooterStates.AT_SETPOINT) {
           conveyor.setShooting();
           idleState = IDLE_STATES.DEFAULT;
-          led.off();
         }
         break;
 
@@ -309,7 +307,6 @@ public class Superstructure extends SubsystemBase {
         if (arm.getState() == ArmStates.AT_SETPOINT) {
           conveyor.setDiverting();
           idleState = IDLE_STATES.DEFAULT;
-          led.off();
         }
         break;
       case ARM_CLIMB:
