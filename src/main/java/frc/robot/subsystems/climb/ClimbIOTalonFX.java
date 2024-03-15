@@ -17,7 +17,7 @@ public class ClimbIOTalonFX implements ClimbIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leader.getConfigurator().apply(config);
     follower.getConfigurator().apply(config);

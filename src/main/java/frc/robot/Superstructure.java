@@ -74,6 +74,7 @@ public class Superstructure extends SubsystemBase {
   private final Climb climb;
   private final NemesisLED led;
   public boolean readyToShoot = false;
+  private boolean climbed = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
@@ -143,7 +144,9 @@ public class Superstructure extends SubsystemBase {
           }
         } else {
           shooter.setStopped();
-          arm.setHome();
+          if (!climbed) {
+            arm.setHome();
+          }
           led.off();
         }
         break;
@@ -319,9 +322,11 @@ public class Superstructure extends SubsystemBase {
          * climb.climb() -- > Sets climb to manual state
          */
         climb.run();
+        climbed = true;
         break;
       case FLIPPING:
         climb.flip();
+        climbed = true;
         break;
     }
     Logger.recordOutput("Superstructure/State", systemState);
@@ -353,6 +358,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void resetRobot() {
+    climbed = false;
     systemState = SuperstructureStates.RESET;
   }
 
