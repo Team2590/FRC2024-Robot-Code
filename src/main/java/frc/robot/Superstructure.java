@@ -144,7 +144,7 @@ public class Superstructure extends SubsystemBase {
           }
         } else {
           shooter.setStopped();
-          if (!climbed){
+          if (!climbed) {
             arm.setHome();
           }
           led.off();
@@ -358,6 +358,7 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void resetRobot() {
+    climbed = false;
     systemState = SuperstructureStates.RESET;
   }
 

@@ -179,18 +179,18 @@ public class RobotContainer {
     //     "Climb/HorizontalOffset",
     // poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
 
-    if (input.leftJoystickButton(4)) {
-      // CommandScheduler.getInstance()
-      //     .schedule(
-      //         DriveCommands.alignClimb(
-      //                 drive,
-      //                 () -> -input.leftJoystickY(),
-      //                 poseEstimator.getPhotonRunnable().getStageAprilTag(),
-      //                 poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-      //             .until(() -> input.leftJoystickButton(4)));
-      superstructure.flip();
-      // superstructure.primeShooter();
-    }
+    // if (input.leftJoystickButton(4)) {
+    //   // CommandScheduler.getInstance()
+    //   //     .schedule(
+    //   //         DriveCommands.alignClimb(
+    //   //                 drive,
+    //   //                 () -> -input.leftJoystickY(),
+    //   //                 poseEstimator.getPhotonRunnable().getStageAprilTag(),
+    //   //                 poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+    //   //             .until(() -> input.leftJoystickButton(4)));
+    //   superstructure.climb();
+    //   // superstructure.primeShooter();
+    // }
 
     if (input.controllerAButton()) {
       superstructure.primeShooter();
@@ -258,6 +258,8 @@ public class RobotContainer {
       input.setOperatorRumble(0);
       superstructure.primeAmp();
     } else if (input.rightJoystickButton(4)) {
+      superstructure.flip();
+    } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
     }
     // else if (input.leftJoystickButton(4)) {
@@ -273,6 +275,7 @@ public class RobotContainer {
       } else {
         teleopSpeaker = true;
       }
+
       superstructure.idle();
     }
 
