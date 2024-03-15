@@ -249,7 +249,7 @@ public class RobotContainer {
                       () -> -input.leftJoystickY(),
                       poseEstimator.getPhotonRunnable().getStageAprilTag(),
                       poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-                  .until(() -> input.leftJoystickButton(4)));
+                  .until(() -> input.rightJoystickPOV() == 180));
     } else if (input.rightJoystickPOV() == 90) {
       superstructure.outtake();
     } else if (input.rightJoystickButton(3)) {
