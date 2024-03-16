@@ -81,17 +81,28 @@ public class AutoRoutines {
             "n7_return_under",
             SNAP_SHOOT));
 
-    // autoChooser.addOption(
-    //     "outside_first",
-    //     ezAuto.apply(
-    //         "startC",
-    //         SNAP_SHOOT,
-    //         "n8_outside",
-    //         "n8_return",
-    //         SNAP_SHOOT,
-    //         "note3_n7",
-    //         "n7_return",
-    //         SNAP_SHOOT));
+    autoChooser.addOption(
+        "startA_midline_first",
+        ezAuto.apply(
+            "startA",
+           SHOOT,
+            "startA_n4",
+            "n4_return",
+            SNAP_SHOOT,
+            "note1_n5",
+            "n5_return",
+            SNAP_SHOOT));
+    autoChooser.addOption(
+        "startC_midline_first",
+        ezAuto.apply(
+            "startC",
+           SHOOT,
+            "startC_n8",
+            "n8_return",
+            SNAP_SHOOT,
+            "note3_n7_out",
+            "n7_return_under",
+            SNAP_SHOOT));          
 
     autoChooser.addOption(
         "4_startB_close",
