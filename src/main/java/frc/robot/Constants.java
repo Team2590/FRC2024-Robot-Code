@@ -88,12 +88,12 @@ public final class Constants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
     public static double AMP_SETPOINT = -0.27;
-    public static final double TRAP_SETPOINT = -0.258;
+    public static final double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
     public static final double MAG_OFFSET = -.156;
-    public static final double ARM_MAX = -0.3;
+    public static final double ARM_MAX = -0.35; // -.3
   }
 
   public final class ShooterConstants {

@@ -225,23 +225,30 @@ public class DriveCommands {
         angleSetpoint = 0;
     }
 
-    return Commands.run(() -> {
-      double theta = drive.getGyroYaw().getDegrees() % 360;
-      double currentError = theta - angleSetpoint;
+    return Commands.run(
+        () -> {
+          double theta = drive.getGyroYaw().getDegrees() % 360;
+          double currentError = theta - angleSetpoint;
 
-      if (currentError > 180) {
-          currentError -= 360;
-      } else if (currentError < -180) {
-          currentError += 360;
-      }
+          if (currentError > 180) {
+            currentError -= 360;
+          } else if (currentError < -180) {
+            currentError += 360;
+          }
 
-      Logger.recordOutput("Odometry/current theta in stage", theta);
+          Logger.recordOutput("Odometry/current theta in stage", theta);
 
-      drive.runVelocity(new ChassisSpeeds(
-          xSupplier.getAsDouble() * drive.getMaxLinearSpeedMetersPerSec() * .25, // Adjusted linear speed
-          drive.linearMovementController.calculate(lateralOffset, 0) * drive.getMaxLinearSpeedMetersPerSec(), // Lateral movement
-          drive.snapController.calculate(currentError, 0) * .25 // Adjusted angular speed for shortest rotation path
-      ));
-  }, drive);
+          drive.runVelocity(
+              new ChassisSpeeds(
+                  xSupplier.getAsDouble()
+                      * drive.getMaxLinearSpeedMetersPerSec()
+                      * .25, // Adjusted linear speed
+                  drive.linearMovementController.calculate(lateralOffset, 0)
+                      * drive.getMaxLinearSpeedMetersPerSec(), // Lateral movement
+                  drive.snapController.calculate(currentError, 0)
+                      * .25 // Adjusted angular speed for shortest rotation path
+                  ));
+        },
+        drive);
   }
 }

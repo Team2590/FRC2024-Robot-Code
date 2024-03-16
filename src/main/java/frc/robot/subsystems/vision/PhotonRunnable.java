@@ -17,6 +17,7 @@ import frc.robot.util.AprilTag;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -66,6 +67,8 @@ public class PhotonRunnable implements Runnable {
       var timestamp = photonResults.getTimestampSeconds();
       updateHorizontalOffset();
       if (photonResults.hasTargets()) {
+        Logger.recordOutput(
+            "photonvision/FrontCamera/Tags In Sight", photonResults.targets.toString());
         if (photonResults.targets.size() > 1
             || photonResults.targets.get(0).getPoseAmbiguity() < APRILTAG_AMBIGUITY_THRESHOLD) {
           photonPoseEstimator
