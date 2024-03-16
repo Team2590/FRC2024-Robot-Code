@@ -14,7 +14,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
@@ -66,8 +65,8 @@ public class Robot extends LoggedRobot {
         File usbDrive = new File("/U/");
         // Only set up usb logging if the folder exists.
         // if (usbDrive.exists()) {
-        System.err.println("No USB found, not writing logs");
-        Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+        // System.err.println("No USB found, not writing logs");
+        // Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
         // }
         usbDrive = null;
         Logger.addDataReceiver(new NT4Publisher());
@@ -127,10 +126,15 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomousCommand = robotContainer.getAutonomousCommand();
-    if (DriverStation.getAlliance().isPresent()){
-      // robotContainer.getDrive().gyroIO.setGyro(DriverStation.getAlliance().get() == Alliance.Blue ? 58.24 : -58.24); // startA
+    if (DriverStation.getAlliance().isPresent()) {
+      // robotContainer.getDrive().gyroIO.setGyro(DriverStation.getAlliance().get() == Alliance.Blue
+      // ? 58.24 : -58.24); // startA
       // robotContainer.getDrive().gyroIO.setGyro(0); // startB
-      // robotContainer.getDrive().gyroIO.setGyro(DriverStation.getAlliance().get() == Alliance.Blue ? -58.24 : 58.24); // startC
+      // robotContainer
+      //     .getDrive()
+      //     .gyroIO
+      //     .setGyro(DriverStation.getAlliance().get() == Alliance.Blue ? -58.24 : 58.24); //
+      // startC
     }
     if (autonomousCommand == null) {
       System.err.println("No autonomous command set");

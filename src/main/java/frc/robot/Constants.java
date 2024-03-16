@@ -37,7 +37,9 @@ public final class Constants {
   public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
-  public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.2);
+  public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.27);
+  public static LoggedTunableNumber trapTuning =
+      new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
 
   public final class FieldConstants {
     public static final double RUMBLE_THRESHOLD = 6;
@@ -88,7 +90,7 @@ public final class Constants {
     // Fill in
     public static final double HOME_SETPOINT = 0.168;
     public static double AMP_SETPOINT = -0.27;
-    public static final double TRAP_SETPOINT = -0.32;
+    public static double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
     public static final double ARM_GEAR_RATIO = 266.67;
@@ -123,7 +125,7 @@ public final class Constants {
     // Fill in
     public static final int INTAKE_ID = 14;
     public static final int INTAKE_PROX_CHANNEL = 0;
-    public static final double INTAKE_PROX_THRESHOLD = 0.1;
+    public static final double INTAKE_PROX_THRESHOLD = 0.2; // .7
   }
 
   public final class ClimbConstants {

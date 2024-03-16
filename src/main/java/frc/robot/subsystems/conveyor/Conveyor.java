@@ -59,7 +59,7 @@ public class Conveyor extends SubsystemBase {
         io.runPower(-conveyorSpeed);
         break;
       case DIVERT:
-        io.runPower(-conveyorSpeed, diverterSpeed);
+        io.runPower(-conveyorSpeed - .3, diverterSpeed);
         break;
       case SHOOT:
         io.runPower(conveyorSpeed);

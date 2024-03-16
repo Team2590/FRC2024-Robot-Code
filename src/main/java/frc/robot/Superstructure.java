@@ -95,7 +95,9 @@ public class Superstructure extends SubsystemBase {
 
     final double[] distance = {0, 1.174, 1.52, 1.705, 2.08, 2.39, 2.78, 3.358, 3.75, 4.205, 4.598};
     // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
-    final double[] armSetpoint = {.16, .16, .145, .135, .115, .105, .09, .073, .065, .059, .059};
+    final double[] armSetpoint = {
+      .16, .16, .145, .135, .115, .105, .09, .073, .065 + .005, .059 + .005, .059
+    };
     // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -290,10 +292,9 @@ public class Superstructure extends SubsystemBase {
          */
         // arm.setposition(AMP);
         idleState = IDLE_STATES.AMP;
-        if (climbed){
+        if (climbed) {
           arm.setPosition(ArmConstants.TRAP_SETPOINT);
-        }
-        else{
+        } else {
           arm.setPosition(ArmConstants.AMP_SETPOINT);
         }
         break;

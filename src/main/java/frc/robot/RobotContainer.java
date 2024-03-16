@@ -246,7 +246,7 @@ public class RobotContainer {
           .schedule(
               DriveCommands.alignClimb(
                       drive,
-                      () -> input.leftJoystickY(),
+                      () -> -input.leftJoystickY(),
                       poseEstimator.getPhotonRunnable().getStageAprilTag(),
                       poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
                   .until(() -> input.rightJoystickPOV() == 180));

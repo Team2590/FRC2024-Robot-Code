@@ -84,14 +84,14 @@ public class AutoCommandBuilder {
               () -> 0,
               () -> 0,
               Targets.SPEAKER,
-              1.0d // TODO: Figure out the best error tolerance.
+              0.5d // TODO: Figure out the best error tolerance.
               ));
       // Commands.race(
       //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 0.85, setpoint));
+    commands.addCommands(new ShootCommand(superstructure, 1, setpoint));
     return this;
   }
 

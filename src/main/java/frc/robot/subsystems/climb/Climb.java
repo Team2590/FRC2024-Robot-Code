@@ -43,8 +43,8 @@ public class Climb extends SubsystemBase {
     Logger.recordOutput("Climb/ClimberRotationL", inputs.leaderPositionRotations);
     Logger.recordOutput("Climb/ClimberRotationF", inputs.followerPositionRotations);
 
-    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 13.5;
-    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 13.5;
+    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 14.5;
+    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 14.5;
 
     // If both motors are above the threshold, stop both.
     if (leaderOutOfBounds && followerOutOfBounds) {

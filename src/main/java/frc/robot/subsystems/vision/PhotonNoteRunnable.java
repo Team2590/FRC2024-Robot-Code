@@ -21,15 +21,19 @@ public class PhotonNoteRunnable implements Runnable {
   /** Updates results on the note detection camera. */
   @Override
   public void run() {
-    result = NoteCam.getLatestResult();
-    if (result.hasTargets()) {
-      target = result.getBestTarget();
-      noteXOffset = camHeight / (Math.tan(camPitch - Math.toRadians(target.getPitch())));
-      noteYOffset = noteXOffset * Math.tan(Math.toRadians(target.getYaw())) + camYOffset;
-    } else {
-      target = null;
-      noteXOffset = 0;
-      noteYOffset = 0;
+    try {
+      result = NoteCam.getLatestResult();
+      if (result.hasTargets()) {
+        target = result.getBestTarget();
+        noteXOffset = camHeight / (Math.tan(camPitch - Math.toRadians(target.getPitch())));
+        noteYOffset = noteXOffset * Math.tan(Math.toRadians(target.getYaw())) + camYOffset;
+      } else {
+        target = null;
+        noteXOffset = 0;
+        noteYOffset = 0;
+      }
+    } catch (NullPointerException e) {
+      return;
     }
   }
 
@@ -52,9 +56,14 @@ public class PhotonNoteRunnable implements Runnable {
    * @return yaw of target in degrees
    */
   public static double getYaw() {
-    if (result.hasTargets()) {
-      return target.getYaw();
-    } else {
+    try {
+      if (target != null && result.hasTargets()) {
+        return target.getYaw();
+      } else {
+        return 0;
+      }
+    } catch (NullPointerException e) {
+      e.printStackTrace();
       return 0;
     }
   }
@@ -65,9 +74,14 @@ public class PhotonNoteRunnable implements Runnable {
    * @return pitch of target in degrees
    */
   public static double getPitch() {
-    if (result.hasTargets()) {
-      return target.getPitch();
-    } else {
+    try {
+      if (result.hasTargets()) {
+        return target.getPitch();
+      } else {
+        return 0;
+      }
+    } catch (NullPointerException e) {
+      e.printStackTrace();
       return 0;
     }
   }
