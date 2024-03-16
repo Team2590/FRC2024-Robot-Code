@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.File;
@@ -124,10 +126,12 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // robotContainer.getDrive().gyroIO.setGyro(58.24); // startA
-    // robotContainer.getDrive().gyroIO.setGyro(0); // startB
-    // robotContainer.getDrive().gyroIO.setGyro(-58.24); // start C
     autonomousCommand = robotContainer.getAutonomousCommand();
+    if (DriverStation.getAlliance().isPresent()){
+      // robotContainer.getDrive().gyroIO.setGyro(DriverStation.getAlliance().get() == Alliance.Blue ? 58.24 : -58.24); // startA
+      // robotContainer.getDrive().gyroIO.setGyro(0); // startB
+      // robotContainer.getDrive().gyroIO.setGyro(DriverStation.getAlliance().get() == Alliance.Blue ? -58.24 : 58.24); // startC
+    }
     if (autonomousCommand == null) {
       System.err.println("No autonomous command set");
       return;

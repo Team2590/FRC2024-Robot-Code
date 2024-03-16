@@ -290,7 +290,12 @@ public class Superstructure extends SubsystemBase {
          */
         // arm.setposition(AMP);
         idleState = IDLE_STATES.AMP;
-        arm.setPosition(ArmConstants.AMP_SETPOINT);
+        if (climbed){
+          arm.setPosition(ArmConstants.TRAP_SETPOINT);
+        }
+        else{
+          arm.setPosition(ArmConstants.AMP_SETPOINT);
+        }
         break;
 
       case SCORE_AMP:

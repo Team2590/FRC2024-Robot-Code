@@ -88,22 +88,26 @@ public class PoseEstimator {
   }
 
   public double currentErrorToSpeaker() {
-    Pose2d targetPose =
-        DriverStation.getAlliance().get() == Alliance.Red
-            ? AprilTag.getTagPose(4)
-            : AprilTag.getTagPose(7);
-    Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-    // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
-    double theta = Math.atan2(difference.getY(), difference.getX());
-    double currentAngle = RobotContainer.getDrive().getGyroYaw().getRadians() % (2 * Math.PI);
-    double currentError = theta - currentAngle;
-    // if (currentError > Math.PI) {
-    //   currentError += 2 * Math.PI;
-    // } else if (currentError < -Math.PI) {
-    //   currentError -= 2 * Math.PI;
-    // }
+    if (DriverStation.getAlliance().isPresent()) {
+      Pose2d targetPose =
+          DriverStation.getAlliance().get() == Alliance.Red
+              ? AprilTag.getTagPose(4)
+              : AprilTag.getTagPose(7);
+      Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
+      // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
+      double theta = Math.atan2(difference.getY(), difference.getX());
+      double currentAngle = RobotContainer.getDrive().getGyroYaw().getRadians() % (2 * Math.PI);
+      double currentError = theta - currentAngle;
+      // if (currentError > Math.PI) {
+      //   currentError += 2 * Math.PI;
+      // } else if (currentError < -Math.PI) {
+      //   currentError -= 2 * Math.PI;
+      // }
 
-    return currentError % (2 * Math.PI);
+      return currentError % (2 * Math.PI);
+    } else {
+      return 0;
+    }
   }
 
   public double distanceBetweenPoses(Pose2d a, Pose2d b) {
