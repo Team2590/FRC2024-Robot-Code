@@ -345,7 +345,7 @@ public class Drive extends SubsystemBase {
     return snapController.getPositionError();
   }
 
-  public static ChassisSpeeds getCurrentChassisSpeeds() {
+  public ChassisSpeeds getCurrentChassisSpeeds() {
     SwerveModuleState[] currentStates = getModuleStates();
     ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(currentStates);
     
