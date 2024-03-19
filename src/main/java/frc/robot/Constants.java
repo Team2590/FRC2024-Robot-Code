@@ -135,7 +135,7 @@ public final class Constants {
   }
 
   public final class LEDConstants {
-    public static final Colors DETECT_NOTE_COLOR = Colors.Blue;
+    public static final Colors DETECT_NOTE_COLOR = Colors.Red;
     public static final Colors HAS_NOTE_COLOR = Colors.Red;
     public static final Colors PRIMED_SUPERSTRUCTURE = Colors.Green;
 
