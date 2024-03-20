@@ -3,6 +3,8 @@ package frc.robot.subsystems.climb;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 public class Climb extends SubsystemBase {
   private ClimbIO io;
   private ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
@@ -71,5 +73,15 @@ public class Climb extends SubsystemBase {
 
   public void setStopped() {
     io.stop();
+  }
+
+  /** Disables brake mode */
+  public void disableBrake() {
+    io.setMotorMode(NeutralModeValue.Coast);
+  }
+
+  /** Enables brake mode */
+  public void enableBrake() {
+    io.setMotorMode(NeutralModeValue.Brake);
   }
 }

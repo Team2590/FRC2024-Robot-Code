@@ -351,4 +351,16 @@ public class Drive extends SubsystemBase {
     
     return currentSpeeds;
   }
+
+  public void enableBrake() {
+    for (Module m: modules) {
+      m.setBrakeMode(true);
+    }
+  }
+
+  public void disableBrake() {
+    for (Module m: modules) {
+      m.setBrakeMode(false);
+    }
+  }
 }

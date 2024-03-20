@@ -2,6 +2,8 @@ package frc.robot.subsystems.elevatorarm;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
@@ -30,4 +32,7 @@ public interface ArmIO {
 
   /** Updates tunable numbers */
   public default void updateTunableNumbers() {}
+
+  /** Changes motors to the given mode */
+  public default void setMotorMode(NeutralModeValue mode) {}
 }

@@ -115,6 +115,9 @@ public class Superstructure extends SubsystemBase {
         intake.setStopped();
         conveyor.setStopped();
         shooter.setStopped();
+        conveyor.disableBrake();
+        climb.disableBrake();
+        arm.disableBrake();
         // arm.setStopped();
         break;
       case RESET:
@@ -136,6 +139,9 @@ public class Superstructure extends SubsystemBase {
          * arm.setpositon(HOME) -- > HOME setpoint
          */
         climb.setStopped();
+        conveyor.enableBrake();
+        climb.enableBrake();
+        arm.enableBrake();
         if (conveyor.hasNote()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {

@@ -2,6 +2,7 @@ package frc.robot.subsystems.conveyor;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 /**
  * Nemesis Conveyor for 2024
@@ -127,6 +128,16 @@ public class Conveyor extends SubsystemBase {
    */
   public boolean hasNote() {
     return inputs.hasNote;
+  }
+
+  /** Disables brake mode */
+  public void disableBrake() {
+    io.setMotorMode(NeutralModeValue.Coast);
+  }
+
+  /** Enables brake mode */
+  public void enableBrake() {
+    io.setMotorMode(NeutralModeValue.Brake);
   }
 }
 

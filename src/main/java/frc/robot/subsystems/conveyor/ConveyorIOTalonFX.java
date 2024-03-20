@@ -1,5 +1,6 @@
 package frc.robot.subsystems.conveyor;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -87,6 +88,12 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   public void runPower(double feederPower, double diverterPower) {
     feederMotor.set(feederPower);
     diverterMotor.set(diverterPower);
+  }
+
+  @Override
+  public void setMotorMode(NeutralModeValue mode) {
+    feederMotor.setNeutralMode(mode);
+    diverterMotor.setNeutralMode(mode);
   }
 
   /**
