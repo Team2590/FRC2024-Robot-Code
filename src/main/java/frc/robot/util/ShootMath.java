@@ -316,6 +316,7 @@ public interface ShootMath {
  * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠲⠾⠿⠟⠛⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀
  * ⠀⠀
  *  Have a break from this nightmare
+ *  @thief Ian Keller
  */
 
     /**
