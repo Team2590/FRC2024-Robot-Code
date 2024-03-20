@@ -2,6 +2,7 @@ package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.ClimbConstants;
 
 public class Climb extends SubsystemBase {
   private ClimbIO io;
@@ -17,8 +18,8 @@ public class Climb extends SubsystemBase {
   }
 
   public void run() {
-    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 153;
-    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 153;
+    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > ClimbConstants.CLIMB_POSITION_TARGET;
+    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > ClimbConstants.CLIMB_POSITION_TARGET;
 
     // If both motors are above the threshold, stop both.
     if (leaderOutOfBounds && followerOutOfBounds) {
@@ -43,8 +44,8 @@ public class Climb extends SubsystemBase {
     Logger.recordOutput("Climb/ClimberRotationL", inputs.leaderPositionRotations);
     Logger.recordOutput("Climb/ClimberRotationF", inputs.followerPositionRotations);
 
-    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > 14.5;
-    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > 14.5;
+    boolean leaderOutOfBounds = Math.abs(inputs.leaderPositionRotations) > ClimbConstants.FLIP_POSITION_TARGET;
+    boolean followerOutOfBounds = Math.abs(inputs.followerPositionRotations) > ClimbConstants.FLIP_POSITION_TARGET;
 
     // If both motors are above the threshold, stop both.
     if (leaderOutOfBounds && followerOutOfBounds) {
