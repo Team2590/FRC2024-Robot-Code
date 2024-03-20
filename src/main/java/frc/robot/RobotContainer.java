@@ -158,6 +158,10 @@ public class RobotContainer {
   public void stop() {
     drive.stop();
     superstructure.stop();
+    conveyor.disableBrake();
+    climb.disableBrake();
+    arm.disableBrake();
+    drive.disableBrake();
   }
 
   public void updateSubsystems() {
@@ -168,7 +172,10 @@ public class RobotContainer {
 
   public void updateUserInput() {
     Logger.recordOutput("Odometry/Gyro", drive.getGyroYaw().getDegrees());
-
+    conveyor.enableBrake();
+    climb.enableBrake();
+    arm.enableBrake();
+    drive.enableBrake();
     /*
      * Driver input w/ superstructure
      */

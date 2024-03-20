@@ -150,6 +150,11 @@ public class ArmIOTalonFX implements ArmIO {
     arm.setControl(power);
   }
 
+  @Override
+  public void setMotorMode(NeutralModeValue mode) {
+    arm.setNeutralMode(mode);
+  }
+
   // private static double CANCoderSensorUnitsToDegrees(double sensorUnits) {
   //     return sensorUnits * (360.0) / 4096.0;
   // }

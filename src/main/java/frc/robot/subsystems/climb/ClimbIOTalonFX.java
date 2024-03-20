@@ -53,6 +53,12 @@ public class ClimbIOTalonFX implements ClimbIO {
     }
   }
 
+  @Override
+  public void setMotorMode(NeutralModeValue mode) {
+    leader.setNeutralMode(mode);
+    follower.setNeutralMode(mode);
+  }
+
   public void stop() {
     leader.stopMotor();
     follower.stopMotor();

@@ -2,6 +2,8 @@ package frc.robot.subsystems.conveyor;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 /**
  * @author Ian Keller
  */
@@ -37,4 +39,7 @@ public interface ConveyorIO {
   public default void runPower(double feederPower, double diverterPower) {}
 
   public default void stop() {}
+
+  /** Changes motors to the given mode */
+  public default void setMotorMode(NeutralModeValue mode) {}
 }

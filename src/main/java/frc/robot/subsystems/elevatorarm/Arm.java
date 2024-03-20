@@ -1,6 +1,8 @@
 package frc.robot.subsystems.elevatorarm;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.HelperFn;
@@ -137,5 +139,15 @@ public class Arm extends SubsystemBase {
 
   public ArmStates getState() {
     return state;
+  }
+  
+  /** Disables brake mode */
+  public void disableBrake() {
+    arm.setMotorMode(NeutralModeValue.Coast);
+  }
+
+  /** Enables brake mode */
+  public void enableBrake() {
+    arm.setMotorMode(NeutralModeValue.Brake);
   }
 }
