@@ -65,6 +65,9 @@ public class Climb extends SubsystemBase {
     }
   }
 
+  public void setCoast(){
+    io.setCoast();
+  }
   public void resetRotationCount() {
     io.resetRotationCount();
   }
