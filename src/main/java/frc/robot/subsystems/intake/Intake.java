@@ -34,10 +34,10 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // handle inputs
     io.updateInputs(inputs);
-    Logger.recordOutput("Intake/IntakeProx", intakeProx.getVoltage());
+    // Logger.recordOutput("Intake/IntakeProx", intakeProx.getVoltage());
     proxValue.update();
-    Logger.recordOutput("Intake/Avg IntakeProx", proxValue.get());
-    // Logger.processInputs("Intake", inputs);
+    // Logger.recordOutput("Intake/Avg IntakeProx", proxValue.get());
+    Logger.processInputs("Intake", inputs);
     // Logger.recordOutput("Intake/State", state);
 
     // run the motors based on current state
