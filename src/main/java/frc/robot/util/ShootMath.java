@@ -3,6 +3,7 @@ package frc.robot.util;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -156,16 +157,12 @@ public interface ShootMath {
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
      * https://www.desmos.com/3d/b8ff2f55bd
-     *
-     * @param pv - shooting velocity
-     * @param dx - x distance to target
-     * @param dy - y distance to target
-     * @param dz - z distance to target
-     * @param rvx - initial x velocity relative to target
-     * @param rvy - initial y velocity relative to target
-     * @param rvz - initial z velocity relative to target
+     * 
+     * @param sv - shooter velocity
+     * @param d - distances to target
+     * @param v - velocities relative to target
      * @param g - constant of gravity
-     * @return The shooting velocity, yaw, and pitch.
+     * @return The shooter velocity, yaw, and pitch.
      */
     public static ShootState calcConstantVelocity(double sv, Vector d, Vector v, double g) {
         final var tf = approxQuartic(

@@ -21,6 +21,8 @@ public class PhotonNoteRunnable implements Runnable {
   /** Updates results on the note detection camera. */
   @Override
   public void run() {
+    // TODO: DELETE
+    if (0 == 0) return;
     // result = NoteCam.getLatestResult();
     if (result.hasTargets()) {
       target = result.getBestTarget();
