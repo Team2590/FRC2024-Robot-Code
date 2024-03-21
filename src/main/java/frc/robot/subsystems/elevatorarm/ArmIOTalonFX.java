@@ -14,6 +14,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import frc.robot.Constants;
 import frc.robot.util.LoggedTunableNumber;
 
@@ -47,7 +49,7 @@ public class ArmIOTalonFX implements ArmIO {
     /* configurations for the arm motor */
     cfg = new TalonFXConfiguration();
     // cfg.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    cfg.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     /* Configure current limits */
     mm = cfg.MotionMagic;
