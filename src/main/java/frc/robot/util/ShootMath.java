@@ -16,6 +16,8 @@ import frc.robot.subsystems.drive.Drive;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 /**
  * @author Elan Ronen
  * // TODO: with angular velocity to components, check which way is front
@@ -226,11 +228,16 @@ public interface ShootMath {
         });
     }
 
+    public static double radianBand(double radians) {
+        return (radians + 2 * Math.PI) % (2 * Math.PI);
+    }
+
     public static Command snapToTarget(
         Drive drive,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
         Vector target
     ) {
+        
         return oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var targetShooterState = calcConstantVelocity(
@@ -242,9 +249,13 @@ public interface ShootMath {
 
             setShooterPitch(targetShooterState.pitch);
 
+            Logger.recordOutput("ShootMath/radians", drive.getRotation().getRadians());
+            Logger.recordOutput("ShootMath/Modulo", drive.getRotation().getRadians() % (2 * Math.PI));
+            Logger.recordOutput("ShootMath/targetyaw", DriverStation.getAlliance().get() == Alliance.Blue && targetShooterState.yaw < 0 ? (Math.PI * 2) + targetShooterState.yaw : targetShooterState.yaw);
+
             return drive.snapController.calculate(
-                drive.getRotation().getRadians() % (2 * Math.PI),
-                targetShooterState.yaw
+                radianBand(drive.getRotation().getRadians()),
+                radianBand(targetShooterState.yaw)
             ) * drive.getMaxAngularSpeedRadPerSec();
         });
     }
