@@ -243,7 +243,7 @@ public interface ShootMath {
             setShooterPitch(targetShooterState.pitch);
 
             return drive.snapController.calculate(
-                drive.getRotation().getRadians(),
+                drive.getRotation().getRadians() % (2 * Math.PI),
                 targetShooterState.yaw
             ) * drive.getMaxAngularSpeedRadPerSec();
         });
