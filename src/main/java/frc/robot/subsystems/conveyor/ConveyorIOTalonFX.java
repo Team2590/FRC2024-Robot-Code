@@ -30,7 +30,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
 
   public ConveyorIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 30.0;
+    config.CurrentLimits.StatorCurrentLimit = 40.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = ConveyorConstants.feederDirection;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;

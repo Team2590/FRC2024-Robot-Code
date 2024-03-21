@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/IntakeProx", intakeProx.getVoltage());
     proxValue.update();
     Logger.recordOutput("Intake/Avg IntakeProx", proxValue.get());
-    // Logger.processInputs("Intake", inputs);
+    Logger.processInputs("Intake", inputs);
     // Logger.recordOutput("Intake/State", state);
 
     // run the motors based on current state

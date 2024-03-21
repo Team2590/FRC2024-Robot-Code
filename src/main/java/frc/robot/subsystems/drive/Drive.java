@@ -348,7 +348,7 @@ public class Drive extends SubsystemBase {
   public ChassisSpeeds getCurrentChassisSpeeds() {
     SwerveModuleState[] currentStates = getModuleStates();
     ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(currentStates);
-    
+
     return currentSpeeds;
   }
 }
