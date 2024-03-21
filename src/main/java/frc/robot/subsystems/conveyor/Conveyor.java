@@ -16,8 +16,8 @@ public class Conveyor extends SubsystemBase {
   // TODO: update constants once we get the robot
   // tunable constants
 
-  private double conveyorSpeed = .15;
-  private double diverterSpeed = .5;
+  private double conveyorSpeed = 0.25;
+  private double diverterSpeed = 0.25;
 
   // conveyor states
   public enum ConveyorStates {

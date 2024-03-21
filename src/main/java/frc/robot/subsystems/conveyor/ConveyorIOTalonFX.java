@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.ConveyorConstants;
@@ -32,8 +31,8 @@ public class ConveyorIOTalonFX implements ConveyorIO {
 
   public ConveyorIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 30.0;
-    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    // config.CurrentLimits.StatorCurrentLimit = 30.0;
+    // config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = ConveyorConstants.feederDirection;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     feederMotor.getConfigurator().apply(config);
