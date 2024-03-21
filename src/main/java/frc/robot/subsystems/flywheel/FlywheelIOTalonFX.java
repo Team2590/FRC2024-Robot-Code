@@ -40,8 +40,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public FlywheelIOTalonFX() {
     var config = new TalonFXConfiguration();
-    // config.CurrentLimits.StatorCurrentLimit = 30.0;
-    // config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leader.getConfigurator().apply(config);
