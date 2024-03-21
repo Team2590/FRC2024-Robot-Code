@@ -33,6 +33,7 @@ import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
 import frc.robot.util.PoseEstimator;
+import frc.robot.util.ShootMath;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -208,13 +209,22 @@ public class RobotContainer {
       if (teleopSpeaker) {
         CommandScheduler.getInstance()
             .schedule(
+                ShootMath.snapToTarget(
+                    drive,
+                    () -> -input.leftJoystickY(),
+                    () -> -input.leftJoystickX(),
+                    ShootMath.Speaker.CENTER).until(() -> input.leftJoystickTrigger()));
+
+        /*
+        CommandScheduler.getInstance()
+            .schedule(
                 DriveCommands.SnapToTarget(
                         drive,
                         () -> -input.leftJoystickY(),
                         () -> -input.leftJoystickX(),
                         Targets.SPEAKER)
                     .until(() -> input.leftJoystickTrigger()));
-        superstructure.shoot();
+        superstructure.shoot();*/
       } else {
         superstructure.scoreAmp();
       }
