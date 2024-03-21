@@ -139,9 +139,9 @@ public class Superstructure extends SubsystemBase {
         if (conveyor.hasNote()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
-            led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
+            // led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
           } else {
-            led.setColor(LEDConstants.HAS_NOTE_COLOR);
+            // led.setColor(LEDConstants.HAS_NOTE_COLOR);
             intake.setStopped();
           }
         } else {
@@ -154,7 +154,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case IDLE_INTAKING:
         if (intake.detectNote()) {
-          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+          // led.setColor(LEDConstants.DETECT_NOTE_COLOR);
         }
         if (conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
