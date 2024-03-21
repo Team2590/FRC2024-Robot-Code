@@ -210,10 +210,11 @@ public class RobotContainer {
         CommandScheduler.getInstance()
             .schedule(
                 ShootMath.snapToTarget(
-                    drive,
-                    () -> -input.leftJoystickY(),
-                    () -> -input.leftJoystickX(),
-                    ShootMath.Speaker.CENTER).until(() -> input.leftJoystickTrigger()));
+                        drive,
+                        () -> -input.leftJoystickY(),
+                        () -> -input.leftJoystickX(),
+                        ShootMath.Speaker.CENTER)
+                    .until(() -> input.leftJoystickTrigger()));
 
         /*
         CommandScheduler.getInstance()
