@@ -50,9 +50,9 @@ public interface ShootMath {
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
-    final double SHOOT_VELOCITY = 10; // TODO: measure and set
+    final double SHOOT_VELOCITY = 1000; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
-    final double SHOOTER_RADIUS = Units.inchesToMeters(12); // TODO: measure and set
+    final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
 
     /** Speaker coords. (m) */
     public interface Speaker {
