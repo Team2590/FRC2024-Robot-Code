@@ -325,6 +325,10 @@ public class RobotContainer {
     // }
   }
 
+  public void setConveyorCoast(){
+    conveyor.setCoastMode();
+  }
+
   // --------AUTO CHOOSER FUNCTIONS------------
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

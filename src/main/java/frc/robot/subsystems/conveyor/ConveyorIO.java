@@ -37,4 +37,6 @@ public interface ConveyorIO {
   public default void runPower(double feederPower, double diverterPower) {}
 
   public default void stop() {}
+
+  public default void setCoastMode() {}
 }
