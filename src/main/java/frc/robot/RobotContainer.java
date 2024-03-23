@@ -344,6 +344,10 @@ public class RobotContainer {
     return drive;
   }
 
+  public void setClimbCoast(){
+    climb.setCoast();
+  }
+
   // public void initGyro() {
 
   //   double

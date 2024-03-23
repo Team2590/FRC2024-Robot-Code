@@ -132,6 +132,8 @@ public final class Constants {
     // max rotations = (distance/2pi*wheelRadius) * gearRatio
     public static final double MAX_ROTATIONS = -150;
     public static final int TOLERANCE = 1;
+    public static final double CLIMB_POSITION_TARGET = 153;
+    public static final double FLIP_POSITION_TARGET = 14.5;
   }
 
   public final class LEDConstants {
