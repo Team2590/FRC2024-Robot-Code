@@ -245,8 +245,8 @@ public class Superstructure extends SubsystemBase {
                 RobotContainer.poseEstimator.distanceToTarget(
                     Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armAngle.get());
-        shooter.shoot(tunableFlywheelSpeed.get());
+        arm.setPosition(armDistanceSetPoint);
+        shooter.shoot(flywheelSpeedInput);
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
