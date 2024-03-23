@@ -4,6 +4,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
@@ -214,7 +215,8 @@ public class RobotContainer {
                         superstructure,
                         input::leftJoystickY,
                         input::leftJoystickX,
-                        ShootMath.Speaker.target)
+                        ShootMath.Speaker.target,
+                        Commands.waitUntil(() -> input.rightJoystickButton(2)))
                     .until(() -> !input.leftJoystickTrigger()));
 
         /*

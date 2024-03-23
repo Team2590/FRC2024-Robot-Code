@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.user_input.UserInput;
 
 import java.util.function.DoubleSupplier;
 
@@ -198,11 +197,12 @@ public interface ShootMath {
     public static Command shoot(
         Drive drive, Superstructure superstructure,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
-        Target target
+        Target target,
+        Command skipAim
     ) {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                checkForHits(drive, target.surfaces),
+                new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
                 snapToTarget(drive, xSupplier, ySupplier, target.point),
                 Commands.runOnce(superstructure::prep, superstructure)
             ),
