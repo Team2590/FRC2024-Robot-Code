@@ -216,7 +216,7 @@ public class RobotContainer {
                         input::leftJoystickY,
                         input::leftJoystickX,
                         ShootMath.Speaker.target)
-                    .until(() -> input.leftJoystickTrigger()));
+                    .until(() -> !input.leftJoystickTrigger()));
 
         /*
         CommandScheduler.getInstance()
