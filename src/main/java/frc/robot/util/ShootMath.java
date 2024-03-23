@@ -52,7 +52,7 @@ public interface ShootMath {
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
-    final double SHOOT_VELOCITY = 1000; // TODO: measure and set
+    final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
     final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
 
@@ -246,7 +246,7 @@ public interface ShootMath {
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight())),
-                calcRobotVelocity(drive, getRobotHeading(robotPose.getRotation().getRadians())),
+                calcRobotVelocityFAKE(drive, getRobotHeading(robotPose.getRotation().getRadians())),
                 GRAVITY
             );
 
@@ -262,7 +262,19 @@ public interface ShootMath {
         });
     }
 
+    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 2);
+
     // shoot commands █████████████████████████████████████████████████████████████████████████████
+
+    public static Vector calcRobotVelocityFAKE(Drive drive, double robotHeading) {
+        final var chassisSpeeds = drive.getCurrentChassisSpeeds();
+        final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
+        return new Vector(
+            chassisSpeeds.vxMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            chassisSpeeds.vyMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
+            getProjectileZVelocity()
+        );
+    }
 
     public static Vector calcRobotVelocity(Drive drive, double robotHeading) {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
@@ -273,6 +285,8 @@ public interface ShootMath {
             getProjectileZVelocity()
         );
     }
+
+    
 
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
@@ -289,13 +303,13 @@ public interface ShootMath {
             g * g / 4,
             -v.z * g,
             d.z * g - sv * sv + v.dot(v),
-            -2 * d.dot(v),
+            2 * d.dot(v),
             d.dot(d),
             d.magnitude() / sv,
             10
         );
 
-        final var projectileVelocity = d.scale(1/tf).minus(v).plus(new Vector(0, 0, g * tf / 2));
+        final var projectileVelocity = d.scale(1/tf).plus(v).plus(new Vector(0, 0, g * tf / 2));
 
         final var yaw = Math.atan2(projectileVelocity.y, projectileVelocity.x);
         final var pitch = Math.atan2(projectileVelocity.z, Math.hypot(projectileVelocity.x, projectileVelocity.y));

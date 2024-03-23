@@ -95,11 +95,9 @@ public class Superstructure extends SubsystemBase {
     this.led = led;
     climb.resetRotationCount();
 
-    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1 ,5.698};
+    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
-    final double[] armSetpoint = {
-      .168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059 ,.055
-    };
+    final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
     // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -249,8 +247,7 @@ public class Superstructure extends SubsystemBase {
         shooter.shoot(flywheelSpeedInput);
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
-              && shooter.getState() == ShooterStates.AT_SETPOINT
-              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
+              && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
