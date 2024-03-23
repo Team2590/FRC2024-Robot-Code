@@ -335,19 +335,20 @@ public class Superstructure extends SubsystemBase {
         climb.flip();
         climbed = true;
         break;
-      // spotless:off
+        // spotless:off
       case PREP:
-        double armSetpoint = armInterpolation.getValue(
-          RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER)
-        );
+        double armSetpoint =
+            armInterpolation.getValue(
+                RobotContainer.poseEstimator.distanceToTarget(
+                    Constants.FieldConstants.Targets.SPEAKER));
         arm.setPosition(armSetpoint);
         shooter.shoot(flywheelSpeedInput);
         break;
       case SHOOT_BLIND:
-        if (arm.getState() != ArmStates.AT_SETPOINT) break;
+        // if (arm.getState() != ArmStates.AT_SETPOINT) break;
         conveyor.setShooting();
         break;
-      // spotless: on
+        // spotless: on
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());

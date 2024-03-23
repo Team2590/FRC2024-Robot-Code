@@ -55,7 +55,7 @@ public interface ShootMath {
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
-    final double SHOOTER_RADIUS = Units.inchesToMeters(29 / 2); // TODO: measure and set
+    final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -212,6 +212,10 @@ public interface ShootMath {
         );
     }
 
+    public static double getHeading(double heading) {
+        return radianBand(DriverStation.getAlliance().get() == Alliance.Red ? heading : heading + Math.PI);
+    }
+
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
@@ -242,17 +246,17 @@ public interface ShootMath {
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight())),
-                calcRobotVelocityFAKE(drive, radianBand(robotPose.getRotation().getRadians())),
+                calcRobotVelocityFAKE(drive, getHeading(robotPose.getRotation().getRadians())),
                 GRAVITY
             );
 
             setShooterPitch(targetShooterState.pitch);
 
-            Logger.recordOutput("ShootMath/robotHeading", radianBand(robotPose.getRotation().getRadians()));
+            Logger.recordOutput("ShootMath/robotHeading", getHeading(robotPose.getRotation().getRadians()));
             Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
 
             return drive.snapController.calculate(
-                radianBand(robotPose.getRotation().getRadians()),
+                getHeading(robotPose.getRotation().getRadians()),
                 radianBand(targetShooterState.yaw)
             ) * drive.getMaxAngularSpeedRadPerSec();
         });
