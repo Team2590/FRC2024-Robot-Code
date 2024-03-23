@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "startC_forward"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n8_return_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n8Short_n7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n7_return_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n7_droppedC"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
