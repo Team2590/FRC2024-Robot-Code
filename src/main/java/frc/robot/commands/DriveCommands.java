@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AprilTag;
@@ -121,7 +121,10 @@ public class DriveCommands {
                           AprilTag.getTagPose(16));
               break;
             case FLING:
-              targetPose = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.FlingConstants.BLUE_FLING_POSE : Constants.FlingConstants.RED_FLING_POSE;
+              targetPose =
+                  DriverStation.getAlliance().get() == Alliance.Blue
+                      ? Constants.FlingConstants.BLUE_FLING_POSE
+                      : Constants.FlingConstants.RED_FLING_POSE;
               break;
             default:
               targetPose = new Pose2d();
