@@ -58,6 +58,8 @@ public class Superstructure extends SubsystemBase {
     FLIPPING,
     SCORE_TRAP,
     ARM_CLIMB,
+    PREP,
+    SHOOT_BLIND,
     FLING
   }
 
@@ -384,6 +386,19 @@ public class Superstructure extends SubsystemBase {
           }
         }
         break;
+      // spotless:off
+      case PREP:
+        double armSetpoint = armInterpolation.getValue(
+          RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER)
+        );
+        arm.setPosition(armSetpoint);
+        shooter.shoot(flywheelSpeedInput);
+        break;
+      case SHOOT_BLIND:
+        if (arm.getState() != ArmStates.AT_SETPOINT) break;
+        conveyor.setShooting();
+        break;
+      // spotless: on
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());
@@ -544,5 +559,13 @@ public class Superstructure extends SubsystemBase {
 
   public Flywheel getShooter() {
     return shooter;
+  }
+
+  public void prep() {
+    systemState = SuperstructureStates.PREP;
+  }
+
+  public void shootBlind() {
+    systemState = SuperstructureStates.SHOOT_BLIND;
   }
 }

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
 
 import java.util.function.DoubleSupplier;
 
@@ -54,7 +55,7 @@ public interface ShootMath {
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
-    final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
+    final double SHOOTER_RADIUS = Units.inchesToMeters(29 / 2); // TODO: measure and set
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -201,21 +202,20 @@ public interface ShootMath {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
                 checkForHits(drive, target.surfaces),
-                snapToTarget(drive, xSupplier, ySupplier, target.point)
+                snapToTarget(drive, xSupplier, ySupplier, target.point),
+                Commands.runOnce(superstructure::prep, superstructure)
             ),
-            Commands.runOnce(superstructure::shoot, superstructure.getShooter()),
-            Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW"))
+            Commands.runOnce(superstructure::shootBlind, superstructure),
+            Commands.waitUntil(() -> superstructure.getArm().getState() == ArmStates.AT_SETPOINT),
+            Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
+            Commands.runOnce(superstructure::idle, superstructure)
         );
-    }
-
-    public static double getRobotHeading(double heading) {
-        return radianBand(heading + Math.PI);
     }
 
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-            final var robotHeading = getRobotHeading(robotPose.getRotation().getRadians());
+            final var robotHeading = radianBand(robotPose.getRotation().getRadians());
             final var robotVector = new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight());
             for (final var triangle : triangles) {
                 if (willHit(
@@ -231,10 +231,6 @@ public interface ShootMath {
         });
     }
 
-    public static double radianBand(double radians) {
-        return MathUtil.inputModulus(radians, 0, TAU);
-    }
-
     public static Command snapToTarget(
         Drive drive,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
@@ -246,23 +242,23 @@ public interface ShootMath {
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight())),
-                calcRobotVelocityFAKE(drive, getRobotHeading(robotPose.getRotation().getRadians())),
+                calcRobotVelocityFAKE(drive, radianBand(robotPose.getRotation().getRadians())),
                 GRAVITY
             );
 
             setShooterPitch(targetShooterState.pitch);
 
-            Logger.recordOutput("ShootMath/robotHeading", getRobotHeading(robotPose.getRotation().getRadians()));
+            Logger.recordOutput("ShootMath/robotHeading", radianBand(robotPose.getRotation().getRadians()));
             Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
 
             return drive.snapController.calculate(
-                getRobotHeading(robotPose.getRotation().getRadians()),
+                radianBand(robotPose.getRotation().getRadians()),
                 radianBand(targetShooterState.yaw)
             ) * drive.getMaxAngularSpeedRadPerSec();
         });
     }
 
-    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 2);
+    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 1);
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
@@ -415,6 +411,10 @@ public interface ShootMath {
     // 3d math library ████████████████████████████████████████████████████████████████████████████
 
     double TAU = 2 * Math.PI;
+
+    public static double radianBand(double radians) {
+        return MathUtil.inputModulus(radians, 0, TAU);
+    }
 
     /**
      * Represents the state of the shooter. The yaw is zero when facing positive x and increases
