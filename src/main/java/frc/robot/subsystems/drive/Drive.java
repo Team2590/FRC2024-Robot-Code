@@ -105,6 +105,7 @@ public class Drive extends SubsystemBase {
     modules[3] = new Module(brModuleIO, 3);
 
     snapController.setTolerance(snapControllerTolerance.get());
+    snapController.enableContinuousInput(0, 2 * Math.PI);
     noteController.setTolerance(noteControllerTolerance.get());
 
     // Configure AutoBuilder for PathPlanner
