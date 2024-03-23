@@ -249,9 +249,8 @@ public interface ShootMath {
 
             setShooterPitch(targetShooterState.pitch);
 
-            Logger.recordOutput("ShootMath/radians", drive.getRotation().getRadians());
-            Logger.recordOutput("ShootMath/Modulo", drive.getRotation().getRadians() % (2 * Math.PI));
-            Logger.recordOutput("ShootMath/targetyaw", DriverStation.getAlliance().get() == Alliance.Blue && targetShooterState.yaw < 0 ? (Math.PI * 2) + targetShooterState.yaw : targetShooterState.yaw);
+            Logger.recordOutput("ShootMath/robotHeading", radianBand(drive.getRotation().getRadians()));
+            Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
 
             return drive.snapController.calculate(
                 radianBand(drive.getRotation().getRadians()),
