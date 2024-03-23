@@ -106,4 +106,13 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   private boolean noteInConveyor() {
     return detectedShooterSide();
   }
+
+  /**
+   * Sets both the feeder and diverter motors to coast mode
+   * 
+   */
+  public void setCoastMode(){
+    feederMotor.setNeutralMode(NeutralModeValue.Coast);
+    diverterMotor.setNeutralMode(NeutralModeValue.Coast);
+  }
 }
