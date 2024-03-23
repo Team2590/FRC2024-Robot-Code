@@ -11,7 +11,12 @@
 package frc.robot;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.LEDConstants;
@@ -55,7 +60,8 @@ public class Superstructure extends SubsystemBase {
     CLIMB,
     FLIPPING,
     SCORE_TRAP,
-    ARM_CLIMB
+    ARM_CLIMB,
+    FLING
   }
 
   private static enum IDLE_STATES {
@@ -80,6 +86,7 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
   private final LookupTable armInterpolation;
+  private final LookupTable armFlingInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
   public Superstructure(
@@ -101,6 +108,7 @@ public class Superstructure extends SubsystemBase {
     // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
+    armFlingInterpolation = new LookupTable(Constants.FlingConstants.FLING_DISTANCE, Constants.FlingConstants.FLING_ARM_SETPOINT);
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
@@ -235,7 +243,7 @@ public class Superstructure extends SubsystemBase {
         }
         break;
 
-      case SHOOT:
+      case SHOOT: {
         Logger.recordOutput(
             "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
         double armDistanceSetPoint =
@@ -276,6 +284,7 @@ public class Superstructure extends SubsystemBase {
         //   conveyor.setShooting();
         // }
         break;
+      }
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(Constants.ShooterConstants.SETPOINT);
@@ -334,6 +343,14 @@ public class Superstructure extends SubsystemBase {
         climb.flip();
         climbed = true;
         break;
+      case FLING: {
+        var flingPose = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.FlingConstants.BLUE_FLING_POSE : Constants.FlingConstants.RED_FLING_POSE; 
+        double armDistanceSetPoint = armFlingInterpolation.getValue(
+          RobotContainer.poseEstimator.distanceBetweenPoses(RobotContainer.poseEstimator.getLatestPose(), flingPose)
+        );
+        arm.setPosition(armDistanceSetPoint);
+        break; 
+      }
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());
@@ -463,6 +480,10 @@ public class Superstructure extends SubsystemBase {
   public void runIntake() {
     intake.setIntake();
     // conveyor.setIntaking();
+  }
+
+  public void fling() {
+    systemState = SuperstructureStates.FLING;
   }
 
   public SuperstructureStates getState() {
