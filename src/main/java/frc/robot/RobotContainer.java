@@ -210,11 +210,12 @@ public class RobotContainer {
       if (teleopSpeaker) {
         CommandScheduler.getInstance()
             .schedule(
-                ShootMath.snapToTarget(
+                ShootMath.shoot(
                         drive,
-                        () -> -input.leftJoystickY(),
-                        () -> -input.leftJoystickX(),
-                        ShootMath.Speaker.CENTER)
+                        superstructure,
+                        input::leftJoystickY,
+                        input::leftJoystickX,
+                        ShootMath.Speaker.target)
                     .until(() -> input.leftJoystickTrigger()));
 
         /*
