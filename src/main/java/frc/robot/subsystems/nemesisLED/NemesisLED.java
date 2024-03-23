@@ -102,14 +102,19 @@ public class NemesisLED extends SubsystemBase {
   }
 
   private int blinkingTime = 0;
+  private boolean isOn = false;
 
   public void setBlinking(LEDConstants.Colors color) {
-    if (blinkingTime % 5 == 0) {
+    if(blinkingTime % 3 == 0){
+      isOn = !isOn;
+    }
+    if(isOn){
       setColor(color);
-    } else {
+    }
+    else{
       off();
     }
-    blinkingTime += 1;
+    blinkingTime++;
   }
 
   public void off() {

@@ -138,6 +138,7 @@ public final class Constants {
     public static final Colors DETECT_NOTE_COLOR = Colors.Red;
     public static final Colors HAS_NOTE_COLOR = Colors.Red;
     public static final Colors PRIMED_SUPERSTRUCTURE = Colors.Green;
+    public static final Colors PRIMED_SHOOTER = Colors.Green;
 
     public enum Colors {
       Red(255, 0, 0),
