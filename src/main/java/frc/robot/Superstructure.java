@@ -79,6 +79,8 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
+  private final LoggedTunableNumber tunableFlywheelSpeed =
+      new LoggedTunableNumber("Flywheel RPM", 2300);
   private final LookupTable armInterpolation;
 
   /** The container for the robot. Pass in the appropriate subsystems from RobotContainer */
@@ -243,8 +245,8 @@ public class Superstructure extends SubsystemBase {
                 RobotContainer.poseEstimator.distanceToTarget(
                     Constants.FieldConstants.Targets.SPEAKER));
         Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-        arm.setPosition(armDistanceSetPoint);
-        shooter.shoot(flywheelSpeedInput);
+        arm.setPosition(armAngle.get());
+        shooter.shoot(tunableFlywheelSpeed.get());
         if (!DriverStation.isAutonomousEnabled()) {
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
