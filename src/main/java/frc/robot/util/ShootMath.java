@@ -206,7 +206,7 @@ public interface ShootMath {
                 Commands.runOnce(superstructure::prep, superstructure)
             ),
             Commands.runOnce(superstructure::shootBlind, superstructure),
-            Commands.waitUntil(() -> superstructure.getArm().getState() == ArmStates.AT_SETPOINT),
+            Commands.waitUntil(superstructure.getArm()::atSetpoint),
             Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
             Commands.runOnce(superstructure::idle, superstructure)
         );

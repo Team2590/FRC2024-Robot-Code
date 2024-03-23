@@ -150,4 +150,8 @@ public class Arm extends SubsystemBase {
   public ArmStates getState() {
     return state;
   }
+
+  public boolean atSetpoint() {
+    return state == ArmStates.AT_SETPOINT;
+  }
 }
