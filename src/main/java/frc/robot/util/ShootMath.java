@@ -9,11 +9,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.elevatorarm.Arm.ArmStates;
+import frc.robot.subsystems.user_input.UserInput;
 
 import java.util.function.DoubleSupplier;
 
@@ -206,7 +207,6 @@ public interface ShootMath {
                 Commands.runOnce(superstructure::prep, superstructure)
             ),
             Commands.runOnce(superstructure::shootBlind, superstructure),
-            Commands.waitUntil(superstructure.getArm()::atSetpoint),
             Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
             Commands.runOnce(superstructure::idle, superstructure)
         );
@@ -219,7 +219,7 @@ public interface ShootMath {
     public static Command checkForHits(Drive drive, Triangle... triangles) {
         return Commands.waitUntil(() -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
-            final var robotHeading = radianBand(robotPose.getRotation().getRadians());
+            final var robotHeading = getHeading(robotPose.getRotation().getRadians());
             final var robotVector = new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight());
             for (final var triangle : triangles) {
                 if (willHit(
@@ -243,22 +243,21 @@ public interface ShootMath {
         
         return oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
+            final var robotHeading = getHeading(robotPose.getRotation().getRadians());
             final var targetShooterState = calcConstantVelocity(
                 SHOOT_VELOCITY,
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight())),
-                calcRobotVelocityFAKE(drive, getHeading(robotPose.getRotation().getRadians())),
+                calcRobotVelocityFAKE(drive, robotHeading),
                 GRAVITY
             );
 
             setShooterPitch(targetShooterState.pitch);
 
-            Logger.recordOutput("ShootMath/robotHeading", getHeading(robotPose.getRotation().getRadians()));
+            Logger.recordOutput("ShootMath/robotHeading", robotHeading);
             Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
 
-            return drive.snapController.calculate(
-                getHeading(robotPose.getRotation().getRadians()),
-                radianBand(targetShooterState.yaw)
-            ) * drive.getMaxAngularSpeedRadPerSec();
+            return drive.snapController.calculate(robotHeading, radianBand(targetShooterState.yaw))
+                * drive.getMaxAngularSpeedRadPerSec();
         });
     }
 
@@ -285,8 +284,6 @@ public interface ShootMath {
             getProjectileZVelocity()
         );
     }
-
-    
 
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
@@ -408,7 +405,7 @@ public interface ShootMath {
         return MathUtil.isNear(
             parallelogram0,
             parallelogram1 + parallelogram2 + parallelogram3,
-            0.01
+            0.05
         );
     }
 
