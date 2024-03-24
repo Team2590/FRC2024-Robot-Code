@@ -237,6 +237,7 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(16)) {
       superstructure.climb();
     } else if (input.rightJoystickButton(5)) {
+      System.out.println("zeroing gyro");
       drive.zeroGyro();
     } else if (input.leftJoystickPOV() == 180) {
       superstructure.subwooferShot();

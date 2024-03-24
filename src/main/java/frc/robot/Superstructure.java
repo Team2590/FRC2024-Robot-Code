@@ -83,6 +83,8 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber flywheelSpeed =
       new LoggedTunableNumber("Flywheeel/Flywheel speed", 2300);
   private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
+  private final LoggedTunableNumber tunableFlywheelSpeed =
+      new LoggedTunableNumber("Flywheel RPM", 2300);
   private final LookupTable armInterpolation;
   private final LookupTable armFlingInterpolation;
   private final LookupTable shooterflingInterpolation;
@@ -99,10 +101,10 @@ public class Superstructure extends SubsystemBase {
     this.led = led;
     climb.resetRotationCount();
 
-    final double[] distance = {0, 1.174, 1.52, 1.705, 2.08, 2.39, 2.78, 3.358, 3.75, 4.205, 4.598};
+    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1 ,5.698};
     // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
     final double[] armSetpoint = {
-      .16, .16, .145, .135, .115, .105, .09, .073, .065 + .005, .059 + .005, .059
+      .168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059 ,.055
     };
     // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
