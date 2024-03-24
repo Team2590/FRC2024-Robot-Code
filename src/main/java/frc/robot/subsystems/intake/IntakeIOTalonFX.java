@@ -3,11 +3,14 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX talon = new TalonFX(Constants.IntakeConstants.INTAKE_ID, Constants.CANBUS);
   private TalonFX follower = new TalonFX(Constants.IntakeConstants.INTAKE_FOLLOWER_ID, Constants.CANBUS);
+  private final DigitalInput beamBreak = new DigitalInput(1);
   private final StatusSignal<Double> intakeLeaderPosition = talon.getPosition();
   private final StatusSignal<Double> intakeLeaderVelocity = talon.getVelocity();
   private final StatusSignal<Double> intakeLeaderAppliedVolts = talon.getMotorVoltage();
@@ -39,5 +42,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.followerAppliedVolts = intakeFollowerAppliedVolts.getValueAsDouble();
     inputs.followerCurrent = intakeFollowerCurrent.getValueAsDouble();
     inputs.followerPosition = intakeFollowerPosition.getValueAsDouble();
+    inputs.beamBreakDetected = beamBreak.get();
   }
 }

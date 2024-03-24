@@ -73,7 +73,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean detectNote() {
-    return proxValue.get() > IntakeConstants.INTAKE_PROX_THRESHOLD;
+    return inputs.beamBreakDetected;
   }
 
   public IntakeStates getState() {

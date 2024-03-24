@@ -16,7 +16,7 @@ public class ConveyorIOSim implements ConveyorIO {
   private final DCMotorSim feederSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
   private final DCMotorSim diverterSim = new DCMotorSim(DCMotor.getFalcon500(1), 1.0, 1.0);
   private final AnalogInputSim shooterProxSim =
-      new AnalogInputSim(ConveyorConstants.SHOOTER_PROX_ID);
+      new AnalogInputSim(ConveyorConstants.BEAMBREAK_ID);
 
   @Override
   public void updateInputs(ConveyorIOInputs inputs) {

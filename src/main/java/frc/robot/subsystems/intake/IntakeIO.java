@@ -14,6 +14,7 @@ public interface IntakeIO {
     public double followerAppliedVolts = 0.0;
     public double followerCurrent = 0.0;
     public double followerPosition = 0.0;
+    public boolean beamBreakDetected = false;
   }
 
   public default void setPower(double powerPercent) {}

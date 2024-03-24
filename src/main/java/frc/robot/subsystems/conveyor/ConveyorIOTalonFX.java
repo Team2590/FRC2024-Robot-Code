@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.ConveyorConstants;
 
@@ -18,7 +19,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
   // motors + sensors
   private final TalonFX feederMotor = new TalonFX(Constants.ConveyorConstants.FEEDER_ID);
   private final TalonFX diverterMotor = new TalonFX(ConveyorConstants.DIVRETER_ID);
-  private final AnalogInput shooterProx = new AnalogInput(ConveyorConstants.SHOOTER_PROX_ID);
+  private final DigitalInput beamBreak = new DigitalInput(ConveyorConstants.BEAMBREAK_ID);
 
   private final StatusSignal<Double> feederVelocity = feederMotor.getVelocity();
   private final StatusSignal<Double> feederAppliedVolts = feederMotor.getMotorVoltage();
@@ -60,7 +61,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
         diverterAppliedVolts,
         diverterCurrent);
     inputs.detectedShooterSide = detectedShooterSide();
-    inputs.shooterProxVolts = shooterProx.getVoltage();
+    // inputs.shooterProxVolts = shooterProx.getVoltage();
     inputs.hasNote = noteInConveyor();
     inputs.diverterRPM =
         diverterVelocity.getValueAsDouble() * ConveyorConstants.DIVERTER_GEAR_RATIO;
@@ -95,7 +96,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
    * @return if something is detected
    */
   private boolean detectedShooterSide() {
-    return shooterProx.getVoltage() > ConveyorConstants.SHOOTER_PROX_THRESHOLD;
+    return beamBreak.get();
   }
 
   /**
