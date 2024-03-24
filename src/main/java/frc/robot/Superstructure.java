@@ -78,7 +78,7 @@ public class Superstructure extends SubsystemBase {
   private final Flywheel shooter;
   private final Arm arm;
   private final Climb climb;
-  private final NemesisLED led;
+  public final NemesisLED led;
   public boolean readyToShoot = false;
   private boolean climbed = false;
   private DutyCycleOut pwr = new DutyCycleOut(0);
