@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
@@ -32,16 +31,26 @@ public interface ShootMath {
         static double shooterPitch = 0; // TODO: actually change shooter pitch
     }
 
-    public static double getShooterPitch() {
-        return FAKE_SHOOTER.shooterPitch;
+    public static double getShooterPitch(Superstructure superstructure) {
+        //return FAKE_SHOOTER.shooterPitch;
+        return encoderTicksToRadians(superstructure.getArm().getAbsolutePosition());
     }
 
-    public static void setShooterPitch(double pitch) {
-        FAKE_SHOOTER.shooterPitch = pitch;
+    public static void setShooterPitch(Superstructure superstructure, double pitch) {
+        //FAKE_SHOOTER.shooterPitch = pitch;
+        superstructure.getArm().setPosition(radiansToEncoderTicks(pitch));
+    }
+
+    public static double encoderTicksToRadians(double encoderTicks) {
+        return Units.degreesToRadians(encoderTicks / 0.168 * 62);
+    }
+
+    public static double radiansToEncoderTicks(double radians) {
+        return Units.radiansToDegrees(radians) / 62 * 0.168;
     }
 
     public static double getProjectileHeight() {
-        return 0; // TODO: calculate
+        return Units.inchesToMeters(25.5); // TODO: calculate
     }
 
     public static double getProjectileZVelocity() {
@@ -50,12 +59,15 @@ public interface ShootMath {
 
     // field, robot, and Earth constants ██████████████████████████████████████████████████████████
 
+    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 15);
+
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
     final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
+
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -202,8 +214,8 @@ public interface ShootMath {
     ) {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
-                snapToTarget(drive, xSupplier, ySupplier, target.point),
+                skipAim,//new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
+                snapToTarget(drive, superstructure, xSupplier, ySupplier, target.point),
                 Commands.runOnce(superstructure::prep, superstructure)
             ),
             Commands.runOnce(superstructure::shootBlind, superstructure),
@@ -216,7 +228,7 @@ public interface ShootMath {
         return radianBand(DriverStation.getAlliance().get() == Alliance.Red ? heading : heading + Math.PI);
     }
 
-    public static Command checkForHits(Drive drive, Triangle... triangles) {
+    public static Command checkForHits(Drive drive, Superstructure superstructure, Triangle... triangles) {
         return Commands.waitUntil(() -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = getHeading(robotPose.getRotation().getRadians());
@@ -225,9 +237,9 @@ public interface ShootMath {
                 if (willHit(
                     calcRobotVelocity(drive, robotHeading),
                     GRAVITY,
-                    SHOOT_VELOCITY,
+                    loggedShootVelocity.get(),
                     robotHeading,
-                    getShooterPitch(),
+                    getShooterPitch(superstructure),
                     triangle.minus(robotVector)
                 )) return true;
             }
@@ -236,7 +248,7 @@ public interface ShootMath {
     }
 
     public static Command snapToTarget(
-        Drive drive,
+        Drive drive, Superstructure superstructure,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
         Vector target
     ) {
@@ -245,13 +257,14 @@ public interface ShootMath {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = getHeading(robotPose.getRotation().getRadians());
             final var targetShooterState = calcConstantVelocity(
-                SHOOT_VELOCITY,
+                loggedShootVelocity.get(),
                 target.minus(new Vector(robotPose.getX(), robotPose.getY(), getProjectileHeight())),
                 calcRobotVelocityFAKE(drive, robotHeading),
                 GRAVITY
             );
 
-            setShooterPitch(targetShooterState.pitch);
+            Logger.recordOutput("ShootMath/shooterTargetPitch", targetShooterState.pitch);
+            setShooterPitch(superstructure, targetShooterState.pitch);
 
             Logger.recordOutput("ShootMath/robotHeading", robotHeading);
             Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
@@ -261,7 +274,8 @@ public interface ShootMath {
         });
     }
 
-    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 1);
+    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 2.5);
+    LoggedTunableNumber loggedPitchMultiplier = new LoggedTunableNumber("ShootMath/pitchMultiplier", 1);
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
@@ -269,8 +283,8 @@ public interface ShootMath {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
         final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
         return new Vector(
-            chassisSpeeds.vxMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-            chassisSpeeds.vyMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
+            chassisSpeeds.vxMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2) * loggedPitchMultiplier.get(),
+            chassisSpeeds.vyMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2) * loggedPitchMultiplier.get(),
             getProjectileZVelocity()
         );
     }
@@ -300,13 +314,13 @@ public interface ShootMath {
             g * g / 4,
             -v.z * g,
             d.z * g - sv * sv + v.dot(v),
-            2 * d.dot(v),
+            -2 * d.dot(v),
             d.dot(d),
             d.magnitude() / sv,
             10
         );
 
-        final var projectileVelocity = d.scale(1/tf).plus(v).plus(new Vector(0, 0, g * tf / 2));
+        final var projectileVelocity = d.scale(1/tf).minus(v).plus(new Vector(0, 0, g * tf / 2));
 
         final var yaw = Math.atan2(projectileVelocity.y, projectileVelocity.x);
         final var pitch = Math.atan2(projectileVelocity.z, Math.hypot(projectileVelocity.x, projectileVelocity.y));

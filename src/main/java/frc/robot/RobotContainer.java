@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -207,18 +209,27 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
+    if (input.leftJoystick.getTriggerPressed()) {
+      CommandScheduler.getInstance()
+          .schedule(
+              ShootMath.shoot(
+                      drive,
+                      superstructure,
+                      () ->
+                          (DriverStation.getAlliance().get() == Alliance.Red
+                              ? input.leftJoystickY()
+                              : -input.leftJoystickY()),
+                      () ->
+                          (DriverStation.getAlliance().get() == Alliance.Red
+                              ? input.leftJoystickX()
+                              : -input.leftJoystickX()),
+                      ShootMath.Speaker.target,
+                      Commands.waitUntil(() -> input.leftJoystick.getRawButtonPressed(2)))
+                  .until(() -> !input.leftJoystickTrigger()));
+    }
+
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
-        CommandScheduler.getInstance()
-            .schedule(
-                ShootMath.shoot(
-                        drive,
-                        superstructure,
-                        input::leftJoystickY,
-                        input::leftJoystickX,
-                        ShootMath.Speaker.target,
-                        Commands.waitUntil(() -> input.rightJoystickButton(2)))
-                    .until(() -> !input.leftJoystickTrigger()));
 
         /*
         CommandScheduler.getInstance()
