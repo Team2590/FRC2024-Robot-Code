@@ -216,7 +216,7 @@ public class RobotContainer {
             ShootMath.redAlliance ? input::leftJoystickX : () -> -input.leftJoystickX(),
             ShootMath.Speaker.target,
             Commands.waitUntil(() -> input.leftJoystickButtonPressed(2))
-        ).onlyWhile(input::leftJoystickTrigger));
+        ).onlyWhile(input::leftJoystickTrigger).finallyDo(superstructure::idle));
     }
     // spotless:on
 

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
+import frc.robot.Constants.LEDConstants;
 import frc.robot.subsystems.drive.Drive;
 
 import java.util.function.DoubleSupplier;
@@ -115,7 +116,7 @@ public interface ShootMath {
 
     // driving commands ███████████████████████████████████████████████████████████████████████████
 
-    public static final double DEADBAND = 0.1;
+    double DEADBAND = 0.1;
 
     /**
      * Maps an input from -1 to 1 to an output from -1 to 1.
@@ -205,17 +206,22 @@ public interface ShootMath {
         Drive drive, Superstructure superstructure,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
         Target target,
-        Command skipAim
+        Command fire
     ) {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                skipAim, //new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
+                fire,
                 snapToTarget(drive, superstructure, xSupplier, ySupplier, target.point),
-                Commands.runOnce(superstructure::prep, superstructure)
+                Commands.runOnce(superstructure::prep, superstructure),
+                Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Violet), superstructure),
+                new SequentialCommandGroup(
+                    checkForHits(drive, superstructure, target.surfaces),
+                    Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Yellow), superstructure)
+                )
             ),
             Commands.runOnce(superstructure::shootBlind, superstructure),
             Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
-            Commands.runOnce(superstructure::idle, superstructure)
+            Commands.waitUntil(() -> !superstructure.getConveyor().hasNote())
         );
     }
 
@@ -247,7 +253,6 @@ public interface ShootMath {
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
         Vector target
     ) {
-        
         return oneJoystickDrive(drive, xSupplier, ySupplier, () -> {
             final var robotPose = RobotContainer.poseEstimator.getLatestPose();
             final var robotHeading = getHeading(robotPose.getRotation().getRadians());
@@ -269,8 +274,8 @@ public interface ShootMath {
         });
     }
 
-    LoggedTunableNumber loggedSpeedMultiplier = new LoggedTunableNumber("ShootMath/speedMultiplier", 2.5);
-    LoggedTunableNumber loggedPitchMultiplier = new LoggedTunableNumber("ShootMath/pitchMultiplier", 1);
+    LoggedTunableNumber loggedStrafeMultiplier = new LoggedTunableNumber("ShootMath/strafeMultiplier", 2.5);
+    LoggedTunableNumber loggedStoopMultiplier = new LoggedTunableNumber("ShootMath/stoopMultiplier", 2.5);
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
@@ -278,8 +283,8 @@ public interface ShootMath {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
         final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
         return new Vector(
-            chassisSpeeds.vxMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2) * loggedPitchMultiplier.get(),
-            chassisSpeeds.vyMetersPerSecond * loggedSpeedMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2) * loggedPitchMultiplier.get(),
+            chassisSpeeds.vxMetersPerSecond * loggedStoopMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            chassisSpeeds.vyMetersPerSecond * loggedStrafeMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
             getProjectileZVelocity()
         );
     }
