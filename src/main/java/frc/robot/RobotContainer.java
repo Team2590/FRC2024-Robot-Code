@@ -209,24 +209,17 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
-    if (input.leftJoystick.getTriggerPressed()) {
-      CommandScheduler.getInstance()
-          .schedule(
-              ShootMath.shoot(
-                      drive,
-                      superstructure,
-                      () ->
-                          (DriverStation.getAlliance().get() == Alliance.Red
-                              ? input.leftJoystickY()
-                              : -input.leftJoystickY()),
-                      () ->
-                          (DriverStation.getAlliance().get() == Alliance.Red
-                              ? input.leftJoystickX()
-                              : -input.leftJoystickX()),
-                      ShootMath.Speaker.target,
-                      Commands.waitUntil(() -> input.leftJoystick.getRawButtonPressed(2)))
-                  .until(() -> !input.leftJoystickTrigger()));
+    // spotless:off
+    if (input.leftJoystickTriggerPressed()) {
+        CommandScheduler.getInstance().schedule(ShootMath.shoot(
+            drive, superstructure,
+            ShootMath.redAlliance ? input::leftJoystickY : () -> -input.leftJoystickY(),
+            ShootMath.redAlliance ? input::leftJoystickX : () -> -input.leftJoystickX(),
+            ShootMath.Speaker.target,
+            Commands.waitUntil(() -> input.leftJoystickButtonPressed(2))
+        ).onlyWhile(input::leftJoystickTrigger));
     }
+    // spotless:on
 
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
