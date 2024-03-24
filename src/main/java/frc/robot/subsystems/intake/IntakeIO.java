@@ -6,10 +6,14 @@ public interface IntakeIO {
 
   @AutoLog
   public static class IntakeIOInputs {
-    public double velocity = 0.0;
-    public double appliedVolts = 0.0;
-    public double current = 0.0;
-    public double position = 0.0;
+    public double leaderVelocity = 0.0;
+    public double leaderAppliedVolts = 0.0;
+    public double leaderCurrent = 0.0;
+    public double leaderPosition = 0.0;
+    public double followerVelocity = 0.0;
+    public double followerAppliedVolts = 0.0;
+    public double followerCurrent = 0.0;
+    public double followerPosition = 0.0;
   }
 
   public default void setPower(double powerPercent) {}
