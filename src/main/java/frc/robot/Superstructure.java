@@ -338,13 +338,15 @@ public class Superstructure extends SubsystemBase {
 
         // spotless:off
       case PREP:
-        arm.setPosition(armInterpolation.getValue(
-          RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER)
-        ));
         shooter.shoot(flywheelSpeedInput);
+        armDistanceSetPoint =
+            armInterpolation.getValue(
+                RobotContainer.poseEstimator.distanceToTarget(
+                    Constants.FieldConstants.Targets.SPEAKER));
+        Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
         break;
       case SHOOT_BLIND:
-        if (!conveyor.hasNote()) systemState = SuperstructureStates.IDLE;
+        //if (!conveyor.hasNote()) systemState = SuperstructureStates.IDLE;
         conveyor.setShooting();
         break;
       // spotless:on
