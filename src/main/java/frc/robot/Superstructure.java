@@ -101,18 +101,19 @@ public class Superstructure extends SubsystemBase {
     this.led = led;
     climb.resetRotationCount();
 
-    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1 ,5.698};
+    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
-    final double[] armSetpoint = {
-      .168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059 ,.055
-    };
+    final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
     // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
     armFlingInterpolation =
         new LookupTable(
             Constants.FlingConstants.FLING_DISTANCE, Constants.FlingConstants.FLING_ARM_SETPOINT);
-    shooterflingInterpolation = new LookupTable(Constants.FlingConstants.FLING_DISTANCE, Constants.FlingConstants.FLING_SHOOTER_SETPOINT);
+    shooterflingInterpolation =
+        new LookupTable(
+            Constants.FlingConstants.FLING_DISTANCE,
+            Constants.FlingConstants.FLING_SHOOTER_SETPOINT);
   }
 
   /** This is where you would call all of the periodic functions of the subsystems. */
@@ -358,7 +359,8 @@ public class Superstructure extends SubsystemBase {
               armFlingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
-          double shooterSetPoint = shooterflingInterpolation.getValue(
+          double shooterSetPoint =
+              shooterflingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
           arm.setPosition(armDistanceSetPoint);
@@ -367,8 +369,8 @@ public class Superstructure extends SubsystemBase {
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
           }
-          break;
         }
+        break;
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());

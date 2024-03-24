@@ -271,7 +271,7 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(15)) {
       DriveCommands.SnapToTarget(
               drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.FLING)
-          .until(() -> input.rightJoystickButton(2));
+          .until(() -> input.rightJoystickButton(15));
       superstructure.fling();
     } else {
 

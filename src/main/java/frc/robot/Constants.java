@@ -172,7 +172,7 @@ public final class Constants {
     public static final Pose2d BLUE_FLING_POSE =
         new Pose2d(BLUE_ALLIANCE_X, BLUE_ALLIANCE_Y, new Rotation2d(0));
 
-    public static final double[] FLING_DISTANCE = {10.51, 9.09, 7.44, 7.77, 7.82 };
+    public static final double[] FLING_DISTANCE = {10.51, 9.09, 7.44, 7.77, 7.82};
     public static final double[] FLING_ARM_SETPOINT = {0.12, 0.145, 0.168, 0.168, 0.168};
     public static final double[] FLING_SHOOTER_SETPOINT = {2300, 2300, 2000, 1850, 1850};
   }
