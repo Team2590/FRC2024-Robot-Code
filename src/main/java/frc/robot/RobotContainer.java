@@ -268,6 +268,11 @@ public class RobotContainer {
     // }
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
+    } else if (input.rightJoystickButton(15)) {
+      DriveCommands.SnapToTarget(
+              drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.FLING)
+          .until(() -> input.rightJoystickButton(15));
+      superstructure.fling();
     } else {
 
       if (superstructure.getState() == SuperstructureStates.PRIMING_AMP
