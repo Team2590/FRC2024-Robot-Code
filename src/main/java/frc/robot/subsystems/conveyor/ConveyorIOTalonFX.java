@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.Constants.ConveyorConstants;
@@ -70,6 +69,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
     inputs.feederRPM = feederVelocity.getValueAsDouble() * ConveyorConstants.FEEDER_GEAR_RATIO;
     inputs.currentAmps =
         new double[] {feederCurrent.getValueAsDouble(), diverterCurrent.getValueAsDouble()};
+    // System.out.println(beamBreak.get());
   }
 
   @Override

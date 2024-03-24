@@ -38,6 +38,9 @@ public final class Constants {
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.27);
+  public static LoggedTunableNumber homeSetpoint =
+      new LoggedTunableNumber("Arm/IntakeSetpoint", .155);
+
   public static LoggedTunableNumber trapTuning =
       new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
 
@@ -89,7 +92,9 @@ public final class Constants {
 
   public final class ArmConstants {
     // Fill in
-    public static final double HOME_SETPOINT = 0.168;
+    public static final double HOME_SETPOINT = homeSetpoint.get();
+    public static final double CLIMB_SETPOINT = .198;
+    public static final double INTAKE_SETPOINT = homeSetpoint.get();
     public static double AMP_SETPOINT = -0.27;
     public static double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;

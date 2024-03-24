@@ -3,13 +3,13 @@ package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX talon = new TalonFX(Constants.IntakeConstants.INTAKE_ID, Constants.CANBUS);
-  private TalonFX follower = new TalonFX(Constants.IntakeConstants.INTAKE_FOLLOWER_ID, Constants.CANBUS);
+  private TalonFX follower =
+      new TalonFX(Constants.IntakeConstants.INTAKE_FOLLOWER_ID, Constants.CANBUS);
   private final DigitalInput beamBreak = new DigitalInput(1);
   private final StatusSignal<Double> intakeLeaderPosition = talon.getPosition();
   private final StatusSignal<Double> intakeLeaderVelocity = talon.getVelocity();
@@ -23,12 +23,14 @@ public class IntakeIOTalonFX implements IntakeIO {
 
   @Override
   public void setPower(double velocity) {
-    talon.set(velocity);
+    talon.set(-velocity);
+    follower.set(velocity);
   }
 
   @Override
   public void stop() {
     talon.stopMotor();
+    follower.stopMotor();
   }
 
   @Override

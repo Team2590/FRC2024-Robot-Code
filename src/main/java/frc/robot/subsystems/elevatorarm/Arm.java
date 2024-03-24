@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.HelperFn;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
@@ -12,6 +13,9 @@ public class Arm extends SubsystemBase {
   private double armSetpoint;
   private double tolerance = .005;
   private DutyCycleOut power = new DutyCycleOut(0);
+  private LoggedTunableNumber homeSetpoint = new LoggedTunableNumber("Arm/homeSetpoint", .168);
+  private double targetHome = ArmConstants.HOME_SETPOINT;
+  private boolean isClimbing = false;
 
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
@@ -22,7 +26,7 @@ public class Arm extends SubsystemBase {
     APPROACHINGSETPOINT,
     AMPTRAP, /*STOWED, */
     APPROACHING_HOME,
-    HOME
+    HOME,
   }
 
   /**
@@ -57,7 +61,7 @@ public class Arm extends SubsystemBase {
       case AT_SETPOINT:
         if (isArmAtSetPointPosition(armSetpoint)) {
           state = ArmStates.AT_SETPOINT;
-          if (armSetpoint == ArmConstants.HOME_SETPOINT) {
+          if (!isClimbing && armSetpoint == ArmConstants.HOME_SETPOINT) {
             state = ArmStates.HOME;
           }
         } else {
@@ -88,8 +92,8 @@ public class Arm extends SubsystemBase {
   public void setPosition(double setpoint) {
     if (setpoint <= ArmConstants.ARM_MAX) {
       setpoint = ArmConstants.ARM_MAX;
-    } else if (setpoint >= ArmConstants.HOME_SETPOINT) {
-      setpoint = ArmConstants.HOME_SETPOINT;
+    } else if (setpoint >= ArmConstants.CLIMB_SETPOINT) {
+      setpoint = ArmConstants.CLIMB_SETPOINT;
     }
     armSetpoint = setpoint;
     if (!HelperFn.isWithinTolerance(inputs.armabspos, armSetpoint, tolerance)) {
@@ -111,7 +115,15 @@ public class Arm extends SubsystemBase {
     }
   }
 
+  public void setClimb() {
+    isClimbing = true;
+    if (!isArmAtSetPointPosition(ArmConstants.CLIMB_SETPOINT)) {
+      setPosition(ArmConstants.CLIMB_SETPOINT);
+    }
+  }
+
   public void resetarm() {
+    isClimbing = false;
     arm.resetArm();
   }
 
