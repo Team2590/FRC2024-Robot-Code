@@ -1,7 +1,9 @@
 package frc.robot.subsystems.user_input;
 
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.util.BandedJoystick;
@@ -49,11 +51,11 @@ public class UserInput extends SubsystemBase implements RobotMap {
   // LEFT JOYSTICK
 
   public double leftJoystickX() {
-    return leftXInput.get();
+    return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? -leftXInput.get() : leftXInput.get();
   }
 
   public double leftJoystickY() {
-    return leftYInput.get();
+    return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? -leftYInput.get() : leftYInput.get();
   }
 
   public boolean leftJoystickButton(int button) {
@@ -91,7 +93,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
   // RIGHT JOYSTICK
 
   public double rightJoystickX() {
-    return rightXInput.get();
+    return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red ? -rightXInput.get() : rightXInput.get();
   }
 
   public boolean rightJoystickButton(int button) {

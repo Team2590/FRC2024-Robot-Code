@@ -171,7 +171,7 @@ public class RobotContainer {
   }
 
   public void updateUserInput() {
-    Logger.recordOutput("Odometry/Gyro", drive.getGyroYaw().getDegrees());
+    Logger.recordOutput("Odometry/Gyro", RobotContainer.poseEstimator.getLatestPose().getRotation().getDegrees());
 
     /*
      * Driver input w/ superstructure

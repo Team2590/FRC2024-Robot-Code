@@ -70,7 +70,7 @@ public class DriveCommands {
                   linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getGyroYaw()));
+                  RobotContainer.poseEstimator.getLatestPose().getRotation()));
         },
         drive);
   }
@@ -127,7 +127,7 @@ public class DriveCommands {
           Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
           // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
           double theta = Math.atan2(difference.getY(), difference.getX());
-          double currentAngle = drive.getGyroYaw().getRadians() % (2 * Math.PI); // CHANGED
+          double currentAngle = RobotContainer.poseEstimator.getLatestPose().getRotation().getRadians(); // CHANGED
           // Logger.recordOutput("SnapController/RealCurrentAngle",
           // drive.getGyroYaw().getRadians());
           // Logger.recordOutput("SnapController/CurrentAngle", currentAngle);
@@ -137,7 +137,7 @@ public class DriveCommands {
           } else if (currentError < -Math.PI) {
             currentAngle -= 2 * Math.PI;
           }
-          // Logger.recordOutput("SnapController/CurrentError", currentError);
+          // Logger.recordOutput("SnapController/CurrentError", currentError);s
           // Logger.recordOutput("SnapController/Target", target);
           // Logger.recordOutput("SnapController/TargetPose", targetPose);
           // run the motors
@@ -151,7 +151,7 @@ public class DriveCommands {
                       * Drive.snapControllermultiplier.get(),
                   drive.snapController.calculate(currentAngle, theta)
                       * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getGyroYaw()));
+                      RobotContainer.poseEstimator.getLatestPose().getRotation()));
         }),
         drive);
   }
@@ -227,7 +227,7 @@ public class DriveCommands {
 
     return Commands.run(
         () -> {
-          double theta = drive.getGyroYaw().getDegrees() % 360;
+          double theta = RobotContainer.poseEstimator.getLatestPose().getRotation().getDegrees();
           double currentError = theta - angleSetpoint;
 
           if (currentError > 180) {
