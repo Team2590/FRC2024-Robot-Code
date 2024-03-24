@@ -27,17 +27,11 @@ public interface ShootMath {
 
     // superstructure API █████████████████████████████████████████████████████████████████████████
 
-    public class FAKE_SHOOTER {
-        static double shooterPitch = 0; // TODO: actually change shooter pitch
-    }
-
     public static double getShooterPitch(Superstructure superstructure) {
-        //return FAKE_SHOOTER.shooterPitch;
         return encoderTicksToRadians(superstructure.getArm().getAbsolutePosition());
     }
 
     public static void setShooterPitch(Superstructure superstructure, double pitch) {
-        //FAKE_SHOOTER.shooterPitch = pitch;
         superstructure.getArm().setPosition(radiansToEncoderTicks(pitch));
     }
 
@@ -66,8 +60,9 @@ public interface ShootMath {
     /** Shooter-induced projectile velocity (m/s) */
     final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
-    final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set
+    final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set (...or not)
 
+    boolean redAlliance = DriverStation.getAlliance().get() == Alliance.Red;
 
     /** Speaker coords. (m) */
     public interface Speaker {
@@ -87,18 +82,18 @@ public interface ShootMath {
         /** Blue speaker's x coordinate. (m) */
         final double BLUE_X = Units.inchesToMeters(-1.5);
 
-        final double SIGNED_EXTRUDE = Math.copySign(EXTRUDE, DriverStation.getAlliance().get() == Alliance.Red ? -1 : 1);
+        final double SIGNED_EXTRUDE = Math.copySign(EXTRUDE, redAlliance ? -1 : 1);
 
         /** The center of the speaker opening. */
         final Vector CENTER = new Vector(
-            (DriverStation.getAlliance().get() == Alliance.Red ? RED_X : BLUE_X) + SIGNED_EXTRUDE / 2,
+            (redAlliance ? RED_X : BLUE_X) + SIGNED_EXTRUDE / 2,
             CENTER_Y,
             (LOW + HIGH)/2
         );
 
         /** Vertex of the speaker opening in the +y +z direction. */
         final Vector MAX_Y_MAX_Z_VERTEX = new Vector(
-            (DriverStation.getAlliance().get() == Alliance.Red ? RED_X : BLUE_X) + SIGNED_EXTRUDE,
+            (redAlliance ? RED_X : BLUE_X) + SIGNED_EXTRUDE,
             CENTER_Y + WIDTH / 2,
             HIGH
         );
@@ -214,7 +209,7 @@ public interface ShootMath {
     ) {
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                skipAim,//new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
+                skipAim, //new ParallelRaceGroup(checkForHits(drive, target.surfaces), skipAim),
                 snapToTarget(drive, superstructure, xSupplier, ySupplier, target.point),
                 Commands.runOnce(superstructure::prep, superstructure)
             ),
@@ -225,7 +220,7 @@ public interface ShootMath {
     }
 
     public static double getHeading(double heading) {
-        return radianBand(DriverStation.getAlliance().get() == Alliance.Red ? heading : heading + Math.PI);
+        return radianBand(redAlliance ? heading : heading + Math.PI);
     }
 
     public static Command checkForHits(Drive drive, Superstructure superstructure, Triangle... triangles) {
@@ -314,13 +309,14 @@ public interface ShootMath {
             g * g / 4,
             -v.z * g,
             d.z * g - sv * sv + v.dot(v),
-            -2 * d.dot(v),
+            (redAlliance ? 2 : -2) * d.dot(v),
             d.dot(d),
             d.magnitude() / sv,
             10
         );
 
-        final var projectileVelocity = d.scale(1/tf).minus(v).plus(new Vector(0, 0, g * tf / 2));
+        final var projectileVelocity = (redAlliance ? d.scale(1/tf).plus(v) : d.scale(1/tf).minus(v))
+            .plus(new Vector(0, 0, g * tf / 2));
 
         final var yaw = Math.atan2(projectileVelocity.y, projectileVelocity.x);
         final var pitch = Math.atan2(projectileVelocity.z, Math.hypot(projectileVelocity.x, projectileVelocity.y));
