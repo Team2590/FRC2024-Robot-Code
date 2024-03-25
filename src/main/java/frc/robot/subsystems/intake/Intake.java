@@ -1,9 +1,6 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.util.Smoother;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -14,13 +11,10 @@ public class Intake extends SubsystemBase {
   private double power = 1.0;
   private final IntakeIO io;
   private IntakeStates state;
-  private final AnalogInput intakeProx = new AnalogInput(IntakeConstants.INTAKE_PROX_CHANNEL);
-  private final Smoother.Wrapper proxValue;
 
   public Intake(IntakeIO io) {
     this.io = io;
     state = IntakeStates.STOPPED;
-    proxValue = Smoother.wrap(5, intakeProx::getVoltage); // stores last 5 values
   }
 
   public enum IntakeStates {
@@ -34,11 +28,7 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // handle inputs
     io.updateInputs(inputs);
-    Logger.recordOutput("Intake/IntakeProx", intakeProx.getVoltage());
-    proxValue.update();
-    Logger.recordOutput("Intake/Avg IntakeProx", proxValue.get());
     Logger.processInputs("Intake", inputs);
-    // Logger.recordOutput("Intake/State", state);
 
     // run the motors based on current state
     switch (state) {
@@ -73,7 +63,7 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean detectNote() {
-    return proxValue.get() > IntakeConstants.INTAKE_PROX_THRESHOLD;
+    return inputs.beamBreakDetected;
   }
 
   public IntakeStates getState() {

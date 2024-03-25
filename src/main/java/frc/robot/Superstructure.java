@@ -43,6 +43,7 @@ public class Superstructure extends SubsystemBase {
     IDLE_INTAKING,
     IDLE_AMP,
     IDLE_PRIMING,
+    IDLE_CLIMB,
     INTAKE,
     OUTTAKE,
     MANUAL_ARM,
@@ -64,6 +65,7 @@ public class Superstructure extends SubsystemBase {
     INTAKE,
     AMP,
     TRAP,
+    CLIMB,
     DEFAULT
   }
 
@@ -102,9 +104,7 @@ public class Superstructure extends SubsystemBase {
     climb.resetRotationCount();
 
     final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
-    // 0,1.174,1.52,1.705,2.08,2.39,2.78,3.358,3.75,4.205,4.598
     final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
-    // .16,.16,.145,.135,.115,.105,.09,.073,.065,.059,.059
 
     armInterpolation = new LookupTable(distance, armSetpoint);
     armFlingInterpolation =
@@ -122,6 +122,7 @@ public class Superstructure extends SubsystemBase {
     Logger.recordOutput(
         "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
     Logger.recordOutput("FlywheelSetpoint", flywheelSpeedInput);
+    Logger.recordOutput("Superstructure/climbed?", climbed);
     switch (systemState) {
       case DISABLED:
         // stop
@@ -158,6 +159,7 @@ public class Superstructure extends SubsystemBase {
             intake.setStopped();
           }
         } else {
+          conveyor.setStopped();
           shooter.setStopped();
           if (!climbed) {
             arm.setHome();
@@ -176,6 +178,9 @@ public class Superstructure extends SubsystemBase {
         }
         climb.setStopped();
         break;
+      case IDLE_CLIMB:
+        arm.setClimb();
+        break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
         // appropriate
@@ -183,6 +188,9 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.DEFAULT;
         }
         climb.setStopped();
+        // if (climbed) { // aka if you're trying to score trap
+        //   arm.setStopped();
+        // }
         break;
       case MANUAL_ARM:
         arm.manual(pwr);
@@ -258,7 +266,7 @@ public class Superstructure extends SubsystemBase {
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
           arm.setPosition(armDistanceSetPoint);
-          shooter.shoot(flywheelSpeedInput);
+          shooter.shoot(flywheelSpeed.get());
           if (!DriverStation.isAutonomousEnabled()) {
             if (arm.getState() == ArmStates.AT_SETPOINT
                 && shooter.getState() == ShooterStates.AT_SETPOINT
@@ -344,10 +352,12 @@ public class Superstructure extends SubsystemBase {
          */
         climb.run();
         climbed = true;
+        idleState = IDLE_STATES.CLIMB;
         break;
       case FLIPPING:
         climb.flip();
         climbed = true;
+        idleState = IDLE_STATES.CLIMB;
         break;
       case FLING:
         if (DriverStation.getAlliance().isPresent()) {
@@ -387,7 +397,9 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void idle() {
-    if (idleState == IDLE_STATES.INTAKE) {
+    if (idleState != IDLE_STATES.AMP && idleState == IDLE_STATES.CLIMB) {
+      systemState = SuperstructureStates.IDLE_CLIMB;
+    } else if (idleState == IDLE_STATES.INTAKE) {
       systemState = SuperstructureStates.IDLE_INTAKING;
     } else if (idleState == IDLE_STATES.AMP) {
       systemState = SuperstructureStates.IDLE_AMP;
@@ -420,10 +432,6 @@ public class Superstructure extends SubsystemBase {
       shooter.shoot(flywheelSpeedInput);
     }
   }
-
-  // public void clearNotes() {
-  //   shooter.fullsend();
-  // }
 
   public void primeAmp() {
     systemState = SuperstructureStates.PRIMING_AMP;

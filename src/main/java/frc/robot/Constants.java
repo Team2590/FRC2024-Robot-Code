@@ -38,6 +38,9 @@ public final class Constants {
   public static final boolean tuningMode = true;
   public static final String CANBUS = "Takeover";
   public static LoggedTunableNumber ampTuned = new LoggedTunableNumber("Arm/AMP Setpoint", -0.27);
+  public static LoggedTunableNumber homeSetpoint =
+      new LoggedTunableNumber("Arm/IntakeSetpoint", .155);
+
   public static LoggedTunableNumber trapTuning =
       new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
 
@@ -89,7 +92,9 @@ public final class Constants {
 
   public final class ArmConstants {
     // Fill in
-    public static final double HOME_SETPOINT = 0.168;
+    public static final double HOME_SETPOINT = homeSetpoint.get();
+    public static final double CLIMB_SETPOINT = .198;
+    public static final double INTAKE_SETPOINT = homeSetpoint.get();
     public static double AMP_SETPOINT = -0.27;
     public static double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;
@@ -109,7 +114,7 @@ public final class Constants {
   public final class ConveyorConstants {
     public static final int FEEDER_ID = 57;
     public static final int DIVRETER_ID = 58;
-    public static final int SHOOTER_PROX_ID = 1;
+    public static final int BEAMBREAK_ID = 0;
     // public static final double SHOOTER_PROX_THRESHOLD = 0.55; // value was tested for, .55
     public static final double SHOOTER_PROX_THRESHOLD =
         RobotBase.isReal() ? 0.80 : -.80; // value was tested for, .80
@@ -125,8 +130,8 @@ public final class Constants {
   public final class IntakeConstants {
     // Fill in
     public static final int INTAKE_ID = 14;
-    public static final int INTAKE_PROX_CHANNEL = 0;
-    public static final double INTAKE_PROX_THRESHOLD = 0.2; // .7
+    public static final int INTAKE_FOLLOWER_ID = 15;
+    public static final int INTAKE_BEAM_BREAK_CHANNEL = 1;
   }
 
   public final class ClimbConstants {
