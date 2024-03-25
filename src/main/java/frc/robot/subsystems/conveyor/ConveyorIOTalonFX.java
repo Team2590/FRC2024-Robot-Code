@@ -60,7 +60,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
         diverterAppliedVolts,
         diverterCurrent);
     inputs.detectedShooterSide = detectedShooterSide();
-    // inputs.shooterProxVolts = shooterProx.getVoltage();
     inputs.hasNote = noteInConveyor();
     inputs.diverterRPM =
         diverterVelocity.getValueAsDouble() * ConveyorConstants.DIVERTER_GEAR_RATIO;
@@ -69,7 +68,6 @@ public class ConveyorIOTalonFX implements ConveyorIO {
     inputs.feederRPM = feederVelocity.getValueAsDouble() * ConveyorConstants.FEEDER_GEAR_RATIO;
     inputs.currentAmps =
         new double[] {feederCurrent.getValueAsDouble(), diverterCurrent.getValueAsDouble()};
-    // System.out.println(beamBreak.get());
   }
 
   @Override

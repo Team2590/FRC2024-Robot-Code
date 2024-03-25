@@ -130,9 +130,8 @@ public final class Constants {
   public final class IntakeConstants {
     // Fill in
     public static final int INTAKE_ID = 14;
-    public static final int INTAKE_PROX_CHANNEL = 0;
-    public static final double INTAKE_PROX_THRESHOLD = 0.2; // .7
-    public static final int INTAKE_FOLLOWER_ID = 0;
+    public static final int INTAKE_BEAM_BREAK_CHANNEL = 1;
+    public static final int INTAKE_FOLLOWER_ID = 15;
   }
 
   public final class ClimbConstants {
