@@ -21,8 +21,6 @@ import org.littletonrobotics.junction.Logger;
 
 /**
  * @author Elan Ronen
- * // TODO: with angular velocity to components, check which way is front
- * // TODO: make work for blue (maybe yaw switches from + to -?)
  * // TODO: instead of flipping random signs in the equation, flip the signs of the chassis velocity
  */
 public interface ShootMath {
