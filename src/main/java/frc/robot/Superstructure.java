@@ -303,7 +303,6 @@ public class Superstructure extends SubsystemBase {
           //   conveyor.setShooting();
           // }
           break;
-        }
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(Constants.ShooterConstants.SETPOINT);
@@ -370,7 +369,7 @@ public class Superstructure extends SubsystemBase {
               DriverStation.getAlliance().get() == Alliance.Blue
                   ? Constants.FlingConstants.BLUE_FLING_POSE
                   : Constants.FlingConstants.RED_FLING_POSE;
-          double armDistanceSetPoint =
+          armDistanceSetPoint =
               armFlingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
