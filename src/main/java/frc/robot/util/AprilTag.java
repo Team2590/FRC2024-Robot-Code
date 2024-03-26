@@ -63,9 +63,11 @@ public class AprilTag {
 
   public static final Pose3d[] tagPoses = {
     null,
-    new Pose3d(15.08, 0.25, tagHeights[1], new Rotation3d(0, 0, Math.toRadians(120))), // Blue source r
-    new Pose3d(16.19, 0.88, tagHeights[2], new Rotation3d(0, 0, Math.toRadians(120))), // Blue source l
-    new Pose3d(16.58, 4.98, tagHeights[3], new Rotation3d(0, 0, Math.toRadians(180))), // 
+    new Pose3d(
+        15.08, 0.25, tagHeights[1], new Rotation3d(0, 0, Math.toRadians(120))), // Blue source r
+    new Pose3d(
+        16.19, 0.88, tagHeights[2], new Rotation3d(0, 0, Math.toRadians(120))), // Blue source l
+    new Pose3d(16.58, 4.98, tagHeights[3], new Rotation3d(0, 0, Math.toRadians(180))), //
     new Pose3d(16.58, 5.55, tagHeights[4], new Rotation3d(0, 0, Math.toRadians(180))),
     new Pose3d(14.70, 8.20, tagHeights[5], new Rotation3d(0, 0, Math.toRadians(-90))),
     new Pose3d(1.84, 8.20, tagHeights[6], new Rotation3d(0, 0, Math.toRadians(-90))),
