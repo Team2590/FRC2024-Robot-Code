@@ -103,8 +103,38 @@ public class Superstructure extends SubsystemBase {
     this.led = led;
     climb.resetRotationCount();
 
-    final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
-    final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
+    //final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
+  //final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
+  final double[] distance={1.24,
+    1.74,
+    2.35,
+    2.65,
+    2.93,
+     3.32,
+     3.64,
+    3.87,
+    4,
+    4.19,
+    4.3,
+    4.59,
+    4.8,
+    4.93};
+    final double[] armSetpoint ={
+      0.168,
+      0.155,
+      0.115,
+      0.105,
+      0.097,
+      0.097,
+      0.088,
+      0.087,
+      0.085,
+      0.083,
+      0.078,
+      0.08,
+      0.079,
+       0.076};
+  
 
     armInterpolation = new LookupTable(distance, armSetpoint);
     armFlingInterpolation =
