@@ -8,6 +8,7 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.SnapToTargetCommandTeleop;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
@@ -367,9 +368,9 @@ public class RobotContainer {
     //     "Drive FF Characterization",
     //     new FeedForwardCharacterization(
     //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    // autoChooser.addOption(
-    //     "Flywheel FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+    autoChooser.addOption(
+        "Flywheel FF Characterization",
+        new FeedForwardCharacterization(
+            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
   }
 }
