@@ -295,14 +295,14 @@ public class Superstructure extends SubsystemBase {
           }
         }
 
-          /*
-           * SHOOT (Right Driver Trigger)
-           * if shooter and arm are PRIMED, conveyor moves note and shoots
-           */
-          // if (systemState == SuperstructureStates.PRIMED_SHOOTER) {
-          //   conveyor.setShooting();
-          // }
-          break;
+        /*
+         * SHOOT (Right Driver Trigger)
+         * if shooter and arm are PRIMED, conveyor moves note and shoots
+         */
+        // if (systemState == SuperstructureStates.PRIMED_SHOOTER) {
+        //   conveyor.setShooting();
+        // }
+        break;
       case SUBWOOFER_SHOT:
         arm.setPosition(ArmConstants.HOME_SETPOINT);
         shooter.shoot(Constants.ShooterConstants.SETPOINT);
@@ -386,7 +386,7 @@ public class Superstructure extends SubsystemBase {
         }
         break;
 
-      // spotless:off
+        // spotless:off
       case PREP:
           shooter.shoot(flywheelSpeedInput);
           break;

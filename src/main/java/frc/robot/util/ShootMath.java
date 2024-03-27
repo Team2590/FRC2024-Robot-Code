@@ -20,10 +20,16 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * @author Elan Ronen
- * // TODO: instead of flipping random signs in the equation, flip the signs of the chassis velocity
+ * @author Elan Robot
+ * @author Ian Keller
  */
 public interface ShootMath {
+    // TODO: instead of flipping random signs in the equation, flip the signs of the chassis velocity
+
+    // temp
+    double[] stoopKeys = {-1.4, -2, -3, -3.75};
+    double[] stoopValues = {2, 2.3, 2.5, 3};
+    LookupTable stoopTable = new LookupTable(stoopKeys, stoopValues);
 
     // superstructure API █████████████████████████████████████████████████████████████████████████
 
@@ -36,11 +42,11 @@ public interface ShootMath {
     }
 
     public static double encoderTicksToRadians(double encoderTicks) {
-        return Units.degreesToRadians(encoderTicks / 0.168 * 62);
+        return Units.degreesToRadians(encoderTicks / 0.155 * 54);
     }
 
     public static double radiansToEncoderTicks(double radians) {
-        return Units.radiansToDegrees(radians) / 62 * 0.168;
+        return Units.radiansToDegrees(radians) / 54 * 0.155;
     }
 
     public static double getProjectileHeight() {
@@ -53,7 +59,7 @@ public interface ShootMath {
 
     // field, robot, and Earth constants ██████████████████████████████████████████████████████████
 
-    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 15);
+    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 12.5);
 
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
@@ -212,13 +218,17 @@ public interface ShootMath {
                 fire,
                 snapToTarget(drive, superstructure, xSupplier, ySupplier, target.point),
                 Commands.runOnce(superstructure::prep, superstructure),
-                Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Violet), superstructure),
+                Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Violet)),
                 new SequentialCommandGroup(
                     checkForHits(drive, superstructure, target.surfaces),
-                    Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Yellow), superstructure)
+                    Commands.runOnce(() -> superstructure.led.setColor(LEDConstants.Colors.Yellow))
                 )
             ),
             Commands.runOnce(superstructure::shootBlind, superstructure),
+            Commands.runOnce(() -> {
+                System.out.println("DRIVE X: " + drive.getCurrentChassisSpeeds().vxMetersPerSecond);
+                System.out.println("DRIVE Y: " + drive.getCurrentChassisSpeeds().vyMetersPerSecond);
+            }),
             Commands.runOnce(() -> System.out.println("PEW PEW PEW PEW")),
             Commands.waitUntil(() -> !superstructure.getConveyor().hasNote())
         );
@@ -267,13 +277,15 @@ public interface ShootMath {
 
             Logger.recordOutput("ShootMath/robotHeading", robotHeading);
             Logger.recordOutput("ShootMath/targetHeading", radianBand(targetShooterState.yaw));
+            Logger.recordOutput("ShootMath/driveVelocityX", drive.getCurrentChassisSpeeds().vxMetersPerSecond);
+            Logger.recordOutput("ShootMath/driveVelocityY", drive.getCurrentChassisSpeeds().vyMetersPerSecond);
 
             return drive.snapController.calculate(robotHeading, radianBand(targetShooterState.yaw))
                 * drive.getMaxAngularSpeedRadPerSec();
         });
     }
 
-    LoggedTunableNumber loggedStrafeMultiplier = new LoggedTunableNumber("ShootMath/strafeMultiplier", 2.5);
+    LoggedTunableNumber loggedStrafeMultiplier = new LoggedTunableNumber("ShootMath/strafeMultiplier", 3);
     LoggedTunableNumber loggedStoopMultiplier = new LoggedTunableNumber("ShootMath/stoopMultiplier", 2.5);
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
@@ -282,10 +294,15 @@ public interface ShootMath {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
         final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
         return new Vector(
-            chassisSpeeds.vxMetersPerSecond * loggedStoopMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            // chassisSpeeds.vxMetersPerSecond * loggedStoopMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            chassisSpeeds.vxMetersPerSecond * stoopTable.getValue(chassisSpeeds.vxMetersPerSecond) + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
             chassisSpeeds.vyMetersPerSecond * loggedStrafeMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
             getProjectileZVelocity()
         );
+    }
+
+    public static void main(String[] args) {
+        System.out.println(stoopTable.getValue(-1.6));
     }
 
     public static Vector calcRobotVelocity(Drive drive, double robotHeading) {
