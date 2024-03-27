@@ -26,11 +26,6 @@ import org.littletonrobotics.junction.Logger;
 public interface ShootMath {
     // TODO: instead of flipping random signs in the equation, flip the signs of the chassis velocity
 
-    // temp
-    double[] stoopKeys = {-1.4, -2, -3, -3.75};
-    double[] stoopValues = {2, 2.3, 2.5, 3};
-    LookupTable stoopTable = new LookupTable(stoopKeys, stoopValues);
-
     // superstructure API █████████████████████████████████████████████████████████████████████████
 
     public static double getShooterPitch(Superstructure superstructure) {
@@ -59,7 +54,7 @@ public interface ShootMath {
 
     // field, robot, and Earth constants ██████████████████████████████████████████████████████████
 
-    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 12.5);
+    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 12.35);
 
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
@@ -290,12 +285,20 @@ public interface ShootMath {
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
+    // multiplier interpolation
+    double[] stoopKeys = {0, -1.4, -2, -3, -3.75};
+    double[] stoopValues = {1, 2, 2.3, 2.5, 3};
+    LookupTable stoopInterpolation = new LookupTable(stoopKeys, stoopValues);
+    double[] strafeKeys = {};
+    double[] strafeValues = {};
+    LookupTable strafeInterpolation = new LookupTable(stoopKeys, stoopValues);
+
     public static Vector calcRobotVelocityFAKE(Drive drive, double robotHeading) {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
         final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
         return new Vector(
             // chassisSpeeds.vxMetersPerSecond * loggedStoopMultiplier.get() + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
-            chassisSpeeds.vxMetersPerSecond * stoopTable.getValue(chassisSpeeds.vxMetersPerSecond) + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
+            chassisSpeeds.vxMetersPerSecond * stoopInterpolation.getValue(chassisSpeeds.vxMetersPerSecond) + robotAngularVelocity * Math.cos(robotHeading + Math.PI/2),
             chassisSpeeds.vyMetersPerSecond * loggedStrafeMultiplier.get() + robotAngularVelocity * Math.sin(robotHeading + Math.PI/2),
             getProjectileZVelocity()
         );
