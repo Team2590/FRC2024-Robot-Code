@@ -72,13 +72,19 @@ public class ShootCommand extends Command {
 
   @Override
   public boolean isFinished() {
+    /**
+     * This should:
+     * 1) wait the given time to wait for robot to intake a note 
+     * 2) if the note isn't detected (aka it wasn't picked up), return true + end command
+     * 3) otherwise, wait for the note to be shot
+     */
     boolean notePresent = superstructure.note_present();
-    if (timer.hasElapsed(timeToWait) || shooterTimer.hasElapsed(1)) {
-      return true;
-    } else {
+    if(timer.hasElapsed(timeToWait)){
+      return notePresent ? shooterTimer.hasElapsed(0.5) : true;
+    }
+    else{
       return false;
     }
-    // return !notePresent || timer.hasElapsed(timeToWait);
   }
 
   @Override
