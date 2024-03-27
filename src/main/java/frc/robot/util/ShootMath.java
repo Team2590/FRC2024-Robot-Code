@@ -304,10 +304,6 @@ public interface ShootMath {
         );
     }
 
-    public static void main(String[] args) {
-        System.out.println(stoopTable.getValue(-1.6));
-    }
-
     public static Vector calcRobotVelocity(Drive drive, double robotHeading) {
         final var chassisSpeeds = drive.getCurrentChassisSpeeds();
         final var robotAngularVelocity = SHOOTER_RADIUS * chassisSpeeds.omegaRadiansPerSecond;
