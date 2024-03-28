@@ -59,7 +59,7 @@ public class ShootCommand extends Command {
     // Tracer.trace("ShootCommand.execute(), Intake.detectNote:" + isNoteDetectedAtIntake);
 
     /*if note present then shoot ? otherwise freeze the timer or something like that */
-    if (superstructure.note_present()) {
+    if (superstructure.note_present()) { // we can maybe switch this notepresent to a tuned time ?
       superstructure.shoot(shooterPoint);
       shooterTimer.start();
       timer.stop();
@@ -73,12 +73,12 @@ public class ShootCommand extends Command {
   @Override
   public boolean isFinished() {
     boolean notePresent = superstructure.note_present();
-    if (timer.hasElapsed(timeToWait) || shooterTimer.hasElapsed(1)) {
-      return true;
-    } else {
-      return false;
-    }
-    // return !notePresent || timer.hasElapsed(timeToWait);
+    // if (timer.hasElapsed(timeToWait) || shooterTimer.hasElapsed(1)) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+    return !notePresent; // || timer.hasElapsed(timeToWait);
   }
 
   @Override

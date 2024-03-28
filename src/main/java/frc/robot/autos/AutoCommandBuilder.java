@@ -91,7 +91,9 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 1, setpoint));
+    commands.addCommands(
+        new ShootCommand(superstructure, .5, setpoint)); // second param is the intake speed taken
+
     return this;
   }
 
