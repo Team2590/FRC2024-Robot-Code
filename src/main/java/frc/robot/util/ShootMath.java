@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.subsystems.drive.Drive;
 
 import java.util.function.DoubleSupplier;
@@ -20,7 +21,9 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * HOW TO:
+ * An API for calculation of shot trajectory, including while moving.
+ * 
+ * <p>HOW TO:
  *  <p>
  *    Update shoot velocity:
  * 
@@ -46,22 +49,27 @@ public interface ShootMath {
 
     // superstructure API █████████████████████████████████████████████████████████████████████████
 
+    /** Gets the current pitch of the shooter */
     public static double getShooterPitch(Superstructure superstructure) {
         return encoderTicksToRadians(superstructure.getArm().getAbsolutePosition());
     }
 
+    /** Set the current pitch of the shooter */
     public static void setShooterPitch(Superstructure superstructure, double pitch) {
         superstructure.getArm().setPosition(radiansToEncoderTicks(pitch));
     }
 
+    /** Convert arm encoder ticks to radians, factoring in gearing */
     public static double encoderTicksToRadians(double encoderTicks) {
         return Units.degreesToRadians(encoderTicks / 0.155 * 54);
     }
 
+    /** Convert radians to arm encoder ticks, factoring in gearing */
     public static double radiansToEncoderTicks(double radians) {
         return Units.radiansToDegrees(radians) / 54 * 0.155;
     }
 
+    /** Get height of the release point of the shooter */
     public static double getProjectileHeight() {
         return Units.inchesToMeters(25.5); // TODO: calculate
     }
@@ -147,8 +155,8 @@ public interface ShootMath {
     }
 
     /**
-     * Field relative drive command using one joystick (controlling linear). Desmos:
-     * https://www.desmos.com/calculator/cswpncuxr2
+     * Field relative drive command using one joystick (controlling linear).
+     * <p>Desmos: https://www.desmos.com/calculator/cswpncuxr2
      *
      * @param drive - the drive subsystem
      * @param xSupplier - function to supply x values [-1, 1]
@@ -220,6 +228,17 @@ public interface ShootMath {
 
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
+    /**
+     * Get the command to shoot into the speaker
+     * 
+     * @param drive - drive instance
+     * @param superstructure - superstructure instance
+     * @param xSupplier - joystick x value
+     * @param ySupplier - joystick y value
+     * @param target - coordinate target from <code>ShootMath</code> class
+     * @param fire - condition to fire
+     * @return the command
+     */
     public static Command shoot(
         Drive drive, Superstructure superstructure,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
@@ -247,6 +266,7 @@ public interface ShootMath {
         );
     }
 
+    /** Get robot heading */
     public static double getHeading(double heading) {
         return radianBand(redAlliance ? heading : heading + Math.PI);
     }
@@ -270,6 +290,23 @@ public interface ShootMath {
         });
     }
 
+    LoggedTunableNumber maxRange = new LoggedTunableNumber("ShootMath/maxRange",3);
+
+    /** Return if the shooter is ready to fire */
+    public static boolean ready(Drive drive) {
+        return RobotContainer.poseEstimator.distanceToTarget(Targets.SPEAKER) <= maxRange.get() && drive.snapControllerAtSetpoint();
+    }
+
+    /**
+     * Snap to the target, adjusted for velocity
+     * 
+     * @param drive - drive instance
+     * @param superstructure - superstructure instance
+     * @param xSupplier - joystick x value
+     * @param ySupplier - joystick y value
+     * @param target - target to snap to
+     * @return the command
+     */
     public static Command snapToTarget(
         Drive drive, Superstructure superstructure,
         DoubleSupplier xSupplier, DoubleSupplier ySupplier,
@@ -334,7 +371,7 @@ public interface ShootMath {
 
     /**
      * Calculates the yaw and pitch of the shooter from a set shooting velocity.
-     * https://www.desmos.com/3d/b8ff2f55bd
+     * <p>Desmos: https://www.desmos.com/3d/b8ff2f55bd
      * 
      * @param sv - shooter velocity
      * @param d - distances to target
