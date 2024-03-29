@@ -20,8 +20,26 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
+ * HOW TO:
+ *  <p>
+ *    Update shoot velocity:
+ * 
+ *    Do a stationary shot. If it shoots too high, decrease constant, if it
+ *    shoots too low, increase constant. Remember that the target is the
+ *    center of the speaker *opening*, not the center of the inside of the speaker.
+ *  </p>
+ *  <p>
+ *    Fix strafing/stooping misses:
+ * 
+ *    Use mulitpliers to make the formula think the robot is going faster/slower
+ *    so that it over/undercompensates. If the multiplier varies based on robot
+ *    speed, create an interpolation table that has a direct relationship from
+ *    robot velocity to multipier.
+ *  </p>
+ * 
  * @author Elan Robot
  * @author Ian Keller
+ * 
  */
 public interface ShootMath {
     // TODO: instead of flipping random signs in the equation, flip the signs of the chassis velocity
@@ -59,7 +77,7 @@ public interface ShootMath {
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
     /** Shooter-induced projectile velocity (m/s) */
-    final double SHOOT_VELOCITY = 15; // TODO: measure and set
+    //final double SHOOT_VELOCITY = 15; // TODO: measure and set
     /** Distance from drivetrain center to end of shooter. (m) */
     final double SHOOTER_RADIUS = Units.inchesToMeters(0); // TODO: measure and set (...or not)
 
