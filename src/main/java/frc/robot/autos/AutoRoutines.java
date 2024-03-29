@@ -211,6 +211,19 @@ public class AutoRoutines {
             "note1_n4",
             "n4_return",
             SNAP_SHOOT));
+    // Drop Note Auto
+    autoChooser.addOption(
+        "3_startD_n7short_n8short_droppedD",
+        ezAuto.apply(
+            "startD",
+            "startD_n7",
+            "n7_return_short",
+            SNAP_SHOOT,
+            "short_n8",
+            "n8_return_short",
+            SNAP_SHOOT,
+            "short_droppedD",
+            SNAP_SHOOT));
 
     // autoChooser.addOption(
     //     "4_startA_n1",
