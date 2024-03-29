@@ -337,7 +337,7 @@ public class Drive extends SubsystemBase {
   }
 
   public boolean snapControllerAtSetpoint() {
-    Logger.recordOutput("SnapController/Error", snapController.getPositionError());
+    // Logger.recordOutput("SnapController/Error", snapController.getPositionError());
     return snapController.atSetpoint();
   }
 

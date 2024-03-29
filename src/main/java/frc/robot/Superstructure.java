@@ -264,6 +264,8 @@ public class Superstructure extends SubsystemBase {
       case SHOOT:
         {
           Logger.recordOutput(
+              "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
+          Logger.recordOutput(
               "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
           double armDistanceSetPoint =
               armInterpolation.getValue(
