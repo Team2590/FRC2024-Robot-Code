@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "startD"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "startD_n8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n8_return_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "short_n7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n7_return_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "short_droppedD"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
