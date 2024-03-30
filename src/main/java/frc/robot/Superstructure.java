@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.Colors;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -154,23 +155,24 @@ public class Superstructure extends SubsystemBase {
          * Default state (No Button presses)
          * arm.setpositon(HOME) -- > HOME setpoint
          */
-        climb.setStopped();
-        if (conveyor.hasNote()) {
-          if (arm.getState() == ArmStates.AT_SETPOINT
-              && shooter.getState() == ShooterStates.AT_SETPOINT) {
-            led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
-          } else {
-            led.setColor(LEDConstants.HAS_NOTE_COLOR);
-            intake.setStopped();
-          }
-        } else {
-          conveyor.setStopped();
-          shooter.setStopped();
-          if (!climbed) {
-            arm.setHome();
-          }
-          led.off();
-        }
+        led.setBlinking(Colors.White, 10);
+        // climb.setStopped();
+        // if (conveyor.hasNote()) {
+        //   if (arm.getState() == ArmStates.AT_SETPOINT
+        //       && shooter.getState() == ShooterStates.AT_SETPOINT) {
+        //     led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
+        //   } else {
+        //     led.setColor(LEDConstants.HAS_NOTE_COLOR);
+        //     intake.setStopped();
+        //   }
+        // } else {
+        //   conveyor.setStopped();
+        //   shooter.setStopped();
+        //   if (!climbed) {
+        //     arm.setHome();
+        //   }
+        //   led.off();
+        // }
         break;
       case IDLE_INTAKING:
         if (intake.detectNote()) {

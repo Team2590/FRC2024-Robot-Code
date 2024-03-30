@@ -20,6 +20,7 @@ public class NemesisLED extends SubsystemBase {
   private final AddressableLEDBuffer ledBuffer;
   private final int length;
   private int hue = 0;
+  private final Timer timer = new Timer();
 
   /**
    * New NemesisLED object
@@ -116,31 +117,8 @@ public class NemesisLED extends SubsystemBase {
     blinkingTime += 1;
   }
 
-  // private boolean alreadyBlinking = false;
-  // private double initalTime = 0;
-
-  Timer timer = new Timer();
-
-  // public void setBlinking(LEDConstants.Colors color, double time) {
-  //   if (!alreadyBlinking) {
-  //     alreadyBlinking = true;
-  //     initalTime = timer.get();
-  //   }
-  //   else {
-  //     if (timer.get() - initalTime >= time) {
-  //       alreadyBlinking = false;
-  //       off();
-  //     } else {
-  //       setBlinking(color);
-  //     }
-  //   }
-  // }
-
-  private int maxBlinks = 0;
-
   public void setBlinking(LEDConstants.Colors color, int blinks) {
-    maxBlinks = blinks;
-    if (maxBlinks % (blinks + 1) >= maxBlinks) {
+    if (timesBlinked > 0 && ((blinks % timesBlinked) - blinks == 0)) {
       off();
     } else {
       setBlinking(color);
