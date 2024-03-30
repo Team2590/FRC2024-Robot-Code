@@ -304,7 +304,7 @@ public class Superstructure extends SubsystemBase {
           if (RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER) > 3.6) {
               flywheelSetpoint = 3000;
           }
-          shooter.shoot(flywheelSpeed.get());
+          shooter.shoot(flywheelSetpoint);
 
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
