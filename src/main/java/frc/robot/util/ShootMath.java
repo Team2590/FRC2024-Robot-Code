@@ -80,7 +80,7 @@ public interface ShootMath {
 
     // field, robot, and Earth constants ██████████████████████████████████████████████████████████
 
-    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 12.35);
+    LoggedTunableNumber loggedShootVelocity = new LoggedTunableNumber("ShootMath/shootVelocity", 18); // somewhere between 17 and 20 or something idk :(
 
     /** Acceleration due to gravity (m/s^2) */
     final double GRAVITY = 9.80;
@@ -236,7 +236,7 @@ public interface ShootMath {
      * @param xSupplier - joystick x value
      * @param ySupplier - joystick y value
      * @param target - coordinate target from <code>ShootMath</code> class
-     * @param fire - condition to fire
+     * @param fire - condition to fire (use the {@link Commands#waitUntil()} method to generate the condition command)
      * @return the command
      */
     public static Command shoot(

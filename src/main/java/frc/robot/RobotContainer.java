@@ -212,15 +212,16 @@ public class RobotContainer {
     /************************************************
      * TWO BUTTON SHOOT
      ***********************************************/
-    if (input.leftJoystickButtonPressed(2)) {
+    if (input.leftJoystickTriggerPressed()) {
         CommandScheduler.getInstance().schedule(ShootMath.shoot(
             drive, superstructure,
             ShootMath.redAlliance ? input::leftJoystickY : () -> -input.leftJoystickY(),
             ShootMath.redAlliance ? input::leftJoystickX : () -> -input.leftJoystickX(),
             ShootMath.Speaker.target,
-            Commands.waitUntil(() -> input.leftJoystickTriggerPressed())
+            Commands.waitUntil(() -> input.leftJoystickButtonPressed(2))
         ).onlyWhile(input::leftJoystickTrigger).finallyDo(superstructure::idle));
     }
+
     /************************************************
      * ONE BUTTON SHOOT
      ***********************************************/
