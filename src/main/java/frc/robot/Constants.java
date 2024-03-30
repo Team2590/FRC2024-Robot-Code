@@ -108,7 +108,7 @@ public final class Constants {
     // Fill in
     public static final int LEADER = 55;
     public static final int FOLLOWER = 56;
-    public static final double SETPOINT = 3000.0;
+    public static final double SETPOINT = 2300.0;
   }
 
   public final class ConveyorConstants {
@@ -141,8 +141,8 @@ public final class Constants {
   }
 
   public final class LEDConstants {
-    public static final Colors DETECT_NOTE_COLOR = Colors.Red;
-    public static final Colors HAS_NOTE_COLOR = Colors.Red;
+    public static final Colors DETECT_NOTE_COLOR = Colors.White;
+    public static final Colors HAS_NOTE_COLOR = Colors.White;
     public static final Colors PRIMED_SUPERSTRUCTURE = Colors.Green;
 
     public enum Colors {
