@@ -112,6 +112,29 @@ public class NemesisLED extends SubsystemBase {
     blinkingTime += 1;
   }
 
+  private double elaspedBlinkingTime = 0;
+  private double timedBlinkingMaxTime = 0;
+  private boolean alreadyBlinking = false;
+
+  private void resetTimedBlinking(double newTime) {
+    elaspedBlinkingTime = 0;
+    timedBlinkingMaxTime = newTime;
+    alreadyBlinking = false;
+  }
+
+  public void setBlinking(LEDConstants.Colors color, double time) {
+    if (!alreadyBlinking) {
+      resetTimedBlinking(time);
+    } else {
+      elaspedBlinkingTime += 0.02;
+      if (elaspedBlinkingTime >= elaspedBlinkingTime) {
+        off();
+      } else {
+        setBlinking(color);
+      }
+    }
+  }
+
   public void off() {
     for (int i = 0; i < length; i++) {
       ledBuffer.setRGB(i, 0, 0, 0);
