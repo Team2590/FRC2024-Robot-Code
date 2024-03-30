@@ -2,6 +2,7 @@ package frc.robot.subsystems.nemesisLED;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 
@@ -112,22 +113,18 @@ public class NemesisLED extends SubsystemBase {
     blinkingTime += 1;
   }
 
-  private double elaspedBlinkingTime = 0;
-  private double timedBlinkingMaxTime = 0;
   private boolean alreadyBlinking = false;
+  private double initalTime = 0;
 
-  private void resetTimedBlinking(double newTime) {
-    elaspedBlinkingTime = 0;
-    timedBlinkingMaxTime = newTime;
-    alreadyBlinking = false;
-  }
+  Timer timer = new Timer();
 
   public void setBlinking(LEDConstants.Colors color, double time) {
     if (!alreadyBlinking) {
-      resetTimedBlinking(time);
-    } else {
-      elaspedBlinkingTime += 0.02;
-      if (elaspedBlinkingTime >= elaspedBlinkingTime) {
+      alreadyBlinking = true;
+      initalTime = timer.get();
+    }
+    else {
+      if (timer.get() - initalTime >= time) {
         off();
       } else {
         setBlinking(color);
