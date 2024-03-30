@@ -103,11 +103,38 @@ public class Superstructure extends SubsystemBase {
     // final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
     final double[] distance = {
-      1.24, 1.74, 2.35, 2.65, 2.93, 3.32, 3.64, 3.87, 4, 4.19, 4.3, 4.59, 4.8, 4.93
+      1.29,
+      1.75,
+      2.05,
+      2.31,
+      2.65,
+      2.96,
+      3.25,
+      3.43,
+      3.7,
+      3.95,
+      4.26,
+      4.54,
+      4.73,
+      5.09,
+      5.4
     };
     final double[] armSetpoint = {
-      0.168, 0.155, 0.115, 0.105, 0.097, 0.097, 0.088, 0.087, 0.085, 0.083, 0.078, 0.08, 0.079,
-      0.076
+      .168,
+      .14,
+      .126,
+      .11,
+      .1,
+      .095,
+      .085,
+      .082,
+      .075,
+      .071,
+      .067,
+      .064,
+      .061,
+      .058,
+      .061
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -263,6 +290,7 @@ public class Superstructure extends SubsystemBase {
 
       case SHOOT:
         {
+          double flywheelSetpoint = 2300;
           Logger.recordOutput(
               "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
           Logger.recordOutput(
@@ -272,7 +300,10 @@ public class Superstructure extends SubsystemBase {
                   RobotContainer.poseEstimator.distanceToTarget(
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-          arm.setPosition(armAngle.get());
+          arm.setPosition(armDistanceSetPoint);
+          if (RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER) > 3.6) {
+              flywheelSetpoint = 3000;
+          }
           shooter.shoot(flywheelSpeed.get());
 
           if (arm.getState() == ArmStates.AT_SETPOINT
