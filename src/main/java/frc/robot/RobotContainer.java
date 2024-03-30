@@ -208,15 +208,32 @@ public class RobotContainer {
     }
 
     // spotless:off
-    if (input.leftJoystickTriggerPressed()) {
+
+    /************************************************
+     * TWO BUTTON SHOOT
+     ***********************************************/
+    if (input.leftJoystickButtonPressed(2)) {
         CommandScheduler.getInstance().schedule(ShootMath.shoot(
             drive, superstructure,
             ShootMath.redAlliance ? input::leftJoystickY : () -> -input.leftJoystickY(),
             ShootMath.redAlliance ? input::leftJoystickX : () -> -input.leftJoystickX(),
             ShootMath.Speaker.target,
-            Commands.waitUntil(() -> input.leftJoystickButtonPressed(2))
+            Commands.waitUntil(() -> input.leftJoystickTriggerPressed())
         ).onlyWhile(input::leftJoystickTrigger).finallyDo(superstructure::idle));
     }
+    /************************************************
+     * ONE BUTTON SHOOT
+     ***********************************************/
+    // if (input.leftJoystickTriggerPressed()) {
+    //     CommandScheduler.getInstance().schedule(ShootMath.shoot(
+    //         drive, superstructure,
+    //         ShootMath.redAlliance ? input::leftJoystickY : () -> -input.leftJoystickY(),
+    //         ShootMath.redAlliance ? input::leftJoystickX : () -> -input.leftJoystickX(),
+    //         ShootMath.Speaker.target,
+    //         Commands.waitUntil(() -> ShootMath.ready(drive, superstructure))
+    //     ).onlyWhile(input::leftJoystickTrigger).finallyDo(superstructure::idle));
+    // }
+    
     // spotless:on
 
     if (input.leftJoystickTrigger()) {
