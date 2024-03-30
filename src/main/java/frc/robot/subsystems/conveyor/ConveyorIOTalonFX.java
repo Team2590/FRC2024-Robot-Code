@@ -34,6 +34,7 @@ public class ConveyorIOTalonFX implements ConveyorIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = ConveyorConstants.feederDirection;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    // config.MotorOutput.DutyCycleNeutralDeadband = .05;
     feederMotor.getConfigurator().apply(config);
     config.MotorOutput.Inverted = ConveyorConstants.diverterDirection;
     diverterMotor.getConfigurator().apply(config);
