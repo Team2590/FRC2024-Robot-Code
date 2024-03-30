@@ -60,19 +60,21 @@ public class AutoCommandBuilder {
   public AutoCommandBuilder shoot(boolean snapToSpeaker) {
     if (snapToSpeaker) {
       commands.addCommands(
-          new SnapToTargetCommand(
-              drive,
-              () -> 0,
-              () -> 0,
-              Targets.SPEAKER,
-              1.0d // TODO: Figure out the best error tolerance.
-              ));
+          Commands.parallel(
+              new SnapToTargetCommand(
+                  drive,
+                  () -> 0,
+                  () -> 0,
+                  Targets.SPEAKER,
+                  .5d // TODO: Figure out the best error tolerance.
+                  ),
+              new ShootCommand(superstructure, 0.5)));
       // Commands.race(
       //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
       //     Commands.waitSeconds(2.0)));
+    } else {
+      commands.addCommands(new ShootCommand(superstructure, 1));//tune the 1 second to something smaller
     }
-
-    commands.addCommands(new ShootCommand(superstructure, 1));
     return this;
   }
 
@@ -91,7 +93,9 @@ public class AutoCommandBuilder {
       //     Commands.waitSeconds(2.0)));
     }
 
-    commands.addCommands(new ShootCommand(superstructure, 1, setpoint));
+    commands.addCommands(
+        new ShootCommand(superstructure, .5, setpoint)); // second param is the intake speed taken
+
     return this;
   }
 

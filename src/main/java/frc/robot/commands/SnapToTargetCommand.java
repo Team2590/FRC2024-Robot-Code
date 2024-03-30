@@ -110,7 +110,7 @@ public class SnapToTargetCommand extends Command {
     // Tracer.trace(
     //     "SnapToTargerCommand.isFinished(), SnapControllerAtSetPoint:" +
     // snapControllerAtSetpoint);
-    return timer.hasElapsed(waitTimeSeconds); /*  Math.abs(currentError) <= .05; */
+    return /* timer.hasElapsed(waitTimeSeconds);*/ Math.abs(currentError) <= .05;
   }
 
   @Override

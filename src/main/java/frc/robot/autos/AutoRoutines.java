@@ -273,7 +273,7 @@ public class AutoRoutines {
       switch (path) {
         case SHOOT:
           if (firstShot) {
-            builder.shoot(false, 1800);
+            builder.shoot(false, 2300);
           } else {
             builder.shoot(false);
           }
@@ -281,7 +281,7 @@ public class AutoRoutines {
           break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, 1800);
+            builder.shoot(true, 2300);
           } else {
             builder.shoot(true);
           }

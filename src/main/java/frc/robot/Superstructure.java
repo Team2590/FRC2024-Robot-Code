@@ -264,6 +264,8 @@ public class Superstructure extends SubsystemBase {
       case SHOOT:
         {
           Logger.recordOutput(
+              "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
+          Logger.recordOutput(
               "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
           double armDistanceSetPoint =
               armInterpolation.getValue(
@@ -272,26 +274,15 @@ public class Superstructure extends SubsystemBase {
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
           arm.setPosition(armDistanceSetPoint);
           shooter.shoot(flywheelSpeed.get());
-          if (!DriverStation.isAutonomousEnabled()) {
-            if (arm.getState() == ArmStates.AT_SETPOINT
-                && shooter.getState() == ShooterStates.AT_SETPOINT
-                && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
-              conveyor.setShooting();
-              // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
-              // appropriate
-              if (!conveyor.hasNote()) {
-                idleState = IDLE_STATES.DEFAULT;
-              }
-            }
-          } else {
-            if (arm.getState() == ArmStates.AT_SETPOINT
-                && shooter.getState() == ShooterStates.AT_SETPOINT) {
-              conveyor.setShooting();
-              // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
-              // appropriate
-              if (!conveyor.hasNote()) {
-                idleState = IDLE_STATES.DEFAULT;
-              }
+
+          if (arm.getState() == ArmStates.AT_SETPOINT
+              && shooter.getState() == ShooterStates.AT_SETPOINT
+              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
+            conveyor.setShooting();
+            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+            // appropriate
+            if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
             }
           }
 
