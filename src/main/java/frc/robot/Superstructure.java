@@ -291,6 +291,7 @@ public class Superstructure extends SubsystemBase {
       case SHOOT:
         {
           double flywheelSetpoint = 2300;
+          double distanceToSpeaker = RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER);
           Logger.recordOutput(
               "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
           Logger.recordOutput(
@@ -301,8 +302,8 @@ public class Superstructure extends SubsystemBase {
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
           arm.setPosition(armDistanceSetPoint);
-          if (RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER) > 3.6) {
-              flywheelSetpoint = 3000;
+          if (distanceToSpeaker > 3.6) {
+            flywheelSetpoint = 3000;
           }
           shooter.shoot(flywheelSetpoint);
 
