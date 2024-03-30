@@ -292,9 +292,18 @@ public interface ShootMath {
 
     LoggedTunableNumber maxRange = new LoggedTunableNumber("ShootMath/maxRange",3);
 
-    /** Return if the shooter is ready to fire */
-    public static boolean ready(Drive drive) {
-        return RobotContainer.poseEstimator.distanceToTarget(Targets.SPEAKER) <= maxRange.get() && drive.snapControllerAtSetpoint();
+    /**
+     * Checks if the shooter is ready to fire.
+     * <p>The shooter is ready iff the target is in range, the snap controller is at setpoint, and the arm is at setpoint.
+     * 
+     * @param drive - drive instance
+     * @param superstructure - superstructure instance
+     * @return shooter status
+     */
+    public static boolean ready(Drive drive, Superstructure superstructure) {
+        return RobotContainer.poseEstimator.distanceToTarget(Targets.SPEAKER) <= maxRange.get() 
+            && drive.snapControllerAtSetpoint() 
+            && superstructure.getArm().atSetpoint();
     }
 
     /**
