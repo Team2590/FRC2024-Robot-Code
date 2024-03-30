@@ -244,6 +244,10 @@ public class AutoRoutines {
             "short_droppedD",
             SNAP_SHOOT));
 
+
+    autoChooser.addOption("5_startA_n1_n2_n3_n6",
+     ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT, "note1_n2", SNAP_SHOOT, "note2_n3", SNAP_SHOOT, "note3_n6", "n6_return_under", SHOOT));
+
     // autoChooser.addOption(
     //     "4_startA_n1",
     //     ezAuto.apply(
@@ -305,7 +309,7 @@ public class AutoRoutines {
       switch (path) {
         case SHOOT:
           if (firstShot) {
-            builder.shoot(false, 1800);
+            builder.shoot(false, 2300);
           } else {
             builder.shoot(false);
           }
@@ -313,7 +317,7 @@ public class AutoRoutines {
           break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, 1800);
+            builder.shoot(true, 2300);
           } else {
             builder.shoot(true);
           }

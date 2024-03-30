@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
 // import frc.robot.util.Tracer;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Command for shooting using the Superstructure.
@@ -47,6 +48,7 @@ public class ShootCommand extends Command {
     shooting = false;
     timer.restart();
     shooterTimer.reset();
+    // timer.start();
     // isNoteDetectedAtIntake = superstructure.getIntake().detectNoteForAuton();
     // if(!superstructure.getIntake().detectNote() && superstructure.note_present())
     //   shooterPoint=900;
@@ -57,13 +59,30 @@ public class ShootCommand extends Command {
     // isNoteDetectedAtIntake =
     //     superstructure.getIntake().detectNoteForAuton() || superstructure.note_present();
     // Tracer.trace("ShootCommand.execute(), Intake.detectNote:" + isNoteDetectedAtIntake);
-
     /*if note present then shoot ? otherwise freeze the timer or something like that */
-    if (superstructure.note_present()) {
+    if (superstructure.note_present()) { // we can maybe switch this notepresent to a tuned time ?
       superstructure.shoot(shooterPoint);
-      shooterTimer.start();
-      timer.stop();
+      // shooterTimer.start();
+      shooting = true;
+      // timer.stop();
     }
+    // else{
+    //   if
+    // }
+    // if (timer.hasElapsed(0.1)){
+    //   if (superstructure.note_present()) { // we can maybe switch this notepresent to a tuned
+    // time ?
+    //   superstructure.shoot(shooterPoint);
+    //   shooterTimer.start();
+    //   timer.stop();
+    // }
+    // }
+    // if (superstructure.note_present()) { // we can maybe switch this notepresent to a tuned time
+    // ?
+    //   superstructure.shoot(shooterPoint);
+    //   shooterTimer.start();
+    //   timer.stop();
+    // }
 
     // if (!superstructure.note_present()) {
     //   cycle++;
@@ -73,12 +92,15 @@ public class ShootCommand extends Command {
   @Override
   public boolean isFinished() {
     boolean notePresent = superstructure.note_present();
-    if (timer.hasElapsed(timeToWait) || shooterTimer.hasElapsed(1)) {
-      return true;
-    } else {
-      return false;
-    }
-    // return !notePresent || timer.hasElapsed(timeToWait);
+    Logger.recordOutput("ShootCommand/Autos", cycle);
+    cycle++;
+    // if (timer.hasElapsed(timeToWait) || shooterTimer.hasElapsed(1)) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+
+    return timer.hasElapsed(1) || (shooting && !notePresent); // || timer.hasElapsed(timeToWait);
   }
 
   @Override
