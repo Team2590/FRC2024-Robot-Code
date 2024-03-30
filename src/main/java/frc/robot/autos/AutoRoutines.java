@@ -1,8 +1,12 @@
 package frc.robot.autos;
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.PhotonNoteRunnable;
+import java.util.Optional;
 import java.util.function.Function;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -211,10 +215,68 @@ public class AutoRoutines {
             "note1_n4",
             "n4_return",
             SNAP_SHOOT));
+    /*
+     * Drop N Dash auto
+     * startD -- n7 -- short/shoot -- n8 -- short/shoot
+     */
+    autoChooser.addOption(
+        "3_startD_n7short_n8short_droppedD",
+        ezAuto.apply(
+            "startD",
+            "startD_n7",
+            "n7_return_short",
+            SNAP_SHOOT,
+            "short_n8",
+            "n8_return_short",
+            SNAP_SHOOT,
+            "short_droppedD",
+            SNAP_SHOOT));
 
+    autoChooser.addOption(
+        "drop_three_piece_midline_n8_n7_n6",
+        ezAuto.apply(
+            "startD",
+            "startD_n8",
+            "n8_return_under",
+            SNAP_SHOOT,
+            "axis_n7",
+            "n7_return_under",
+            SNAP_SHOOT,
+            "axis_n6",
+            SNAP_SHOOT,
+            "n6_return_under",
+            SNAP_SHOOT));
+    /*
+     * Drop N Dash auto
+     * startD -- n8 -- short/shoot -- n7 -- short/shoot
+     */
+    autoChooser.addOption(
+        "3_startD_n8short_n7short_droppedD",
+        ezAuto.apply(
+            "startD",
+            "startD_n8",
+            "n8_return_short",
+            SNAP_SHOOT,
+            "short_n7",
+            "n7_return_short",
+            SNAP_SHOOT,
+            "short_droppedD",
+            SNAP_SHOOT));
 
-    autoChooser.addOption("5_startA_n1_n2_n3_n6",
-     ezAuto.apply("startA", SNAP_SHOOT, "startA_note1", SNAP_SHOOT, "note1_n2", SNAP_SHOOT, "note2_n3", SNAP_SHOOT, "note3_n6", "n6_return_under", SHOOT));
+    autoChooser.addOption(
+        "5_startA_n1_n2_n3_n6",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "startA_note1",
+            SNAP_SHOOT,
+            "note1_n2",
+            SNAP_SHOOT,
+            "note2_n3",
+            SNAP_SHOOT,
+            "note3_n6",
+            "n6_return_under",
+            SNAP_SHOOT));
 
     // autoChooser.addOption(
     //     "4_startA_n1",
@@ -271,6 +333,8 @@ public class AutoRoutines {
       Drive drive,
       Superstructure superstructure,
       String... instructions) {
+
+    PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     boolean firstShot = true;
     for (String path : instructions) {
@@ -308,5 +372,14 @@ public class AutoRoutines {
   interface AutoFunction extends Function<String[], Command> {
     @Override
     Command apply(String... args);
+  }
+
+  private static final Optional<Rotation2d> turnToNoteOverride() {
+    double rot = -PhotonNoteRunnable.getYaw();
+    System.out.println("Turning to note (yaw): " + rot);
+    if (Math.abs(rot) == 0) {
+      return Optional.empty();
+    }
+    return Optional.of(Rotation2d.fromDegrees(rot));
   }
 }
