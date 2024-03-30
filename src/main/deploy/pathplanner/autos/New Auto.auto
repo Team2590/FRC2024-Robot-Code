@@ -14,25 +14,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "startD_n7"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "n7_return_short"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "short_n8"
+            "pathName": "startD_n8"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "n8_return_short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "short_n7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "n7_return_short"
           }
         },
         {
