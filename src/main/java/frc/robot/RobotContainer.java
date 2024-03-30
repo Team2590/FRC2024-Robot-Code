@@ -269,10 +269,12 @@ public class RobotContainer {
     // }
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
-    } else if (input.rightJoystickButton(15)) {
+    } else if (input.leftJoystickPOV() == 0) {
+      CommandScheduler.getInstance().schedule(
       DriveCommands.SnapToTarget(
               drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.FLING)
-          .until(() -> input.rightJoystickButton(15));
+          .until(() -> input.leftJoystickPOV() == 0)
+      );
       superstructure.fling();
     } else {
 
