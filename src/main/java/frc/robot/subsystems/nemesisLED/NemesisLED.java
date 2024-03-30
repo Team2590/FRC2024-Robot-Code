@@ -117,6 +117,15 @@ public class NemesisLED extends SubsystemBase {
     blinkingTime += 1;
   }
 
+  public void resetBlinkCount() {
+    timesBlinked = 0;
+  }
+
+  /**
+   * Must call the resetBlinkCount method before use
+   * @param color
+   * @param blinks
+   */
   public void setBlinking(LEDConstants.Colors color, int blinks) {
     if (timesBlinked > 0 && ((blinks % timesBlinked) - blinks == 0)) {
       off();
