@@ -6,8 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
-import frc.robot.subsystems.vision.PhotonRunnable;
-
 import java.util.Optional;
 import java.util.function.Function;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -377,7 +375,11 @@ public class AutoRoutines {
   }
 
   private static final Optional<Rotation2d> turnToNoteOverride() {
-    System.out.println("Turning to note");
-    return Optional.of(Rotation2d.fromDegrees(PhotonNoteRunnable.getYaw()));
+    double rot = -PhotonNoteRunnable.getYaw();
+    System.out.println("Turning to note (yaw): " + rot);
+    if (Math.abs(rot) == 0) {
+      return Optional.empty();
+    }
+    return Optional.of(Rotation2d.fromDegrees(rot));
   }
 }
