@@ -40,7 +40,7 @@ import org.littletonrobotics.junction.Logger;
  *    robot velocity to multipier.
  *  </p>
  * 
- * @author Elan Robot
+ * @author Elan Ronen
  * @author Ian Keller
  * 
  */
@@ -229,7 +229,7 @@ public interface ShootMath {
     // shoot commands █████████████████████████████████████████████████████████████████████████████
 
     /**
-     * Get the command to shoot into the speaker
+     * Shoot into the speaker
      * 
      * @param drive - drive instance
      * @param superstructure - superstructure instance
@@ -434,7 +434,6 @@ public interface ShootMath {
  * ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠲⠾⠿⠟⠛⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠋⠉⠁⠀⠀⠀⠀⠀
  * ⠀⠀
  *  Have a break from this nightmare
- *  @thief Ian Keller
  */
 
     /**
