@@ -44,7 +44,8 @@ public class AutoCommandBuilder {
     } else {
       commands.addCommands(
           Commands.print("Running FollowPathCommand for " + pathName),
-          paths.getFollowPathCommand(pathName));
+          paths.getFollowPathCommand(pathName),
+          Commands.print("FollowPath done:" + pathName));
     }
     return this;
   }
