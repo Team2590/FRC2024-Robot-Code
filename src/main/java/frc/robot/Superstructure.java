@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -103,38 +105,10 @@ public class Superstructure extends SubsystemBase {
     // final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
     final double[] distance = {
-      1.29,
-      1.75,
-      2.05,
-      2.31,
-      2.65,
-      2.96,
-      3.25,
-      3.43,
-      3.7,
-      3.95,
-      4.26,
-      4.54,
-      4.73,
-      5.09,
-      5.4
+      1.29, 1.75, 2.05, 2.31, 2.65, 2.96, 3.25, 3.43, 3.7, 3.95, 4.26, 4.54, 4.73, 5.09, 5.4
     };
     final double[] armSetpoint = {
-      .168,
-      .14,
-      .126,
-      .11,
-      .1,
-      .095,
-      .085,
-      .082,
-      .075,
-      .071,
-      .067,
-      .064,
-      .061,
-      .058,
-      .061
+      .168, .14, .126, .11, .1, .095, .085, .082, .075, .071, .067, .064, .061, .058, .061
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -291,7 +265,9 @@ public class Superstructure extends SubsystemBase {
       case SHOOT:
         {
           double flywheelSetpoint = 2300;
-          double distanceToSpeaker = RobotContainer.poseEstimator.distanceToTarget(Constants.FieldConstants.Targets.SPEAKER);
+          double distanceToSpeaker =
+              RobotContainer.poseEstimator.distanceToTarget(
+                  Constants.FieldConstants.Targets.SPEAKER);
           Logger.recordOutput(
               "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
           Logger.recordOutput(
@@ -306,7 +282,10 @@ public class Superstructure extends SubsystemBase {
             flywheelSetpoint = 3000;
           }
           shooter.shoot(flywheelSetpoint);
-
+          if (DriverStation.isAutonomousEnabled()) {
+            DriveCommands.snapToTargetForAuto(
+                RobotContainer.getDrive(), () -> 0, () -> 0, Targets.SPEAKER);
+          }
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
               && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
