@@ -108,7 +108,7 @@ public final class Constants {
     // Fill in
     public static final int LEADER = 55;
     public static final int FOLLOWER = 56;
-    public static final double SETPOINT = 3000.0;
+    public static final double SETPOINT = 2300.0;
   }
 
   public final class ConveyorConstants {
