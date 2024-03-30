@@ -83,8 +83,7 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeed =
-      new LoggedTunableNumber("Flywheeel/Flywheel speed", 2300);
-  private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
+      new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
   private final LookupTable armFlingInterpolation;
   private final LookupTable shooterflingInterpolation;
@@ -126,7 +125,6 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput(
         "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
-    Logger.recordOutput("FlywheelSetpoint", flywheelSpeedInput);
     Logger.recordOutput("Superstructure/climbed?", climbed);
     switch (systemState) {
       case DISABLED:
@@ -239,7 +237,7 @@ public class Superstructure extends SubsystemBase {
          * PRIMING_SHOOTER (For Auto Routines)
          * Run flywheel at desired velocity. Useful in auto routines.
          */
-        shooter.shoot(flywheelSpeedInput);
+        shooter.shoot(flywheelSpeed.get());
         arm.setPosition(
             armInterpolation.getValue(
                     RobotContainer.poseEstimator.distanceToTarget(
@@ -272,7 +270,7 @@ public class Superstructure extends SubsystemBase {
                   RobotContainer.poseEstimator.distanceToTarget(
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-          arm.setPosition(armDistanceSetPoint);
+          arm.setPosition(armAngle.get());
           shooter.shoot(flywheelSpeed.get());
 
           if (arm.getState() == ArmStates.AT_SETPOINT
@@ -420,12 +418,12 @@ public class Superstructure extends SubsystemBase {
   public void primeShooter() {
     if (DriverStation.isAutonomousEnabled()) {
       if (note_present()) {
-        shooter.shoot(flywheelSpeedInput);
+        shooter.shoot(flywheelSpeed.get());
       } else {
         intake();
       }
     } else {
-      shooter.shoot(flywheelSpeedInput);
+      shooter.shoot(flywheelSpeed.get());
     }
   }
 
@@ -438,12 +436,10 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void shoot() {
-    flywheelSpeedInput = 2300;
     systemState = SuperstructureStates.SHOOT;
   }
 
   public void shoot(int setpoint) {
-    flywheelSpeedInput = setpoint;
     systemState = SuperstructureStates.SHOOT;
   }
 
