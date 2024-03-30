@@ -104,31 +104,46 @@ public class NemesisLED extends SubsystemBase {
 
   private int blinkingTime = 0;
 
+  private int timesBlinked = 0;
+
   public void setBlinking(LEDConstants.Colors color) {
     if (blinkingTime % 5 == 0) {
       setColor(color);
+      timesBlinked += 1;
     } else {
       off();
     }
     blinkingTime += 1;
   }
 
-  private boolean alreadyBlinking = false;
-  private double initalTime = 0;
+  // private boolean alreadyBlinking = false;
+  // private double initalTime = 0;
 
   Timer timer = new Timer();
 
-  public void setBlinking(LEDConstants.Colors color, double time) {
-    if (!alreadyBlinking) {
-      alreadyBlinking = true;
-      initalTime = timer.get();
-    }
-    else {
-      if (timer.get() - initalTime >= time) {
-        off();
-      } else {
-        setBlinking(color);
-      }
+  // public void setBlinking(LEDConstants.Colors color, double time) {
+  //   if (!alreadyBlinking) {
+  //     alreadyBlinking = true;
+  //     initalTime = timer.get();
+  //   }
+  //   else {
+  //     if (timer.get() - initalTime >= time) {
+  //       alreadyBlinking = false;
+  //       off();
+  //     } else {
+  //       setBlinking(color);
+  //     }
+  //   }
+  // }
+
+  private int maxBlinks = 0;
+
+  public void setBlinking(LEDConstants.Colors color, int blinks) {
+    maxBlinks = blinks;
+    if (maxBlinks % (blinks + 1) >= maxBlinks) {
+      off();
+    } else {
+      setBlinking(color);
     }
   }
 
