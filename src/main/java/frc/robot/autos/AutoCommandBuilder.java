@@ -73,8 +73,8 @@ public class AutoCommandBuilder {
     //   //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
     //   //     Commands.waitSeconds(2.0)));
     // } else {
-      commands.addCommands(
-          new ShootCommand(superstructure, 1)); // tune the 1 second to something smaller
+    commands.addCommands(
+        new ShootCommand(superstructure, 1)); // tune the 1 second to something smaller
     // }
     return this;
   }

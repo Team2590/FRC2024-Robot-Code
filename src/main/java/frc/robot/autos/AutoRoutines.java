@@ -227,6 +227,21 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "short_droppedD",
             SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "drop_three_piece_midline_n8_n7_n6",
+        ezAuto.apply(
+            "startD",
+            "startD_n8",
+            "n8_return_under",
+            SNAP_SHOOT,
+            "axis_n7",
+            "n7_return_under",
+            SNAP_SHOOT,
+            "axis_n6",
+            SNAP_SHOOT,
+            "n6_return_under",
+            SNAP_SHOOT));
     /*
      * Drop N Dash auto
      * startD -- n8 -- short/shoot -- n7 -- short/shoot
