@@ -1,6 +1,5 @@
 package frc.robot.autos;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Superstructure;
@@ -334,14 +333,14 @@ public class AutoRoutines {
       Superstructure superstructure,
       String... instructions) {
 
-    PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
+    // PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     boolean firstShot = true;
     for (String path : instructions) {
       switch (path) {
         case SHOOT:
           if (firstShot) {
-            builder.shoot(false, 2300);
+            builder.shoot(false, 3000);
           } else {
             builder.shoot(false);
           }
@@ -349,7 +348,7 @@ public class AutoRoutines {
           break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, 2300);
+            builder.shoot(true, 3000);
           } else {
             builder.shoot(true);
           }
@@ -375,6 +374,9 @@ public class AutoRoutines {
   }
 
   private static final Optional<Rotation2d> turnToNoteOverride() {
+    if (AutoCommandBuilder.getName().equals("")) {
+      return Optional.empty();
+    }
     double rot = -PhotonNoteRunnable.getYaw();
     System.out.println("Turning to note (yaw): " + rot);
     if (Math.abs(rot) == 0) {

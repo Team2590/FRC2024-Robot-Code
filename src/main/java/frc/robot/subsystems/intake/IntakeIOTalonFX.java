@@ -8,8 +8,7 @@ import frc.robot.Constants;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private TalonFX talon = new TalonFX(Constants.IntakeConstants.INTAKE_ID, Constants.CANBUS);
-  private TalonFX follower =
-      new TalonFX(Constants.IntakeConstants.INTAKE_FOLLOWER_ID, Constants.CANBUS);
+  private TalonFX follower = new TalonFX(Constants.IntakeConstants.INTAKE_FOLLOWER_ID);
   private final DigitalInput beamBreak =
       new DigitalInput(Constants.IntakeConstants.INTAKE_BEAM_BREAK_CHANNEL);
   private final StatusSignal<Double> intakeLeaderPosition = talon.getPosition();

@@ -28,12 +28,12 @@ public class ShootCommand extends Command {
     this.superstructure = superstructure;
     this.timeToWait = timeToWait;
     addRequirements(superstructure.getShooter());
-    shooterPoint = 2300;
+    shooterPoint = 3000;
   }
 
   public ShootCommand(Superstructure superstructure) {
     this(superstructure, DEFAULT_SECONDS_TO_WAIT);
-    shooterPoint = 2300;
+    shooterPoint = 3000;
   }
 
   public ShootCommand(Superstructure superstructure, double timeToWait, int setpoint) {

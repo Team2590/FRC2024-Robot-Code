@@ -183,6 +183,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case IDLE_CLIMB:
         arm.setClimb();
+        climb.setStopped();
         break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
@@ -240,7 +241,7 @@ public class Superstructure extends SubsystemBase {
          * PRIMING_SHOOTER (For Auto Routines)
          * Run flywheel at desired velocity. Useful in auto routines.
          */
-        shooter.shoot(flywheelSpeed.get());
+        shooter.shoot(3000);
         arm.setPosition(
             armInterpolation.getValue(
                     RobotContainer.poseEstimator.distanceToTarget(
@@ -264,7 +265,7 @@ public class Superstructure extends SubsystemBase {
 
       case SHOOT:
         {
-          double flywheelSetpoint = 2300;
+          double flywheelSetpoint = 3000;
           double distanceToSpeaker =
               RobotContainer.poseEstimator.distanceToTarget(
                   Constants.FieldConstants.Targets.SPEAKER);
@@ -372,6 +373,10 @@ public class Superstructure extends SubsystemBase {
               DriverStation.getAlliance().get() == Alliance.Blue
                   ? Constants.FlingConstants.BLUE_FLING_POSE
                   : Constants.FlingConstants.RED_FLING_POSE;
+          Logger.recordOutput(
+              "Pose/FlingDistance",
+              RobotContainer.poseEstimator.distanceBetweenPoses(
+                  RobotContainer.poseEstimator.getLatestPose(), flingPose));
           double armDistanceSetPoint =
               armFlingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
@@ -380,8 +385,8 @@ public class Superstructure extends SubsystemBase {
               shooterflingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
-          arm.setPosition(armDistanceSetPoint);
-          shooter.shoot(shooterSetPoint);
+          arm.setPosition(armAngle.get());
+          shooter.shoot(flywheelSpeed.get());
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
@@ -431,12 +436,12 @@ public class Superstructure extends SubsystemBase {
   public void primeShooter() {
     if (DriverStation.isAutonomousEnabled()) {
       if (note_present()) {
-        shooter.shoot(flywheelSpeed.get());
+        shooter.shoot(3000);
       } else {
         intake();
       }
     } else {
-      shooter.shoot(flywheelSpeed.get());
+      shooter.shoot(3000);
     }
   }
 
