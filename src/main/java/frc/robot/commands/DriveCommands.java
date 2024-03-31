@@ -93,74 +93,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       FieldConstants.Targets target) {
-    return Commands.run(
-        (() -> {
-          // get target pose
-          Pose2d targetPose;
-          switch (target) {
-            case SPEAKER:
-              targetPose =
-                  DriverStation.getAlliance().get() == Alliance.Red
-                      ? AprilTag.getTagPose(4)
-                      : AprilTag.getTagPose(7);
-              break;
-            case AMP:
-              targetPose =
-                  DriverStation.getAlliance().get() == Alliance.Red
-                      ? AprilTag.getTagPose(5)
-                      : AprilTag.getTagPose(6);
-              break;
-            case STAGE:
-              targetPose =
-                  DriverStation.getAlliance().get() == Alliance.Red
-                      ? GeomUtil.triangleCenter(
-                          AprilTag.getTagPose(11), AprilTag.getTagPose(12), AprilTag.getTagPose(13))
-                      : GeomUtil.triangleCenter(
-                          AprilTag.getTagPose(14),
-                          AprilTag.getTagPose(15),
-                          AprilTag.getTagPose(16));
-              break;
-            case FLING:
-              targetPose =
-                  DriverStation.getAlliance().get() == Alliance.Blue
-                      ? Constants.FlingConstants.BLUE_FLING_POSE
-                      : Constants.FlingConstants.RED_FLING_POSE;
-              break;
-            default:
-              targetPose = new Pose2d();
-              break;
-          }
-          // find angle
-          Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
-          // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
-          double theta = Math.atan2(difference.getY(), difference.getX());
-          double currentAngle = drive.getGyroYaw().getRadians() % (2 * Math.PI); // CHANGED
-          // Logger.recordOutput("SnapController/RealCurrentAngle",
-          // drive.getGyroYaw().getRadians());
-          // Logger.recordOutput("SnapController/CurrentAngle", currentAngle);
-          double currentError = theta - currentAngle;
-          if (currentError > Math.PI) {
-            currentAngle += 2 * Math.PI;
-          } else if (currentError < -Math.PI) {
-            currentAngle -= 2 * Math.PI;
-          }
-          Logger.recordOutput("SnapController/CurrentError", currentError);
-          Logger.recordOutput("SnapController/Target", target);
-          Logger.recordOutput("SnapController/TargetPose", targetPose);
-          // run the motors
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  xSupplier.getAsDouble()
-                      * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
-                  ySupplier.getAsDouble()
-                      * drive.getMaxLinearSpeedMetersPerSec()
-                      * Drive.snapControllermultiplier.get(),
-                  drive.snapController.calculate(currentAngle, theta)
-                      * drive.getMaxAngularSpeedRadPerSec(),
-                  drive.getGyroYaw()));
-        }),
-        drive);
+    return Commands.run(() -> snapToTargetForAuto(drive, xSupplier, ySupplier, target), drive);
   }
 
   /**

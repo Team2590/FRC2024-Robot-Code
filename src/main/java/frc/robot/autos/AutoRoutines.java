@@ -233,7 +233,7 @@ public class AutoRoutines {
             SNAP_SHOOT));
 
     autoChooser.addOption(
-        "drop_three_piece_midline_n8_n7_n6",
+        "3_startD_midline_n8_n7_n6",
         ezAuto.apply(
             "startD",
             "startD_n8",
@@ -310,18 +310,6 @@ public class AutoRoutines {
     return autoChooser;
   }
 
-  /** Creates a single note auto. */
-  // private static Command oneNoteAuto(
-  //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
-  //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(true)
-  //       .startPath("startB_note1")
-  //       .shoot(true)
-  //       .followPath("n2-n3")
-  //       .shoot(true)
-  //       .build();
-  // }
-
   /**
    * Easy way to configure an Auto Routine, just pass in the paths.
    *
@@ -340,24 +328,13 @@ public class AutoRoutines {
     for (String path : instructions) {
       switch (path) {
         case SHOOT:
-          if (firstShot) {
-            builder.shoot(false, Constants.ShooterConstants.SETPOINT);
-          } else {
-            builder.shoot(false);
-          }
-          firstShot = false;
-          break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, Constants.ShooterConstants.SETPOINT);
+            builder.shoot(Constants.ShooterConstants.SETPOINT);
           } else {
-            builder.shoot(true);
+            builder.shoot();
           }
           firstShot = false;
-          break;
-        case INTAKE:
-          // intake automatically starts up after shoot but just in case if we need it.
-          builder.intake();
           break;
         default:
           // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
