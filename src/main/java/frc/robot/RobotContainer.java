@@ -8,7 +8,6 @@ import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.commands.SnapToTargetCommandTeleop;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;

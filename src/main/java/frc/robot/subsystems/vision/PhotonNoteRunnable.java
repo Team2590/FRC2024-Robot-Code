@@ -8,7 +8,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonNoteRunnable implements Runnable {
   private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
-  private static PhotonCamera NoteCam = new PhotonCamera(instance, "NoteCam");
+  private static PhotonCamera NoteCam = new PhotonCamera(instance, "FrontCamera");
   private static PhotonPipelineResult result;
   public static PhotonTrackedTarget target;
   private static double camHeight = VisionConstants.NOTE_CAMERA_HEIGHT_METERS;
