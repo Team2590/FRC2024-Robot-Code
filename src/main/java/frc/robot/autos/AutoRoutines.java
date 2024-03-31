@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 public class AutoRoutines {
 
   private static final String SHOOT = "shoot";
@@ -334,7 +336,7 @@ public class AutoRoutines {
       Superstructure superstructure,
       String... instructions) {
 
-    // PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
+    PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     boolean firstShot = true;
     for (String path : instructions) {
