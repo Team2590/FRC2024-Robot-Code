@@ -10,6 +10,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.FieldConstants.SNAP_ERROR_TOLERANCE;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -265,9 +267,6 @@ public class Superstructure extends SubsystemBase {
 
       case SHOOT:
         {
-          double distanceToSpeaker =
-              RobotContainer.poseEstimator.distanceToTarget(
-                  Constants.FieldConstants.Targets.SPEAKER);
           Logger.recordOutput(
               "SnapController/Error", RobotContainer.getDrive().snapController.getPositionError());
           Logger.recordOutput(
@@ -285,7 +284,8 @@ public class Superstructure extends SubsystemBase {
           }
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
-              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
+              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker())
+                  < SNAP_ERROR_TOLERANCE)) {
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
