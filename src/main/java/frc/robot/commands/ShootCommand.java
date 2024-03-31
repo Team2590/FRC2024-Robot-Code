@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -19,6 +21,7 @@ public class ShootCommand extends Command {
   private final Superstructure superstructure;
   private double shooterPoint;
   private boolean startedShooting = false;
+  private long shootStartTime = 0;
 
   public ShootCommand(Superstructure superstructure, double timeToWait) {
     this(superstructure, timeToWait, Constants.ShooterConstants.SETPOINT);
@@ -43,6 +46,9 @@ public class ShootCommand extends Command {
       superstructure.shoot(shooterPoint);
       startedShooting = true;
     }
+    if (startedShooting) {
+      shootStartTime = Logger.getTimestamp();
+    }
   }
 
   @Override
@@ -53,6 +59,8 @@ public class ShootCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    double shootEndTime = (Logger.getTimestamp() - shootStartTime) / 1000;
+    Logger.recordOutput("ShootCommand/ShootTimeMs", shootEndTime);
     timer.stop();
   }
 }
