@@ -383,8 +383,8 @@ public class Superstructure extends SubsystemBase {
               shooterflingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
-          arm.setPosition(armAngle.get());
-          shooter.shoot(flywheelSpeed.get());
+          arm.setPosition(armDistanceSetPoint);
+          shooter.shoot(shooterSetPoint);
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
             conveyor.setShooting();
