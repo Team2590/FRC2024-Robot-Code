@@ -37,12 +37,17 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder followPath(String pathName) {
-    curr_path_name = pathName;
+    // curr_path_name = pathName;
+
     if (!startPathSpecified) {
       // If the first path wasn't specified, make this the first path.
       startPath(pathName);
     } else {
       commands.addCommands(
+          Commands.runOnce(
+              () -> {
+                curr_path_name = pathName;
+              }),
           Commands.print("Running FollowPathCommand for " + pathName),
           paths.getFollowPathCommand(pathName),
           Commands.print("FollowPath done:" + pathName));
@@ -80,7 +85,7 @@ public class AutoCommandBuilder {
     return this;
   }
 
-  public AutoCommandBuilder shoot(boolean snapToSpeaker, int setpoint) {
+  public AutoCommandBuilder shoot(boolean snapToSpeaker, double setpoint) {
     if (snapToSpeaker) {
       commands.addCommands(
           new SnapToTargetCommand(

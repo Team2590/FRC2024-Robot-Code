@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Superstructure;
 // import frc.robot.util.Tracer;
 import org.littletonrobotics.junction.Logger;
@@ -21,22 +22,22 @@ public class ShootCommand extends Command {
   private final Superstructure superstructure;
   private boolean isNoteDetectedAtIntake = false;
   private int cycle = 0;
-  private int shooterPoint;
+  private double shooterPoint;
   private boolean shooting = false;
 
   public ShootCommand(Superstructure superstructure, double timeToWait) {
     this.superstructure = superstructure;
     this.timeToWait = timeToWait;
     addRequirements(superstructure.getShooter());
-    shooterPoint = 2300;
+    shooterPoint = Constants.ShooterConstants.SETPOINT;
   }
 
   public ShootCommand(Superstructure superstructure) {
     this(superstructure, DEFAULT_SECONDS_TO_WAIT);
-    shooterPoint = 2300;
+    shooterPoint = Constants.ShooterConstants.SETPOINT;
   }
 
-  public ShootCommand(Superstructure superstructure, double timeToWait, int setpoint) {
+  public ShootCommand(Superstructure superstructure, double timeToWait, double setpoint) {
     this.superstructure = superstructure;
     this.timeToWait = timeToWait;
     addRequirements(superstructure.getShooter());

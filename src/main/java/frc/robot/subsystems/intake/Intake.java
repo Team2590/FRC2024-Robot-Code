@@ -8,7 +8,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  private double power = 1;
+  private double power = .65;
   private final IntakeIO io;
   private IntakeStates state;
 

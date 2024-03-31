@@ -183,6 +183,7 @@ public class Superstructure extends SubsystemBase {
         break;
       case IDLE_CLIMB:
         arm.setClimb();
+        climb.setStopped();
         break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
@@ -264,7 +265,6 @@ public class Superstructure extends SubsystemBase {
 
       case SHOOT:
         {
-          double flywheelSetpoint = 2300;
           double distanceToSpeaker =
               RobotContainer.poseEstimator.distanceToTarget(
                   Constants.FieldConstants.Targets.SPEAKER);
@@ -278,10 +278,7 @@ public class Superstructure extends SubsystemBase {
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
           arm.setPosition(armDistanceSetPoint);
-          if (distanceToSpeaker > 3.6) {
-            flywheelSetpoint = 3000;
-          }
-          shooter.shoot(flywheelSetpoint);
+          shooter.shoot(flywheelSpeed.get());
           if (DriverStation.isAutonomousEnabled()) {
             DriveCommands.snapToTargetForAuto(
                 RobotContainer.getDrive(), () -> 0, () -> 0, Targets.SPEAKER);
@@ -323,6 +320,8 @@ public class Superstructure extends SubsystemBase {
         // arm.setposition(AMP);
         idleState = IDLE_STATES.AMP;
         if (climbed) {
+          // :) - aheulitt
+          led.setRainbow();
           arm.setPosition(ArmConstants.TRAP_SETPOINT);
         } else {
           arm.setPosition(ArmConstants.AMP_SETPOINT);
@@ -372,6 +371,10 @@ public class Superstructure extends SubsystemBase {
               DriverStation.getAlliance().get() == Alliance.Blue
                   ? Constants.FlingConstants.BLUE_FLING_POSE
                   : Constants.FlingConstants.RED_FLING_POSE;
+          Logger.recordOutput(
+              "Pose/FlingDistance",
+              RobotContainer.poseEstimator.distanceBetweenPoses(
+                  RobotContainer.poseEstimator.getLatestPose(), flingPose));
           double armDistanceSetPoint =
               armFlingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
@@ -452,7 +455,7 @@ public class Superstructure extends SubsystemBase {
     systemState = SuperstructureStates.SHOOT;
   }
 
-  public void shoot(int setpoint) {
+  public void shoot(double setpoint) {
     systemState = SuperstructureStates.SHOOT;
   }
 
