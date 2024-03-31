@@ -85,7 +85,7 @@ public class AutoCommandBuilder {
     return this;
   }
 
-  public AutoCommandBuilder shoot(boolean snapToSpeaker, int setpoint) {
+  public AutoCommandBuilder shoot(boolean snapToSpeaker, double setpoint) {
     if (snapToSpeaker) {
       commands.addCommands(
           new SnapToTargetCommand(

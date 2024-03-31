@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
@@ -340,7 +341,7 @@ public class AutoRoutines {
       switch (path) {
         case SHOOT:
           if (firstShot) {
-            builder.shoot(false, 3000);
+            builder.shoot(false, Constants.ShooterConstants.SETPOINT);
           } else {
             builder.shoot(false);
           }
@@ -348,7 +349,7 @@ public class AutoRoutines {
           break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, 3000);
+            builder.shoot(true, Constants.ShooterConstants.SETPOINT);
           } else {
             builder.shoot(true);
           }

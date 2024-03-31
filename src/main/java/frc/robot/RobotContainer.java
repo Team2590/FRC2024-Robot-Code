@@ -269,6 +269,7 @@ public class RobotContainer {
     // }
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
+      teleopSpeaker = false;
     } else if (input.leftJoystickPOV() == 0) {
       CommandScheduler.getInstance()
           .schedule(
