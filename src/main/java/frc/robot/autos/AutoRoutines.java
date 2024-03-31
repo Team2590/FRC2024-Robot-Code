@@ -375,7 +375,7 @@ public class AutoRoutines {
   }
 
   private static final Optional<Rotation2d> turnToNoteOverride() {
-    if (AutoCommandBuilder.getName().equals("")) {
+    if (!isMidlineAuto(AutoCommandBuilder.getName())) {
       return Optional.empty();
     }
     double rot = -PhotonNoteRunnable.getYaw();
@@ -384,5 +384,27 @@ public class AutoRoutines {
       return Optional.empty();
     }
     return Optional.of(Rotation2d.fromDegrees(rot));
+  }
+
+  /**
+   * Checks if a given path is a midline path (defined as ending at the midline)
+   * This works with our current naming convnetion (having the target note as the last number)
+   * 
+   * @param pathName - String name of a path
+   * @return true if it's a path that ends at the midline, otherwise false
+   */
+  private static boolean isMidlineAuto(String pathName){
+    if (!pathName.contains("return")) {
+      for (int i = pathName.length(); i > 1; i--) {
+          try {
+              if (Integer.parseInt(pathName.substring(i - 1, i)) >= 4) {
+                  return true;
+              }
+          } catch (NumberFormatException e) {
+              continue;
+          }
+      }
+  }
+  return false;
   }
 }
