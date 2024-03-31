@@ -15,8 +15,8 @@ public class PhotonNoteRunnable implements Runnable {
   private static double camPitch = VisionConstants.NOTE_CAMERA_PITCH;
   private static double camXOffset = VisionConstants.NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS;
   private static double camYOffset = VisionConstants.NOTE_CAMERA_Y_DISTANCE_FROM_CENTER_METERS;
-  private static double noteXOffset = 0;
-  private static double noteYOffset = 0;
+  private static double noteYawRad;
+  private static double camFocalLength = 0.00195; //meters
 
   /** Updates results on the note detection camera. */
   @Override
@@ -25,40 +25,32 @@ public class PhotonNoteRunnable implements Runnable {
       result = NoteCam.getLatestResult();
       if (result.hasTargets()) {
         target = result.getBestTarget();
-        noteXOffset = camHeight / (Math.tan(camPitch - Math.toRadians(target.getPitch())));
-        noteYOffset = noteXOffset * Math.tan(Math.toRadians(target.getYaw())) + camYOffset;
+        double mPitch = Math.toRadians(target.getPitch());
+        double mYaw = Math.toRadians(target.getYaw());
+        double realPitch = Math.atan2(mPitch, camFocalLength);
+        double realYaw = Math.atan2(mYaw, camFocalLength);
+        double distanceToNote = camHeight / (Math.tan(camPitch + realPitch));
+        double xToNote = distanceToNote * Math.cos(realYaw);
+        double yToNote = distanceToNote * Math.sin(realYaw);
+        noteYawRad = Math.atan2(yToNote, xToNote + camXOffset);
       } else {
         target = null;
-        noteXOffset = 0;
-        noteYOffset = 0;
+        noteYawRad = 0;
       }
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       return;
     }
   }
 
   /**
-   * Gets the HORIZONTAL (right is +) translation from the center of the robot to the detected note.
-   *
-   * @return y offset of note
-   */
-  public static double getYOffset() {
-    return noteYOffset;
-  }
-
-  public static double getXOffset() {
-    return noteXOffset + camXOffset;
-  }
-
-  /**
    * Gets the yaw of target in DEGREES.
    *
-   * @return yaw of target in degrees
+   * @return yaw of target in DEGREES
    */
   public static double getYaw() {
     try {
       if (target != null && result.hasTargets()) {
-        return target.getYaw();
+        return -noteYawRad;
       } else {
         return 0;
       }
@@ -68,21 +60,21 @@ public class PhotonNoteRunnable implements Runnable {
     }
   }
 
-  /**
-   * Gets the pitch of target in DEGREES.
-   *
-   * @return pitch of target in degrees
-   */
-  public static double getPitch() {
-    try {
-      if (result.hasTargets()) {
-        return target.getPitch();
-      } else {
-        return 0;
-      }
-    } catch (NullPointerException e) {
-      e.printStackTrace();
-      return 0;
-    }
-  }
+  // /**
+  //  * Gets the pitch of target in DEGREES.
+  //  *
+  //  * @return pitch of target in degrees
+  //  */
+  // public static double getPitch() {
+  //   try {
+  //     if (result.hasTargets()) {
+  //       return target.getPitch();
+  //     } else {
+  //       return 0;
+  //     }
+  //   } catch (NullPointerException e) {
+  //     e.printStackTrace();
+  //     return 0;
+  //   }
+  // }
 }

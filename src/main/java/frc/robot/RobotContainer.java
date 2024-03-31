@@ -270,11 +270,14 @@ public class RobotContainer {
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
     } else if (input.leftJoystickPOV() == 0) {
-      CommandScheduler.getInstance().schedule(
-      DriveCommands.SnapToTarget(
-              drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.FLING)
-          .until(() -> input.leftJoystickPOV() == 0)
-      );
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.FLING)
+                  .until(() -> input.leftJoystickPOV() == 0));
       superstructure.fling();
     } else {
 
