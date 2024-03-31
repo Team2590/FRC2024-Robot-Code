@@ -1,12 +1,11 @@
 package frc.robot.commands;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Superstructure;
 // import frc.robot.util.Tracer;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Command for shooting using the Superstructure.
@@ -44,10 +43,10 @@ public class ShootCommand extends Command {
   public void execute() {
     if (superstructure.note_present()) { // we can maybe switch this notepresent to a tuned time ?
       superstructure.shoot(shooterPoint);
-      startedShooting = true;
-    }
-    if (startedShooting) {
-      shootStartTime = Logger.getTimestamp();
+      if (!startedShooting) {
+        startedShooting = true;
+        shootStartTime = Logger.getTimestamp();
+      }
     }
   }
 
