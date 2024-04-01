@@ -123,7 +123,7 @@ public class AutoRoutines {
             SNAP_SHOOT));
 
     autoChooser.addOption(
-        "4_startB_close",
+        "4_startB_n1_n2_n3",
         ezAuto.apply(
             "startB",
             SHOOT,
@@ -132,6 +132,18 @@ public class AutoRoutines {
             "note1_n2",
             SNAP_SHOOT,
             "note2_n3",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "4_startB_n3_n2_n1",
+        ezAuto.apply(
+            "startB",
+            SHOOT,
+            "startB_note3",
+            SNAP_SHOOT,
+            "note3_n2",
+            SNAP_SHOOT,
+            "note2_n1",
             SNAP_SHOOT));
 
     autoChooser.addOption(
