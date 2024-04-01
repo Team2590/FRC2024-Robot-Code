@@ -45,6 +45,8 @@ public final class Constants {
       new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
 
   public final class FieldConstants {
+    // Error Tolerance for Snapping.
+    public static final double SNAP_ERROR_TOLERANCE = 0.05;
     public static final double RUMBLE_THRESHOLD = 6;
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
