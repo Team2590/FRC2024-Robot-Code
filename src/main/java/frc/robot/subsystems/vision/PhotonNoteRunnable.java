@@ -15,8 +15,8 @@ public class PhotonNoteRunnable implements Runnable {
   private static double camPitch = VisionConstants.NOTE_CAMERA_PITCH;
   private static double camXOffset = VisionConstants.NOTE_CAMERA_X_DISTANCE_FROM_CENTER_METERS;
   private static double camYOffset = VisionConstants.NOTE_CAMERA_Y_DISTANCE_FROM_CENTER_METERS;
-  private static double noteYawRad;
-  private static double camFocalLength = 0.00195; //meters
+  private static double noteYaw;
+  private static double camFocalLength = 0.39;
 
   /** Updates results on the note detection camera. */
   @Override
@@ -29,13 +29,13 @@ public class PhotonNoteRunnable implements Runnable {
         double mYaw = Math.toRadians(target.getYaw());
         double realPitch = Math.atan2(mPitch, camFocalLength);
         double realYaw = Math.atan2(mYaw, camFocalLength);
-        double distanceToNote = camHeight / (Math.tan(camPitch + realPitch));
+        double distanceToNote = camHeight / (Math.tan(camPitch - realPitch));
         double xToNote = distanceToNote * Math.cos(realYaw);
         double yToNote = distanceToNote * Math.sin(realYaw);
-        noteYawRad = Math.atan2(yToNote, xToNote + camXOffset);
+        noteYaw = Math.toDegrees(Math.atan(yToNote / (xToNote + camXOffset)));
       } else {
         target = null;
-        noteYawRad = 0;
+        noteYaw = 0;
       }
     } catch (Exception e) {
       return;
@@ -50,7 +50,7 @@ public class PhotonNoteRunnable implements Runnable {
   public static double getYaw() {
     try {
       if (target != null && result.hasTargets()) {
-        return -noteYawRad;
+        return noteYaw;
       } else {
         return 0;
       }
