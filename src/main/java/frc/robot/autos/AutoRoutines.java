@@ -246,6 +246,19 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "n6_return_under",
             SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "3_startA_dropped_n4_n5",
+        ezAuto.apply(
+            "startA",
+            "startA_n4_out",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT,
+            "amp_side_dropped_return",
+            SNAP_SHOOT));
     /*
      * Drop N Dash auto
      * startD -- n8 -- short/shoot -- n7 -- short/shoot
@@ -261,6 +274,20 @@ public class AutoRoutines {
             "n7_return_short",
             SNAP_SHOOT,
             "short_droppedD",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "3_piece_midline_n4_n5_n6",
+        ezAuto.apply(
+            "startA",
+            "startA_n4",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT,
+            "stage_n6",
+            "n6_return",
             SNAP_SHOOT));
 
     autoChooser.addOption(

@@ -160,6 +160,7 @@ public class RobotContainer {
 
   public void updateUserInput() {
     Logger.recordOutput("Odometry/Gyro", drive.getGyroYaw().getDegrees());
+    Logger.recordOutput("Drive/currentSpeed", drive.getCurrentChassisSpeeds().toString());
 
     /*
      * Driver input w/ superstructure
