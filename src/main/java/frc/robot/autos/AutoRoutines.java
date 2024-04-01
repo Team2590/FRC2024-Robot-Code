@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -14,7 +15,6 @@ public class AutoRoutines {
 
   private static final String SHOOT = "shoot";
   private static final String SNAP_SHOOT = "snap_shoot";
-  private static final String INTAKE = "intake";
 
   public static final LoggedDashboardChooser<Command> buildChooser(
       Drive drive, Superstructure superstructure) {
@@ -349,7 +349,7 @@ public class AutoRoutines {
       Superstructure superstructure,
       String... instructions) {
 
-    // PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
+    PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     boolean firstShot = true;
     for (String path : instructions) {
@@ -379,7 +379,7 @@ public class AutoRoutines {
   }
 
   private static final Optional<Rotation2d> turnToNoteOverride() {
-    if (AutoCommandBuilder.getName().equals("")) {
+    if (!isMidlineAuto(AutoCommandBuilder.getName())) {
       return Optional.empty();
     }
     double rot = -PhotonNoteRunnable.getYaw();
@@ -388,5 +388,26 @@ public class AutoRoutines {
       return Optional.empty();
     }
     return Optional.of(Rotation2d.fromDegrees(rot));
+  }
+
+  /**
+   * Checks if a given path is a midline path (defined as ending at the midline) This works with our
+   * current naming convnetion (having the target note as the last number)
+   *
+   * @param pathName - String name of a path
+   * @return true if it's a path that ends at the midline, otherwise false
+   */
+  static boolean isMidlineAuto(String pathName) {
+    if (pathName.contains("return")) {
+      return false;
+    }
+    for (int i = pathName.length() - 1; i > 1; i--) {
+      char ch = pathName.charAt(i);
+      if (Character.isDigit(ch)) {
+        int noteNumber = ch - '0';
+        return noteNumber >= 4;
+      }
+    }
+    return false;
   }
 }
