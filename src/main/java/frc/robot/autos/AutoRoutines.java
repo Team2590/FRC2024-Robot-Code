@@ -4,6 +4,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
@@ -280,14 +281,14 @@ public class AutoRoutines {
         "3_piece_midline_n4_n5_n6",
         ezAuto.apply(
             "startA",
-            "startA_n4",
+            "startA_n4_out",
             "n4_return",
             SNAP_SHOOT,
             "stage_n5",
             "n5_return",
             SNAP_SHOOT,
             "stage_n6",
-            "n6_return",
+            "n6_return_under",
             SNAP_SHOOT));
 
     autoChooser.addOption(
@@ -387,7 +388,14 @@ public class AutoRoutines {
     if (Math.abs(rot) == 0) {
       return Optional.empty();
     }
-    return Optional.of(Rotation2d.fromDegrees(rot));
+    // return Optional.of(
+    //     Rotation2d.fromDegrees(
+    //         rot + RobotContainer.poseEstimator.getLatestPose().getRotation().getDegrees()));
+    return Optional.of(
+        RobotContainer.poseEstimator
+            .getLatestPose()
+            .getRotation()
+            .plus(Rotation2d.fromDegrees(rot)));
   }
 
   /**

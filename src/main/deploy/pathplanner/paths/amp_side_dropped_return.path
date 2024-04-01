@@ -33,6 +33,11 @@
       "waypointRelativePos": 0.15,
       "rotationDegrees": 174.8618814225512,
       "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 150.0,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
