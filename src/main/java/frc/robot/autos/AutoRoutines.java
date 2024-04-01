@@ -1,8 +1,12 @@
 package frc.robot.autos;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Superstructure;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.PhotonNoteRunnable;
+import java.util.Optional;
 import java.util.function.Function;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -227,6 +231,21 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "short_droppedD",
             SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "3_startD_midline_n8_n7_n6",
+        ezAuto.apply(
+            "startD",
+            "startD_n8",
+            "n8_return_under",
+            SNAP_SHOOT,
+            "axis_n7",
+            "n7_return_under",
+            SNAP_SHOOT,
+            "axis_n6",
+            SNAP_SHOOT,
+            "n6_return_under",
+            SNAP_SHOOT));
     /*
      * Drop N Dash auto
      * startD -- n8 -- short/shoot -- n7 -- short/shoot
@@ -243,14 +262,6 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "short_droppedD",
             SNAP_SHOOT));
-    /*
-     * Drop N Dash auto
-     * startD -- n8 -- short/shoot -- n7 -- short/shoot
-     */
-    autoChooser.addOption(
-        "2_startAB_n4_n5",
-        ezAuto.apply(
-            "startAB", "startAB_n4", "n4_return", SNAP_SHOOT, "note1_n5", "n5_return", SNAP_SHOOT));
 
     autoChooser.addOption(
         "5_startA_n1_n2_n3_n6",
@@ -265,7 +276,7 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "note3_n6",
             "n6_return_under",
-            SHOOT));
+            SNAP_SHOOT));
 
     // autoChooser.addOption(
     //     "4_startA_n1",
@@ -299,18 +310,6 @@ public class AutoRoutines {
     return autoChooser;
   }
 
-  /** Creates a single note auto. */
-  // private static Command oneNoteAuto(
-  //     PathPlannerPaths paths, Drive drive, Superstructure superstructure) {
-  //   return new AutoCommandBuilder(paths, drive, superstructure)
-  //       .shoot(true)
-  //       .startPath("startB_note1")
-  //       .shoot(true)
-  //       .followPath("n2-n3")
-  //       .shoot(true)
-  //       .build();
-  // }
-
   /**
    * Easy way to configure an Auto Routine, just pass in the paths.
    *
@@ -322,29 +321,20 @@ public class AutoRoutines {
       Drive drive,
       Superstructure superstructure,
       String... instructions) {
+
+    // PPHolonomicDriveController.setRotationTargetOverride(AutoRoutines::turnToNoteOverride);
     AutoCommandBuilder builder = new AutoCommandBuilder(pathPlans, drive, superstructure);
     boolean firstShot = true;
     for (String path : instructions) {
       switch (path) {
         case SHOOT:
-          if (firstShot) {
-            builder.shoot(false, 2300);
-          } else {
-            builder.shoot(false);
-          }
-          firstShot = false;
-          break;
         case SNAP_SHOOT:
           if (firstShot) {
-            builder.shoot(true, 2300);
+            builder.shoot(Constants.ShooterConstants.SETPOINT);
           } else {
-            builder.shoot(true);
+            builder.shoot();
           }
           firstShot = false;
-          break;
-        case INTAKE:
-          // intake automatically starts up after shoot but just in case if we need it.
-          builder.intake();
           break;
         default:
           // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
@@ -359,5 +349,17 @@ public class AutoRoutines {
   interface AutoFunction extends Function<String[], Command> {
     @Override
     Command apply(String... args);
+  }
+
+  private static final Optional<Rotation2d> turnToNoteOverride() {
+    if (AutoCommandBuilder.getName().equals("")) {
+      return Optional.empty();
+    }
+    double rot = -PhotonNoteRunnable.getYaw();
+    System.out.println("Turning to note (yaw): " + rot);
+    if (Math.abs(rot) == 0) {
+      return Optional.empty();
+    }
+    return Optional.of(Rotation2d.fromDegrees(rot));
   }
 }

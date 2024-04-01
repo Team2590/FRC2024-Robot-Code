@@ -9,7 +9,6 @@ import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.SnapToTargetCommandTeleop;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -57,7 +56,6 @@ public class RobotContainer {
   public static final PoseEstimator poseEstimator =
       new PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0002));
   // Dashboard inputs
-  public static SnapToTargetCommandTeleop snapCommand;
   private final LoggedDashboardChooser<Command> autoChooser;
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
@@ -134,13 +132,6 @@ public class RobotContainer {
         arm = new Arm(new ArmIOTalonFX());
         break;
     }
-    snapCommand =
-        new SnapToTargetCommandTeleop(
-            drive,
-            () -> -input.leftJoystickY(),
-            () -> -input.leftJoystickX(),
-            Targets.SPEAKER,
-            0.05);
     // pass in all subsystems into superstructure
     superstructure = new Superstructure(conveyor, intake, flywheel, arm, climb, led);
     // Set up auto routines
@@ -269,11 +260,18 @@ public class RobotContainer {
     // }
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
-    } else if (input.rightJoystickButton(15)) {
-      DriveCommands.SnapToTarget(
-              drive, () -> -input.leftJoystickY(), () -> -input.leftJoystickX(), Targets.FLING)
-          .until(() -> input.rightJoystickButton(15));
+      teleopSpeaker = false;
+    } else if (input.leftJoystickPOV() == 0) {
+      CommandScheduler.getInstance()
+          .schedule(
+              DriveCommands.SnapToTarget(
+                      drive,
+                      () -> -input.leftJoystickY(),
+                      () -> -input.leftJoystickX(),
+                      Targets.FLING)
+                  .until(() -> input.leftJoystickPOV() == 0));
       superstructure.fling();
+
     } else {
 
       if (superstructure.getState() == SuperstructureStates.PRIMING_AMP

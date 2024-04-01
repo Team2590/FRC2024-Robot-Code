@@ -2,12 +2,9 @@ package frc.robot.autos;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.SnapToTargetCommand;
 import frc.robot.subsystems.drive.Drive;
 
 public class AutoCommandBuilder {
@@ -37,65 +34,29 @@ public class AutoCommandBuilder {
   }
 
   public AutoCommandBuilder followPath(String pathName) {
-    curr_path_name = pathName;
     if (!startPathSpecified) {
       // If the first path wasn't specified, make this the first path.
       startPath(pathName);
     } else {
       commands.addCommands(
+          Commands.runOnce(() -> curr_path_name = pathName),
           Commands.print("Running FollowPathCommand for " + pathName),
-          paths.getFollowPathCommand(pathName));
+          paths.getFollowPathCommand(pathName),
+          Commands.print("FollowPath done:" + pathName),
+          Commands.runOnce(() -> curr_path_name = "none"));
     }
     return this;
   }
 
-  public AutoCommandBuilder intake() {
+  public AutoCommandBuilder shoot() {
     commands.addCommands(
-        Commands.print("Running intake command"),
-        new InstantCommand(() -> superstructure.intake()));
-
+        new ShootCommand(superstructure, 1.0)); // tune the 1 second to something smaller
     return this;
   }
 
-  public AutoCommandBuilder shoot(boolean snapToSpeaker) {
-    if (snapToSpeaker) {
-      commands.addCommands(
-          Commands.parallel(
-              new SnapToTargetCommand(
-                  drive,
-                  () -> 0,
-                  () -> 0,
-                  Targets.SPEAKER,
-                  .5d // TODO: Figure out the best error tolerance.
-                  ),
-              new ShootCommand(superstructure, 0.5)));
-      // Commands.race(
-      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-      //     Commands.waitSeconds(2.0)));
-    } else {
-      commands.addCommands(new ShootCommand(superstructure, 1));//tune the 1 second to something smaller
-    }
-    return this;
-  }
-
-  public AutoCommandBuilder shoot(boolean snapToSpeaker, int setpoint) {
-    if (snapToSpeaker) {
-      commands.addCommands(
-          new SnapToTargetCommand(
-              drive,
-              () -> 0,
-              () -> 0,
-              Targets.SPEAKER,
-              0.5d // TODO: Figure out the best error tolerance.
-              ));
-      // Commands.race(
-      //     DriveCommands.SnapToTarget(drive, () -> 0, () -> 0, Targets.SPEAKER),
-      //     Commands.waitSeconds(2.0)));
-    }
-
+  public AutoCommandBuilder shoot(double setpoint) {
     commands.addCommands(
-        new ShootCommand(superstructure, .5, setpoint)); // second param is the intake speed taken
-
+        new ShootCommand(superstructure, 1.0, setpoint)); // second param is the intake speed taken
     return this;
   }
 

@@ -45,6 +45,8 @@ public final class Constants {
       new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
 
   public final class FieldConstants {
+    // Error Tolerance for Snapping.
+    public static final double SNAP_ERROR_TOLERANCE = 0.05;
     public static final double RUMBLE_THRESHOLD = 6;
     public static final double FIELD_LENGTH_METERS = 16.54175;
     public static final double FIELD_WIDTH_METERS = 8.0137;
@@ -141,8 +143,8 @@ public final class Constants {
   }
 
   public final class LEDConstants {
-    public static final Colors DETECT_NOTE_COLOR = Colors.Red;
-    public static final Colors HAS_NOTE_COLOR = Colors.Red;
+    public static final Colors DETECT_NOTE_COLOR = Colors.White;
+    public static final Colors HAS_NOTE_COLOR = Colors.White;
     public static final Colors PRIMED_SUPERSTRUCTURE = Colors.Green;
 
     public enum Colors {
@@ -168,18 +170,18 @@ public final class Constants {
   }
 
   public final class FlingConstants {
-    public static final double RED_ALLIANCE_X = 1.84;
-    public static final double RED_ALLIANCE_Y = 2.667;
-    public static final double BLUE_ALLIANCE_X = 14.7;
+    public static final double BLUE_ALLIANCE_X = 1.84;
+    public static final double RED_ALLIANCE_Y = 7.15;
+    public static final double RED_ALLIANCE_X = 14.7;
     public static final double BLUE_ALLIANCE_Y = RED_ALLIANCE_Y;
     public static final Pose2d RED_FLING_POSE =
         new Pose2d(RED_ALLIANCE_X, RED_ALLIANCE_Y, new Rotation2d(0));
     public static final Pose2d BLUE_FLING_POSE =
         new Pose2d(BLUE_ALLIANCE_X, BLUE_ALLIANCE_Y, new Rotation2d(0));
 
-    public static final double[] FLING_DISTANCE = {10.51, 9.09, 7.44, 7.77, 7.82};
-    public static final double[] FLING_ARM_SETPOINT = {0.12, 0.145, 0.168, 0.168, 0.168};
-    public static final double[] FLING_SHOOTER_SETPOINT = {2300, 2300, 2000, 1850, 1850};
+    public static final double[] FLING_DISTANCE = {7.3, 7.726, 8.964, 9.783, 10.2, 10.7};
+    public static final double[] FLING_ARM_SETPOINT = {.14, .12, .12, .12, .11, .11};
+    public static final double[] FLING_SHOOTER_SETPOINT = {1500, 1500, 1750, 1750, 2000, 2000};
   }
 
   public static enum Mode {

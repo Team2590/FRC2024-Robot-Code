@@ -10,12 +10,16 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.FieldConstants.SNAP_ERROR_TOLERANCE;
+
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.elevatorarm.Arm;
@@ -83,8 +87,7 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
   private final LoggedTunableNumber flywheelSpeed =
-      new LoggedTunableNumber("Flywheeel/Flywheel speed", 2300);
-  private double flywheelSpeedInput = Constants.ShooterConstants.SETPOINT; // 2300
+      new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
   private final LookupTable armFlingInterpolation;
   private final LookupTable shooterflingInterpolation;
@@ -104,11 +107,10 @@ public class Superstructure extends SubsystemBase {
     // final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
     final double[] distance = {
-      1.24, 1.74, 2.35, 2.65, 2.93, 3.32, 3.64, 3.87, 4, 4.19, 4.3, 4.59, 4.8, 4.93
+      1.29, 1.75, 2.05, 2.31, 2.65, 2.96, 3.25, 3.43, 3.7, 3.95, 4.26, 4.54, 4.73, 5.09, 5.4
     };
     final double[] armSetpoint = {
-      0.168, 0.155, 0.115, 0.105, 0.097, 0.097, 0.088, 0.087, 0.085, 0.083, 0.078, 0.08, 0.079,
-      0.076
+      .168, .14, .126, .11, .1, .095, .085, .082, .075, .071, .067, .064, .061, .058, .061
     };
 
     armInterpolation = new LookupTable(distance, armSetpoint);
@@ -126,7 +128,6 @@ public class Superstructure extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput(
         "Pose/ErrorToSpeaker", RobotContainer.poseEstimator.currentErrorToSpeaker());
-    Logger.recordOutput("FlywheelSetpoint", flywheelSpeedInput);
     Logger.recordOutput("Superstructure/climbed?", climbed);
     switch (systemState) {
       case DISABLED:
@@ -156,11 +157,10 @@ public class Superstructure extends SubsystemBase {
          */
         climb.setStopped();
         if (conveyor.hasNote()) {
+          led.off();
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
-            led.setColor(LEDConstants.PRIMED_SUPERSTRUCTURE);
           } else {
-            led.setColor(LEDConstants.HAS_NOTE_COLOR);
             intake.setStopped();
           }
         } else {
@@ -178,13 +178,14 @@ public class Superstructure extends SubsystemBase {
         }
         if (conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
-          led.setColor(LEDConstants.HAS_NOTE_COLOR);
+          led.off();
           // intake.setStopped();
         }
         climb.setStopped();
         break;
       case IDLE_CLIMB:
         arm.setClimb();
+        climb.setStopped();
         break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
@@ -209,6 +210,9 @@ public class Superstructure extends SubsystemBase {
          */
 
         // if (arm.getState() == ArmStates.HOME) {
+        if (intake.detectNote()) {
+          led.setColor(LEDConstants.DETECT_NOTE_COLOR);
+        }
         if (arm.getState() == ArmStates.HOME) {
           idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
@@ -239,7 +243,7 @@ public class Superstructure extends SubsystemBase {
          * PRIMING_SHOOTER (For Auto Routines)
          * Run flywheel at desired velocity. Useful in auto routines.
          */
-        shooter.shoot(flywheelSpeedInput);
+        shooter.shoot(flywheelSpeed.get());
         arm.setPosition(
             armInterpolation.getValue(
                     RobotContainer.poseEstimator.distanceToTarget(
@@ -274,10 +278,14 @@ public class Superstructure extends SubsystemBase {
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
           arm.setPosition(armDistanceSetPoint);
           shooter.shoot(flywheelSpeed.get());
-
+          if (DriverStation.isAutonomousEnabled()) {
+            DriveCommands.snapToTargetForAuto(
+                RobotContainer.getDrive(), () -> 0, () -> 0, Targets.SPEAKER);
+          }
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT
-              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker()) < .05)) {
+              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker())
+                  < SNAP_ERROR_TOLERANCE)) {
             conveyor.setShooting();
             // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
             // appropriate
@@ -312,6 +320,8 @@ public class Superstructure extends SubsystemBase {
         // arm.setposition(AMP);
         idleState = IDLE_STATES.AMP;
         if (climbed) {
+          // :) - aheulitt
+          led.setRainbow();
           arm.setPosition(ArmConstants.TRAP_SETPOINT);
         } else {
           arm.setPosition(ArmConstants.AMP_SETPOINT);
@@ -361,6 +371,10 @@ public class Superstructure extends SubsystemBase {
               DriverStation.getAlliance().get() == Alliance.Blue
                   ? Constants.FlingConstants.BLUE_FLING_POSE
                   : Constants.FlingConstants.RED_FLING_POSE;
+          Logger.recordOutput(
+              "Pose/FlingDistance",
+              RobotContainer.poseEstimator.distanceBetweenPoses(
+                  RobotContainer.poseEstimator.getLatestPose(), flingPose));
           double armDistanceSetPoint =
               armFlingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
@@ -420,12 +434,12 @@ public class Superstructure extends SubsystemBase {
   public void primeShooter() {
     if (DriverStation.isAutonomousEnabled()) {
       if (note_present()) {
-        shooter.shoot(flywheelSpeedInput);
+        shooter.shoot(flywheelSpeed.get());
       } else {
         intake();
       }
     } else {
-      shooter.shoot(flywheelSpeedInput);
+      shooter.shoot(flywheelSpeed.get());
     }
   }
 
@@ -438,12 +452,10 @@ public class Superstructure extends SubsystemBase {
   }
 
   public void shoot() {
-    flywheelSpeedInput = 2300;
     systemState = SuperstructureStates.SHOOT;
   }
 
-  public void shoot(int setpoint) {
-    flywheelSpeedInput = setpoint;
+  public void shoot(double setpoint) {
     systemState = SuperstructureStates.SHOOT;
   }
 
