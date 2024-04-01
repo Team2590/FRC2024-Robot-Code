@@ -11,13 +11,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
 public class AutoRoutines {
 
   private static final String SHOOT = "shoot";
   private static final String SNAP_SHOOT = "snap_shoot";
-  private static final String INTAKE = "intake";
 
   public static final LoggedDashboardChooser<Command> buildChooser(
       Drive drive, Superstructure superstructure) {
@@ -373,11 +370,11 @@ public class AutoRoutines {
    * @param pathName - String name of a path
    * @return true if it's a path that ends at the midline, otherwise false
    */
-  private static boolean isMidlineAuto(String pathName) {
+  static boolean isMidlineAuto(String pathName) {
     if (pathName.contains("return")) {
       return false;
     }
-    for (int i = pathName.length(); i > 1; i--) {
+    for (int i = pathName.length() - 1; i > 1; i--) {
       char ch = pathName.charAt(i);
       if (Character.isDigit(ch)) {
         int noteNumber = ch - '0';
