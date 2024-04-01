@@ -1,5 +1,6 @@
 package frc.robot.autos;
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -389,24 +390,23 @@ public class AutoRoutines {
   }
 
   /**
-   * Checks if a given path is a midline path (defined as ending at the midline)
-   * This works with our current naming convnetion (having the target note as the last number)
-   * 
+   * Checks if a given path is a midline path (defined as ending at the midline) This works with our
+   * current naming convnetion (having the target note as the last number)
+   *
    * @param pathName - String name of a path
    * @return true if it's a path that ends at the midline, otherwise false
    */
-  private static boolean isMidlineAuto(String pathName){
-    if (!pathName.contains("return")) {
-      for (int i = pathName.length(); i > 1; i--) {
-          try {
-              if (Integer.parseInt(pathName.substring(i - 1, i)) >= 4) {
-                  return true;
-              }
-          } catch (NumberFormatException e) {
-              continue;
-          }
+  private static boolean isMidlineAuto(String pathName) {
+    if (pathName.contains("return")) {
+      return false;
+    }
+    for (int i = pathName.length(); i > 1; i--) {
+      char ch = pathName.charAt(i);
+      if (Character.isDigit(ch)) {
+        int noteNumber = ch - '0';
+        return noteNumber >= 4;
       }
-  }
-  return false;
+    }
+    return false;
   }
 }
