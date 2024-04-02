@@ -83,6 +83,7 @@ public class Superstructure extends SubsystemBase {
   private final NemesisLED led;
   public boolean readyToShoot = false;
   private boolean climbed = false;
+  private boolean usingVision = true;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
@@ -276,21 +277,33 @@ public class Superstructure extends SubsystemBase {
                   RobotContainer.poseEstimator.distanceToTarget(
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-          arm.setPosition(armDistanceSetPoint);
+          arm.setPosition(armDistanceSetPoint + offset.get());
           shooter.shoot(flywheelSpeed.get());
           if (DriverStation.isAutonomousEnabled()) {
             DriveCommands.snapToTargetForAuto(
                 RobotContainer.getDrive(), () -> 0, () -> 0, Targets.SPEAKER);
           }
-          if (arm.getState() == ArmStates.AT_SETPOINT
-              && shooter.getState() == ShooterStates.AT_SETPOINT
-              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker())
-                  < SNAP_ERROR_TOLERANCE)) {
-            conveyor.setShooting();
-            // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
-            // appropriate
-            if (!conveyor.hasNote()) {
-              idleState = IDLE_STATES.DEFAULT;
+          if (usingVision) {
+            if (arm.getState() == ArmStates.AT_SETPOINT
+                && shooter.getState() == ShooterStates.AT_SETPOINT
+                && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker())
+                    < SNAP_ERROR_TOLERANCE)) {
+              conveyor.setShooting();
+              // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+              // appropriate
+              if (!conveyor.hasNote()) {
+                idleState = IDLE_STATES.DEFAULT;
+              }
+            }
+          } else {
+            if (arm.getState() == ArmStates.AT_SETPOINT
+                && shooter.getState() == ShooterStates.AT_SETPOINT) {
+              conveyor.setShooting();
+              // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
+              // appropriate
+              if (!conveyor.hasNote()) {
+                idleState = IDLE_STATES.DEFAULT;
+              }
             }
           }
 
@@ -467,6 +480,18 @@ public class Superstructure extends SubsystemBase {
     systemState = SuperstructureStates.SUBWOOFER_SHOT;
   }
 
+  public void toggleVision() {
+    usingVision = !usingVision;
+    System.out.println("usingVision: " + usingVision);
+  }
+
+  public void setUsingVision(boolean input) {
+    usingVision = input;
+  }
+
+  public boolean getUsingVision() {
+    return usingVision;
+  }
   /**
    * Returns true if we are in the process of shooting i.e either priming up to shooting or
    * shooting.

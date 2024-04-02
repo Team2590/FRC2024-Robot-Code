@@ -256,7 +256,6 @@ public class AutoRoutines {
             "n7_return_under",
             SNAP_SHOOT,
             "axis_n6",
-            SNAP_SHOOT,
             "n6_return_under",
             SNAP_SHOOT));
 

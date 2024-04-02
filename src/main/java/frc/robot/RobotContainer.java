@@ -197,23 +197,41 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
+    if (input.controllerRightBumper()) {
+      System.out.println("operator zero gyro");
+      drive.zeroGyro();
+    }
+
+    if (input.controllerPOV() == 90) {
+      superstructure.setUsingVision(true);
+      ;
+      System.out.println("set using vision to true");
+    } else if (input.controllerPOV() == 270) {
+      superstructure.setUsingVision(false);
+      System.out.println("set using vision to false");
+    }
+
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
-        CommandScheduler.getInstance()
-            .schedule(
-                DriveCommands.SnapToTarget(
-                        drive,
-                        () -> -input.leftJoystickY(),
-                        () -> -input.leftJoystickX(),
-                        Targets.SPEAKER)
-                    .until(() -> input.leftJoystickTrigger()));
+        if (superstructure.getUsingVision()) {
+          CommandScheduler.getInstance()
+              .schedule(
+                  DriveCommands.SnapToTarget(
+                          drive,
+                          () -> -input.leftJoystickY(),
+                          () -> -input.leftJoystickX(),
+                          Targets.SPEAKER)
+                      .until(() -> input.leftJoystickTrigger()));
+        }
         superstructure.shoot();
       } else {
         superstructure.scoreAmp();
       }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
-    } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
+    } else if (PhotonNoteRunnable.target != null
+        && superstructure.getUsingVision()
+        && input.rightJoystickButton(2)) {
       // I just put this button as a place holder
       CommandScheduler.getInstance()
           .schedule(
@@ -230,11 +248,11 @@ public class RobotContainer {
     } else if (input.rightJoystickButton(16)) {
       superstructure.climb();
     } else if (input.rightJoystickButton(5)) {
-      System.out.println("zeroing gyro");
+      System.out.println("driver zeroing gyro");
       drive.zeroGyro();
     } else if (input.leftJoystickPOV() == 180) {
       superstructure.subwooferShot();
-    } else if (input.rightJoystickPOV() == 180) {
+    } else if (input.rightJoystickPOV() == 180 && superstructure.getUsingVision()) {
       // spit
       CommandScheduler.getInstance()
           .schedule(
@@ -263,14 +281,16 @@ public class RobotContainer {
       superstructure.resetRobot();
       teleopSpeaker = false;
     } else if (input.leftJoystickPOV() == 0) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.FLING)
-                  .until(() -> input.leftJoystickPOV() == 0));
+      if (superstructure.getUsingVision()) {
+        CommandScheduler.getInstance()
+            .schedule(
+                DriveCommands.SnapToTarget(
+                        drive,
+                        () -> -input.leftJoystickY(),
+                        () -> -input.leftJoystickX(),
+                        Targets.FLING)
+                    .until(() -> input.leftJoystickPOV() == 0));
+      }
       superstructure.fling();
 
     } else {
