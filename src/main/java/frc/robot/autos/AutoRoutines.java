@@ -16,6 +16,7 @@ public class AutoRoutines {
 
   private static final String SHOOT = "shoot";
   private static final String SNAP_SHOOT = "snap_shoot";
+  private static final String FLING= "fling";
 
   public static final LoggedDashboardChooser<Command> buildChooser(
       Drive drive, Superstructure superstructure) {
@@ -334,7 +335,7 @@ public class AutoRoutines {
 
     
 
-    autoChooser.addDefaultOption("evilAuto(KnockEverythingFromMidlineOut)", ezAuto.apply("startD", "EvilPath"));
+    autoChooser.addDefaultOption("evilAuto(KnockEverythingFromMidlineOut)", ezAuto.apply("startD", "startD_n8"));
 
 
 
@@ -396,6 +397,8 @@ public class AutoRoutines {
           }
           firstShot = false;
           break;
+        case FLING:
+          builder.fling();
         default:
           // if this was to be the first path, AutoCommandBuilder will make it the StartPathCommand.
           builder.followPath(path);
