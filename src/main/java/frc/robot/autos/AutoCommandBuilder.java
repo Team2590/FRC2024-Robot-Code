@@ -1,7 +1,5 @@
 package frc.robot.autos;
 
-import java.util.Timer;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -50,12 +48,12 @@ public class AutoCommandBuilder {
     return this;
   }
 
-  public AutoCommandBuilder fling(){
-  
-    commands.addCommands(Commands.run(()->superstructure.fling(), superstructure.getShooter()).until(()->!superstructure.note_present()));
+  public AutoCommandBuilder fling() {
+
+    commands.addCommands(
+        Commands.run(() -> superstructure.fling(), superstructure.getShooter())
+            .until(() -> !superstructure.note_present()));
     return this;
-
-
   }
 
   public AutoCommandBuilder shoot() {
