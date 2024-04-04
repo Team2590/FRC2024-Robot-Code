@@ -89,7 +89,7 @@ public class AutoRoutines {
             SNAP_SHOOT));
 
     autoChooser.addOption(
-        "startA_midline_first",
+        "startA_shoot_first_n4_n5",
         ezAuto.apply(
             "startA",
             SNAP_SHOOT,
@@ -303,6 +303,21 @@ public class AutoRoutines {
             SNAP_SHOOT));
 
     autoChooser.addOption(
+        "5_startB_n1_n2_n3_n6",
+        ezAuto.apply(
+            "startB",
+            SNAP_SHOOT,
+            "startB_note1",
+            SNAP_SHOOT,
+            "note1_n2",
+            SNAP_SHOOT,
+            "note2_n3",
+            SNAP_SHOOT,
+            "note3_n6",
+            "n6_return_under",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
         "5_startA_n1_n2_n3_n6",
         ezAuto.apply(
             "startA",
@@ -316,6 +331,12 @@ public class AutoRoutines {
             "note3_n6",
             "n6_return_under",
             SNAP_SHOOT));
+
+    
+
+    autoChooser.addDefaultOption("evilAuto(KnockEverythingFromMidlineOut)", ezAuto.apply("startD", "EvilPath"));
+
+
 
     // autoChooser.addOption(
     //     "4_startA_n1",

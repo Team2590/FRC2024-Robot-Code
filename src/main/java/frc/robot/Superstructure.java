@@ -86,7 +86,7 @@ public class Superstructure extends SubsystemBase {
   private boolean usingVision = true;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
-  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .01);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .00);
   private final LoggedTunableNumber flywheelSpeed =
       new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
