@@ -396,10 +396,17 @@ public class Superstructure extends SubsystemBase {
               shooterflingInterpolation.getValue(
                   RobotContainer.poseEstimator.distanceBetweenPoses(
                       RobotContainer.poseEstimator.getLatestPose(), flingPose));
+          if (DriverStation.isAutonomousEnabled()) {
+            DriveCommands.snapToTargetForAuto(
+                RobotContainer.getDrive(), () -> 0, () -> 0, Targets.SPEAKER);
+          }
+
           arm.setPosition(armDistanceSetPoint);
           shooter.shoot(shooterSetPoint);
           if (arm.getState() == ArmStates.AT_SETPOINT
-              && shooter.getState() == ShooterStates.AT_SETPOINT) {
+              && shooter.getState() == ShooterStates.AT_SETPOINT
+              && (Math.abs(RobotContainer.poseEstimator.currentErrorToSpeaker())
+                  < SNAP_ERROR_TOLERANCE+.05)) {
             conveyor.setShooting();
           }
         }

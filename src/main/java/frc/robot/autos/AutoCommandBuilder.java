@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Superstructure;
+import frc.robot.commands.FlingCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.drive.Drive;
 
@@ -50,9 +51,7 @@ public class AutoCommandBuilder {
 
   public AutoCommandBuilder fling() {
 
-    commands.addCommands(
-        Commands.run(() -> superstructure.fling(), superstructure.getShooter())
-            .until(() -> !superstructure.note_present()));
+    commands.addCommands(new FlingCommand(superstructure, 1.0));
     return this;
   }
 
