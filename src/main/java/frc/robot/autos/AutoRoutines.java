@@ -93,10 +93,10 @@ public class AutoRoutines {
         ezAuto.apply(
             "startA",
             SNAP_SHOOT,
-            "startA_n4",
+            "startA_n4_out",
             "n4_return",
             SNAP_SHOOT,
-            "note1_n5",
+            "stage_n5",
             "n5_return",
             SNAP_SHOOT));
     autoChooser.addOption(
@@ -332,11 +332,8 @@ public class AutoRoutines {
             "n6_return_under",
             SNAP_SHOOT));
 
-    
-
-    autoChooser.addDefaultOption("evilAuto(KnockEverythingFromMidlineOut)", ezAuto.apply("startD", "EvilPath"));
-
-
+    autoChooser.addDefaultOption(
+        "evilAuto(KnockEverythingFromMidlineOut)", ezAuto.apply("startD", "EvilPath"));
 
     // autoChooser.addOption(
     //     "4_startA_n1",
