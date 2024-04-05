@@ -175,7 +175,7 @@ public final class Constants {
     public static final double RED_ALLIANCE_X = 14.7;
     public static final double BLUE_ALLIANCE_Y = RED_ALLIANCE_Y;
     public static final Pose2d RED_FLING_POSE =
-        new Pose2d(RED_ALLIANCE_X, RED_ALLIANCE_Y, new Rotation2d(180));
+        new Pose2d(RED_ALLIANCE_X, RED_ALLIANCE_Y, new Rotation2d(Math.PI));
     public static final Pose2d BLUE_FLING_POSE =
         new Pose2d(BLUE_ALLIANCE_X, BLUE_ALLIANCE_Y, new Rotation2d(0));
 
