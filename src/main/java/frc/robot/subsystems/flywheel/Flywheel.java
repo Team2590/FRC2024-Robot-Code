@@ -34,7 +34,8 @@ public class Flywheel extends SubsystemBase {
     STOP,
     MANUAL,
     APPROACHING_SETPOINT,
-    AT_SETPOINT
+    AT_SETPOINT,
+    SOURCE_INTAKE
   }
 
   /** Creates a new Flywheel. */
@@ -88,6 +89,8 @@ public class Flywheel extends SubsystemBase {
           state = ShooterStates.APPROACHING_SETPOINT;
         }
         break;
+      case SOURCE_INTAKE:
+        io.sourceIntake();
     }
   }
 
@@ -125,6 +128,14 @@ public class Flywheel extends SubsystemBase {
     io.stop();
     state = ShooterStates.STOP;
     currentSetpoint = 0;
+  }
+
+  public void setSourceIntake() {
+    // currentSetpoint = -1200;
+    // if (inputs.velocityRadPerSec == 0) {
+    //   state = ShooterStates.APPROACHING_SETPOINT;
+    // }
+    state = ShooterStates.SOURCE_INTAKE;
   }
 
   /** Returns the current velocity in RPM. */

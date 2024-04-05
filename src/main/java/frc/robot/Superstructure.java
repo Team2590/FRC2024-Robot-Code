@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.LEDConstants.Colors;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -62,7 +63,8 @@ public class Superstructure extends SubsystemBase {
     FLIPPING,
     SCORE_TRAP,
     ARM_CLIMB,
-    FLING
+    FLING,
+    SOURCE_INTAKE
   }
 
   private static enum IDLE_STATES {
@@ -86,7 +88,7 @@ public class Superstructure extends SubsystemBase {
   private boolean usingVision = true;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
-  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", .00);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", -.005);
   private final LoggedTunableNumber flywheelSpeed =
       new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
@@ -158,7 +160,7 @@ public class Superstructure extends SubsystemBase {
          */
         climb.setStopped();
         if (conveyor.hasNote()) {
-          led.off();
+          led.setColor(Colors.Red);
           if (arm.getState() == ArmStates.AT_SETPOINT
               && shooter.getState() == ShooterStates.AT_SETPOINT) {
           } else {
@@ -170,7 +172,11 @@ public class Superstructure extends SubsystemBase {
           if (!climbed) {
             arm.setHome();
           }
-          led.off();
+          if (climbed) {
+            led.setCandyCaneFlow();
+          } else {
+            led.off();
+          }
         }
         break;
       case IDLE_INTAKING:
@@ -179,12 +185,13 @@ public class Superstructure extends SubsystemBase {
         }
         if (conveyor.hasNote()) {
           idleState = IDLE_STATES.DEFAULT;
-          led.off();
+          led.setColor(Colors.Red);
           // intake.setStopped();
         }
         climb.setStopped();
         break;
       case IDLE_CLIMB:
+        led.setCandyCaneFlow();
         arm.setClimb();
         climb.setStopped();
         break;
@@ -223,8 +230,23 @@ public class Superstructure extends SubsystemBase {
         }
         if (conveyor.hasNote()) {
           intake.setStopped();
+          led.setColor(Colors.Red);
           systemState = SuperstructureStates.HAS_NOTE;
         }
+        break;
+      case SOURCE_INTAKE:
+        // alt way of doing source code
+        arm.setPosition(ArmConstants.SOURCE_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT) {
+          conveyor.setIntaking();
+        }
+        if (conveyor.hasNote()) {
+          systemState = SuperstructureStates.HAS_NOTE;
+        }
+        // shooter.setSourceIntake();
+        // conveyor.setDiverting();
+
+        idleState = IDLE_STATES.INTAKE;
         break;
       case OUTTAKE:
         /*
@@ -334,7 +356,7 @@ public class Superstructure extends SubsystemBase {
         idleState = IDLE_STATES.AMP;
         if (climbed) {
           // :) - aheulitt
-          led.setRainbow();
+          led.setFlow();
           arm.setPosition(ArmConstants.TRAP_SETPOINT);
         } else {
           arm.setPosition(ArmConstants.AMP_SETPOINT);
@@ -554,6 +576,18 @@ public class Superstructure extends SubsystemBase {
   public void runConveyor() {
     conveyor.setManual(.25);
     ;
+  }
+
+  public void directSourceIntake(boolean input) {
+    if (input) {
+      shooter.setSourceIntake();
+    } else {
+      shooter.setStopped();
+    }
+  }
+
+  public void sourceIntake() {
+    systemState = SuperstructureStates.SOURCE_INTAKE;
   }
 
   public void stopConveyor() {

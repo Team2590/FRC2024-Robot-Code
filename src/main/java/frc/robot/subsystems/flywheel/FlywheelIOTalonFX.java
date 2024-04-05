@@ -25,12 +25,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final TalonFX leader = new TalonFX(Constants.ShooterConstants.LEADER);
   private final TalonFX follower = new TalonFX(Constants.ShooterConstants.FOLLOWER);
+  private LoggedTunableNumber sourceIntake = new LoggedTunableNumber("Intake/SourceIntake", -.4);
 
   private final StatusSignal<Double> leaderPosition = leader.getPosition();
   private final StatusSignal<Double> leaderVelocity = leader.getVelocity();
@@ -86,6 +88,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   @Override
   public void stop() {
     leader.stopMotor();
+  }
+
+  public void sourceIntake() {
+    leader.set(sourceIntake.get());
   }
 
   @Override

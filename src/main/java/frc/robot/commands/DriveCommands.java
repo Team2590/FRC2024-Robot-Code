@@ -231,6 +231,7 @@ public class DriveCommands {
         break;
     }
     // find angle
+    // Logger.recordOutput("Odometry/TargetPoseCommand", targetPose);
     Transform2d difference = RobotContainer.poseEstimator.getLatestPose().minus(targetPose);
     // double angleOffset = DriverStation.getAlliance().get() == Alliance.Red ? Math.PI : 0;
     double theta = Math.atan2(difference.getY(), difference.getX());

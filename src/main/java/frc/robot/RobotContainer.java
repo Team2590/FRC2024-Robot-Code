@@ -273,14 +273,19 @@ public class RobotContainer {
       superstructure.flip();
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
+
+    } else if (input.controllerLeftBumper()) {
+      // superstructure.directSourceIntake(input.controllerLeftBumper());
+      superstructure.sourceIntake();
     }
+
     // else if (input.leftJoystickButton(4)) {
     //   superstructure.climb();
     // }
     else if (input.controllerButton(7)) {
       superstructure.resetRobot();
       teleopSpeaker = false;
-    } else if (input.leftJoystickPOV() == 0) {
+    } else if (input.leftJoystickButton(2)) {
       if (superstructure.getUsingVision()) {
         CommandScheduler.getInstance()
             .schedule(
@@ -289,7 +294,7 @@ public class RobotContainer {
                         () -> -input.leftJoystickY(),
                         () -> -input.leftJoystickX(),
                         Targets.FLING)
-                    .until(() -> input.leftJoystickPOV() == 0));
+                    .until(() -> input.leftJoystickButton(2)));
       }
       superstructure.fling();
 

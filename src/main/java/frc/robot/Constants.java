@@ -43,6 +43,8 @@ public final class Constants {
 
   public static LoggedTunableNumber trapTuning =
       new LoggedTunableNumber("Arm/TRAP Setpoint", -0.32);
+  public static LoggedTunableNumber sourceIntake =
+      new LoggedTunableNumber("Arm/SOUCE Setpoint", -.27);
 
   public final class FieldConstants {
     // Error Tolerance for Snapping.
@@ -97,6 +99,7 @@ public final class Constants {
     public static final double HOME_SETPOINT = homeSetpoint.get();
     public static final double CLIMB_SETPOINT = .198;
     public static final double INTAKE_SETPOINT = homeSetpoint.get();
+    public static double SOURCE_SETPOINT = sourceIntake.get();
     public static double AMP_SETPOINT = -0.27;
     public static double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;

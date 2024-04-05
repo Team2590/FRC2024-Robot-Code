@@ -89,7 +89,19 @@ public class AutoRoutines {
             SNAP_SHOOT));
 
     autoChooser.addOption(
-        "startA_shoot_first_n4_n5",
+        "3_startA_shoot_first_n4_n5_n5",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "startA_n4_out",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT,
+            "stage_n5"));
+    autoChooser.addOption(
+        "3_startA_shoot_first_n4_n5",
         ezAuto.apply(
             "startA",
             SNAP_SHOOT,
@@ -100,18 +112,57 @@ public class AutoRoutines {
             "n5_return",
             SNAP_SHOOT));
     autoChooser.addOption(
-        "startC_midline_first_n7return_out",
+        "3_SPLIT_startA_shoot_first_n4_n5",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "startA_out",
+            "out_n4",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT));
+
+    autoChooser.addOption(
+        "3_SPLIT_startA_THROUGH_n4_n5",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "startA_through",
+            "through_n4",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT));
+    autoChooser.addOption(
+        "4_startA_shoot_first_n4_n5_n6",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "startA_n4_out",
+            "n4_return",
+            SNAP_SHOOT,
+            "stage_n5",
+            "n5_return",
+            SNAP_SHOOT,
+            "stage_n6",
+            "n6_return_under",
+            SNAP_SHOOT));
+    autoChooser.addOption(
+        "3_startC_shoot_first_n8_n7_SHORT",
         ezAuto.apply(
             "startC",
             SNAP_SHOOT,
             "startC_n8",
-            "n8_return",
+            "n8_return_short",
             SNAP_SHOOT,
-            "note3_n7_out",
-            "n7_return_out",
+            "short_n7",
+            "n7_return_short",
             SNAP_SHOOT));
     autoChooser.addOption(
-        "startC_midline_first_n7return_under",
+        "3_startC_shoot_first_n8_n7_LONG",
         ezAuto.apply(
             "startC",
             SNAP_SHOOT,
