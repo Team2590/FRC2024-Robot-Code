@@ -266,6 +266,20 @@ public class AutoRoutines {
             "n6_return_under",
             SNAP_SHOOT));
     autoChooser.addOption(
+        "4_startC_shoot_first_n8_n7_n6_SHORT",
+        ezAuto.apply(
+            "startC",
+            SNAP_SHOOT,
+            "startC_n8",
+            "n8_return_short",
+            SNAP_SHOOT,
+            "short_n7",
+            "n7_return_under",
+            SNAP_SHOOT,
+            "axis_n6",
+            "n6_return_under",
+            SNAP_SHOOT));
+    autoChooser.addOption(
         "5_startC_n3_n2_n1_n4",
         ezAuto.apply(
             "startC",
