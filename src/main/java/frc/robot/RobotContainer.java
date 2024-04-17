@@ -60,6 +60,7 @@ public class RobotContainer {
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
   private boolean teleopSpeaker;
+  private boolean shootAmp;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -145,6 +146,7 @@ public class RobotContainer {
             () -> -input.rightJoystickX()));
 
     teleopSpeaker = true;
+    shootAmp = false;
   }
 
   public void stop() {
@@ -202,6 +204,13 @@ public class RobotContainer {
       drive.zeroGyro();
     }
 
+    if (input.controllerLeftBumper()){
+      shootAmp = true;
+    }
+    else{
+      shootAmp = false;
+    }
+
     if (input.controllerPOV() == 90) {
       superstructure.setUsingVision(true);
       ;
@@ -213,7 +222,11 @@ public class RobotContainer {
 
     if (input.leftJoystickTrigger()) {
       if (teleopSpeaker) {
-        if (superstructure.getUsingVision()) {
+        if (shootAmp){
+          superstructure.shootAmp();
+        }
+        else{
+          if (superstructure.getUsingVision()) {
           CommandScheduler.getInstance()
               .schedule(
                   DriveCommands.SnapToTarget(
@@ -224,6 +237,7 @@ public class RobotContainer {
                       .until(() -> input.leftJoystickTrigger()));
         }
         superstructure.shoot();
+        }
       } else {
         superstructure.scoreAmp();
       }
@@ -274,10 +288,11 @@ public class RobotContainer {
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
 
-    } else if (input.controllerLeftBumper()) {
-      // superstructure.directSourceIntake(input.controllerLeftBumper());
-      superstructure.sourceIntake();
-    }
+    } 
+    // else if (input.controllerLeftBumper()) {
+    //   // superstructure.directSourceIntake(input.controllerLeftBumper());
+    //   superstructure.sourceIntake();
+    // }
 
     // else if (input.leftJoystickButton(4)) {
     //   superstructure.climb();

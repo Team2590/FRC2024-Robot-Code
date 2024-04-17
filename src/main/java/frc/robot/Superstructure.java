@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.LEDConstants.Colors;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climb.Climb;
@@ -64,7 +65,8 @@ public class Superstructure extends SubsystemBase {
     SCORE_TRAP,
     ARM_CLIMB,
     FLING,
-    SOURCE_INTAKE
+    SOURCE_INTAKE,
+    SHOOT_AMP
   }
 
   private static enum IDLE_STATES {
@@ -381,6 +383,16 @@ public class Superstructure extends SubsystemBase {
           }
         }
         break;
+      case SHOOT_AMP:
+        arm.setPosition(ArmConstants.SHOOT_AMP);
+        shooter.shoot(ShooterConstants.SHOOT_AMP_SETPOINT);
+        if (arm.getState() == ArmStates.AT_SETPOINT && shooter.getState() == ShooterStates.AT_SETPOINT){
+          conveyor.setShooting();
+          if (!conveyor.hasNote()) {
+              idleState = IDLE_STATES.DEFAULT;
+          }
+        }
+        break;
       case SCORE_TRAP:
         arm.setPosition(ArmConstants.TRAP_SETPOINT);
         if (arm.getState() == ArmStates.AT_SETPOINT) {
@@ -490,6 +502,10 @@ public class Superstructure extends SubsystemBase {
 
   public void primeAmp() {
     systemState = SuperstructureStates.PRIMING_AMP;
+  }
+  
+  public void shootAmp(){
+    systemState = SuperstructureStates.SHOOT_AMP;
   }
 
   public void hasNote() {

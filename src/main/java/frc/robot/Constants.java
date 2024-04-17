@@ -101,6 +101,7 @@ public final class Constants {
     public static final double INTAKE_SETPOINT = homeSetpoint.get();
     public static double SOURCE_SETPOINT = sourceIntake.get();
     public static double AMP_SETPOINT = -0.27;
+    public static double SHOOT_AMP = .178;
     public static double TRAP_SETPOINT = -0.32;
     public static final int ARM = 45;
     public static final int ARM_CANCODER_ID = 44;
@@ -114,6 +115,7 @@ public final class Constants {
     public static final int LEADER = 55;
     public static final int FOLLOWER = 56;
     public static final double SETPOINT = 3000.0;
+    public static final double SHOOT_AMP_SETPOINT = 350.0;
   }
 
   public final class ConveyorConstants {
