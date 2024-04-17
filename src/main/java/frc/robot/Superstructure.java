@@ -89,6 +89,8 @@ public class Superstructure extends SubsystemBase {
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
   private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", -.005);
+  private final LoggedTunableNumber ampFlywheel =
+      new LoggedTunableNumber("Flywheel/AmpFlywheel", 1500);
   private final LoggedTunableNumber flywheelSpeed =
       new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
@@ -167,6 +169,7 @@ public class Superstructure extends SubsystemBase {
             intake.setStopped();
           }
         } else {
+          led.off();
           conveyor.setStopped();
           shooter.setStopped();
           if (!climbed) {
@@ -189,11 +192,13 @@ public class Superstructure extends SubsystemBase {
           // intake.setStopped();
         }
         climb.setStopped();
+        led.off();
         break;
       case IDLE_CLIMB:
         led.setCandyCaneFlow();
         arm.setClimb();
         climb.setStopped();
+        shooter.setStopped();
         break;
       case IDLE_AMP:
         // Since the conveyor is moving towards one Prox sensor, using hasNote() should be
@@ -225,6 +230,7 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.INTAKE;
           intake.setIntake();
           conveyor.setIntaking();
+          led.off();
         } else {
           arm.setHome();
         }
@@ -468,13 +474,17 @@ public class Superstructure extends SubsystemBase {
 
   public void primeShooter() {
     if (DriverStation.isAutonomousEnabled()) {
+
       if (note_present()) {
         shooter.shoot(flywheelSpeed.get());
       } else {
         intake();
       }
+
     } else {
-      shooter.shoot(flywheelSpeed.get());
+      if (!climbed) {
+        shooter.shoot(flywheelSpeed.get());
+      }
     }
   }
 

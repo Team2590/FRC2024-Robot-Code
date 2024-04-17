@@ -160,7 +160,20 @@ public class AutoRoutines {
             SNAP_SHOOT,
             "short_n7",
             "n7_return_short",
-            SNAP_SHOOT));
+            SNAP_SHOOT,
+            "go_source"));
+    autoChooser.addOption(
+        "3_startC_shoot_first_n7_n8_short",
+        ezAuto.apply(
+            "startC",
+            SNAP_SHOOT,
+            "startC_n8",
+            "n8_return_short",
+            SNAP_SHOOT,
+            "short_n7",
+            "n7_return_short",
+            SNAP_SHOOT,
+            "go_source"));
     autoChooser.addOption(
         "3_startC_shoot_first_n8_n7_LONG",
         ezAuto.apply(
