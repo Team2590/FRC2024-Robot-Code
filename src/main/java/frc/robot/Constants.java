@@ -97,7 +97,7 @@ public final class Constants {
   public final class ArmConstants {
     // Fill in
     public static final double HOME_SETPOINT = homeSetpoint.get();
-    public static final double CLIMB_SETPOINT = .198;
+    public static final double CLIMB_SETPOINT = .193;
     public static final double INTAKE_SETPOINT = homeSetpoint.get();
     public static double SOURCE_SETPOINT = sourceIntake.get();
     public static double AMP_SETPOINT = -0.27;

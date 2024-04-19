@@ -137,11 +137,12 @@ public class AutoRoutines {
             "n5_return",
             SNAP_SHOOT));
     autoChooser.addOption(
-        "4_startA_shoot_first_n4_n5_n6",
+        "4_SPLIT_startA_shoot_first_n4_n5_n6",
         ezAuto.apply(
             "startA",
             SNAP_SHOOT,
-            "startA_n4_out",
+            "startA_out",
+            "out_n4",
             "n4_return",
             SNAP_SHOOT,
             "stage_n5",
@@ -167,11 +168,11 @@ public class AutoRoutines {
         ezAuto.apply(
             "startC",
             SNAP_SHOOT,
-            "startC_n8",
-            "n8_return_short",
-            SNAP_SHOOT,
-            "short_n7",
+            "startC_n7",
             "n7_return_short",
+            SNAP_SHOOT,
+            "short_n8",
+            "n8_return_short",
             SNAP_SHOOT,
             "go_source"));
     autoChooser.addOption(

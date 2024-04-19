@@ -64,7 +64,8 @@ public class Superstructure extends SubsystemBase {
     SCORE_TRAP,
     ARM_CLIMB,
     FLING,
-    SOURCE_INTAKE
+    SOURCE_INTAKE,
+    SHOOT_AMP
   }
 
   private static enum IDLE_STATES {
@@ -88,7 +89,8 @@ public class Superstructure extends SubsystemBase {
   private boolean usingVision = true;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
-  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", 0); // -.005
+  private final LoggedTunableNumber offset =
+      new LoggedTunableNumber("Arm/Arm offset", 0); // offset A: -.01, offset B: -.005
   private final LoggedTunableNumber ampFlywheel =
       new LoggedTunableNumber("Flywheel/AmpFlywheel", 1500);
   private final LoggedTunableNumber flywheelSpeed =
@@ -113,11 +115,19 @@ public class Superstructure extends SubsystemBase {
     // final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
 
     final double[] distance = {
-      0, 1.3, 1.84, 2.25, 2.52, 2.87, 3.06, 3.5, 3.89, 4.19, 4.3, 4.5, 4.8, 4.98
+      0, 1.38, 1.82, 2.2, 2.4, 2.77, 3.05, 3.4, 3.67, 3.81, 4.02, 4.24, 4.41, 4.65
     };
     final double[] armSetpoint = {
-      .168, .168, .145, .12, .115, .1, .093, .082, .077, .073, .071, .071, .069, .069
+      .168, .168, .137, .11, .1, .09, .087, .078, .074, .072, .067, .068, .068, .063
     };
+
+    // day 2 tuning #1 houston
+    // final double[] distance = {
+    //   0, 1.3, 1.84, 2.25, 2.52, 2.87, 3.06, 3.5, 3.89, 4.19, 4.3, 4.5, 4.8, 4.98
+    // };
+    // final double[] armSetpoint = {
+    //   .168, .168, .145, .12, .115, .1, .093, .082, .077, .073, .071, .071, .069, .069
+    // };
 
     // day 1 houston:
     // final double[] distance = {
@@ -388,7 +398,15 @@ public class Superstructure extends SubsystemBase {
           idleState = IDLE_STATES.DEFAULT;
         }
         break;
-
+      case SHOOT_AMP:
+        arm.setPosition(.178);
+        shooter.shoot(350);
+        if (arm.getState() == ArmStates.AT_SETPOINT
+            && shooter.getState() == ShooterStates.AT_SETPOINT) {
+          conveyor.setShooting();
+          idleState = IDLE_STATES.DEFAULT;
+        }
+        break;
       case PRIMING_AMP:
         /*
          * PRIMING_AMP
@@ -546,6 +564,10 @@ public class Superstructure extends SubsystemBase {
 
   public void subwooferShot() {
     systemState = SuperstructureStates.SUBWOOFER_SHOT;
+  }
+
+  public void shootAmp() {
+    systemState = SuperstructureStates.SHOOT_AMP;
   }
 
   public void toggleVision() {

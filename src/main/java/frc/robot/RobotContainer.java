@@ -60,6 +60,7 @@ public class RobotContainer {
   private final PhotonNoteRunnable noteDetection = new PhotonNoteRunnable();
   private final Notifier noteNotifier = new Notifier(noteDetection);
   private boolean teleopSpeaker;
+  private boolean shootAmp;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -145,6 +146,7 @@ public class RobotContainer {
             () -> -input.rightJoystickX()));
 
     teleopSpeaker = true;
+    shootAmp = false;
   }
 
   public void stop() {
@@ -197,6 +199,13 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
+    if (input.controllerLeftBumper()) {
+      shootAmp = true;
+    } else {
+      shootAmp = false;
+    }
+    // System.out.println("shootAmp: " + shootAmp);
+
     // if (input.controllerRightBumper()) {
     //   System.out.println("operator zero gyro");
     //   drive.zeroGyro();
@@ -212,20 +221,25 @@ public class RobotContainer {
     }
 
     if (input.leftJoystickTrigger()) {
-      if (teleopSpeaker) {
-        if (superstructure.getUsingVision()) {
-          CommandScheduler.getInstance()
-              .schedule(
-                  DriveCommands.SnapToTarget(
-                          drive,
-                          () -> -input.leftJoystickY(),
-                          () -> -input.leftJoystickX(),
-                          Targets.SPEAKER)
-                      .until(() -> input.leftJoystickTrigger()));
-        }
-        superstructure.shoot();
+      if (shootAmp) {
+        System.out.println("doing shoot amp hopefully");
+        superstructure.shootAmp();
       } else {
-        superstructure.scoreAmp();
+        if (teleopSpeaker) {
+          if (superstructure.getUsingVision()) {
+            CommandScheduler.getInstance()
+                .schedule(
+                    DriveCommands.SnapToTarget(
+                            drive,
+                            () -> -input.leftJoystickY(),
+                            () -> -input.leftJoystickX(),
+                            Targets.SPEAKER)
+                        .until(() -> input.leftJoystickTrigger()));
+          }
+          superstructure.shoot();
+        } else {
+          superstructure.scoreAmp();
+        }
       }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
@@ -274,10 +288,11 @@ public class RobotContainer {
     } else if (input.leftJoystickButton(4)) {
       superstructure.climb();
 
-    } else if (input.controllerLeftBumper()) {
-      // superstructure.directSourceIntake(input.controllerLeftBumper());
-      superstructure.sourceIntake();
     }
+    // else if (input.controllerLeftBumper()) {
+    //   // superstructure.directSourceIntake(input.controllerLeftBumper());
+    //   // superstructure.sourceIntake();
+    // }
 
     // else if (input.leftJoystickButton(4)) {
     //   superstructure.climb();
