@@ -114,6 +114,7 @@ public final class Constants {
     public static final int LEADER = 55;
     public static final int FOLLOWER = 56;
     public static final double SETPOINT = 3000.0;
+    public static final double SUBWOOFER_SETPOINT = 2300.0;
   }
 
   public final class ConveyorConstants {
@@ -174,7 +175,7 @@ public final class Constants {
 
   public final class FlingConstants {
     public static final double BLUE_ALLIANCE_X = 1.84;
-    public static final double RED_ALLIANCE_Y = 7.15;
+    public static final double RED_ALLIANCE_Y = 6.27;
     public static final double RED_ALLIANCE_X = 15.5;
     public static final double BLUE_ALLIANCE_Y = RED_ALLIANCE_Y;
     public static final Pose2d RED_FLING_POSE =
@@ -184,7 +185,7 @@ public final class Constants {
 
     public static final double[] FLING_DISTANCE = {7.3, 7.726, 8.964, 9.783, 10.2, 10.7};
     public static final double[] FLING_ARM_SETPOINT = {.14, .12, .12, .12, .11, .11};
-    public static final double[] FLING_SHOOTER_SETPOINT = {1500, 1500, 1750, 1750, 2000, 2000};
+    public static final double[] FLING_SHOOTER_SETPOINT = {1450, 1450, 1650, 1650, 1900, 1900};
   }
 
   public static enum Mode {

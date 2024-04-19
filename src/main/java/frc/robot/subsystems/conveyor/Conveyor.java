@@ -1,6 +1,7 @@
 package frc.robot.subsystems.conveyor;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -16,7 +17,9 @@ public class Conveyor extends SubsystemBase {
   // TODO: update constants once we get the robot
   // tunable constants
 
-  private double conveyorSpeed = .45;
+  private LoggedTunableNumber conveyorSpeed =
+      new LoggedTunableNumber("Conveyor/ConveyorSpeed", .38);
+  private double conveyorSpeedb = .4; // .45
   private double diverterSpeed = .5;
 
   // conveyor states
@@ -52,17 +55,17 @@ public class Conveyor extends SubsystemBase {
         if (inputs.hasNote) {
           io.stop();
         } else {
-          io.runPower(conveyorSpeed);
+          io.runPower(conveyorSpeed.get());
         }
         break;
       case OUTTAKE:
-        io.runPower(-conveyorSpeed);
+        io.runPower(-conveyorSpeed.get());
         break;
       case DIVERT:
-        io.runPower(-conveyorSpeed - .3, diverterSpeed);
+        io.runPower(-conveyorSpeed.get() - .3, diverterSpeed);
         break;
       case SHOOT:
-        io.runPower(conveyorSpeed);
+        io.runPower(conveyorSpeed.get());
         break;
       case MANUAL:
         io.runPower(manualPower);

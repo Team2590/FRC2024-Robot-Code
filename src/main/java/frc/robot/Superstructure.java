@@ -88,7 +88,7 @@ public class Superstructure extends SubsystemBase {
   private boolean usingVision = true;
   private DutyCycleOut pwr = new DutyCycleOut(0);
   private final LoggedTunableNumber armAngle = new LoggedTunableNumber("Arm/Arm Angle", .168);
-  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", -.005);
+  private final LoggedTunableNumber offset = new LoggedTunableNumber("Arm/Arm offset", 0); // -.005
   private final LoggedTunableNumber ampFlywheel =
       new LoggedTunableNumber("Flywheel/AmpFlywheel", 1500);
   private final LoggedTunableNumber flywheelSpeed =
@@ -111,13 +111,47 @@ public class Superstructure extends SubsystemBase {
 
     // final double[] distance = {0, 1.599, 1.98, 2.67, 2.9, 3.48, 3.98, 4.6, 5.1, 5.698};
     // final double[] armSetpoint = {.168, .168, .135, .11, .09, 0.077, .069, 0.0625, 0.059, .055};
+
     final double[] distance = {
-      1.29, 1.75, 2.05, 2.31, 2.65, 2.96, 3.25, 3.43, 3.7, 3.95, 4.26, 4.54, 4.73, 5.09, 5.4
+      0, 1.3, 1.84, 2.25, 2.52, 2.87, 3.06, 3.5, 3.89, 4.19, 4.3, 4.5, 4.8, 4.98
     };
     final double[] armSetpoint = {
-      .168, .14, .126, .11, .1, .095, .085, .082, .075, .071, .067, .064, .061, .058, .061
+      .168, .168, .145, .12, .115, .1, .093, .082, .077, .073, .071, .071, .069, .069
     };
 
+    // day 1 houston:
+    // final double[] distance = {
+    //   1.29, 1.75, 2.05, 2.44, 2.65, 2.96, 3.25, 3.43, 3.7, 3.95, 4.07, 4.188, 4.26, 4.35, 4.42,
+    //   4.54, 4.68, 4.73, 5.09, 5.4
+    // };
+    // final double[] armSetpoint = {
+    //   .168, // 1.29
+    //   .14, // 1.75
+    //   .126, // 2.05
+    //   .12, // 2.44
+    //   .1, // 2.65
+    //   .095, // 2.96
+    //   .085, // 3.25
+    //   .082, // 3.43
+    //   .077, // 3.7
+    //   .075, // 3.95
+    //   .068 + .005, // 4.07
+    //   .068, // 4.188
+    //   .068, // 4.26
+    //   .067 + .004, // 4.35
+    //   .065, // 4.42
+    //   .064 + .004, // 4.54
+    //   .065 + .004, // 4.68
+    //   .061, /// 4.73
+    //   .058, // 5.09
+    //   .061 // 5.4
+    // };
+
+    /**
+     * ORIGINAL SHOOTER TABLES: final double[] distance = { 1.29, 1.75, 2.05, 2.31, 2.65, 2.96,
+     * 3.25, 3.43, 3.7, 3.95, 4.26, 4.54, 4.73, 5.09, 5.4 }; final double[] armSetpoint = { .168,
+     * .14, .126, .11, .1, .095, .085, .082, .075, .071, .067, .064, .061, .058, .061 };
+     */
     armInterpolation = new LookupTable(distance, armSetpoint);
     armFlingInterpolation =
         new LookupTable(
@@ -305,7 +339,9 @@ public class Superstructure extends SubsystemBase {
                   RobotContainer.poseEstimator.distanceToTarget(
                       Constants.FieldConstants.Targets.SPEAKER));
           Logger.recordOutput("Arm/DistanceSetpoint", armDistanceSetPoint);
-          arm.setPosition(armDistanceSetPoint + offset.get());
+          arm.setPosition(
+              armDistanceSetPoint + offset.get()); // (armDistanceSetPoint + offset.get()
+          // arm.setPosition(armAngle.get());
           shooter.shoot(flywheelSpeed.get());
           if (DriverStation.isAutonomousEnabled()) {
             DriveCommands.snapToTargetForAuto(

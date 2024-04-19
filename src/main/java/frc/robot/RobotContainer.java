@@ -197,10 +197,10 @@ public class RobotContainer {
       superstructure.stopConveyor();
     }
 
-    if (input.controllerRightBumper()) {
-      System.out.println("operator zero gyro");
-      drive.zeroGyro();
-    }
+    // if (input.controllerRightBumper()) {
+    //   System.out.println("operator zero gyro");
+    //   drive.zeroGyro();
+    // }
 
     if (input.controllerPOV() == 90) {
       superstructure.setUsingVision(true);
