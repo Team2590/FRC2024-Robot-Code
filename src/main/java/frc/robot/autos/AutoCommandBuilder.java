@@ -50,13 +50,13 @@ public class AutoCommandBuilder {
 
   public AutoCommandBuilder shoot() {
     commands.addCommands(
-        new ShootCommand(superstructure, 1.0)); // tune the 1 second to something smaller
+        new ShootCommand(superstructure, 1.8)); // tune the 1 second to something smaller
     return this;
   }
 
   public AutoCommandBuilder shoot(double setpoint) {
     commands.addCommands(
-        new ShootCommand(superstructure, 1.0, setpoint)); // second param is the intake speed taken
+        new ShootCommand(superstructure, 1.8, setpoint)); // second param is the intake speed taken
     return this;
   }
 

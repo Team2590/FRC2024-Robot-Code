@@ -175,7 +175,7 @@ public final class Constants {
 
   public final class FlingConstants {
     public static final double BLUE_ALLIANCE_X = 1.84;
-    public static final double RED_ALLIANCE_Y = 6.27;
+    public static final double RED_ALLIANCE_Y = 6.40;
     public static final double RED_ALLIANCE_X = 15.5;
     public static final double BLUE_ALLIANCE_Y = RED_ALLIANCE_Y;
     public static final Pose2d RED_FLING_POSE =
