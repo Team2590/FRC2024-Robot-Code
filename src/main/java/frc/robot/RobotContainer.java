@@ -1,9 +1,14 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FieldConstants.Targets;
 import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
@@ -32,6 +37,7 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
 import frc.robot.subsystems.user_input.UserInput;
 import frc.robot.subsystems.vision.PhotonNoteRunnable;
+import frc.robot.util.GeomUtil;
 import frc.robot.util.PoseEstimator;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -158,6 +164,34 @@ public class RobotContainer {
     input.update();
   }
 
+  // could outsource this to PoseEstimator..?
+  public boolean inZone(FieldConstants.Targets target){
+    Pose2d TL;
+    Pose2d BR;
+    switch(target){
+      case AMP:
+        TL = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.AMP_TL);
+        BR = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.AMP_BR);
+        break;
+      default:
+        TL = new Pose2d(0,0,new Rotation2d(0));
+        BR = new Pose2d(0,0,new Rotation2d(0));
+    }
+    //getting the latest pose once might cause problems if the robot is moving quickly, but it makes the function more efficient
+    Pose2d currPose = poseEstimator.getLatestPose();
+    //checking if Y-position is within zone
+    if (!(currPose.getY() > BR.getY() && currPose.getY() < TL.getY() )){
+      return false;
+    }
+    if (DriverStation.getAlliance().get() == Alliance.Blue){
+      //checking if X-position is within zone
+      return BR.getX() > currPose.getX()  && TL.getX() < currPose.getX();
+    }
+    else{
+      return BR.getX() < currPose.getX()  && TL.getX() > currPose.getX();
+    }
+  }
+
   public void updateUserInput() {
     Logger.recordOutput("Odometry/Gyro", drive.getGyroYaw().getDegrees());
     Logger.recordOutput("Drive/currentSpeed", drive.getCurrentChassisSpeeds().toString());
@@ -198,7 +232,10 @@ public class RobotContainer {
     }
 
     if (input.leftJoystickTrigger()) {
-      if (teleopSpeaker) {
+      if(inZone(Targets.AMP)){
+        superstructure.scoreAmp();
+      }
+      else{
         CommandScheduler.getInstance()
             .schedule(
                 DriveCommands.SnapToTarget(
@@ -208,8 +245,6 @@ public class RobotContainer {
                         Targets.SPEAKER)
                     .until(() -> input.leftJoystickTrigger()));
         superstructure.shoot();
-      } else {
-        superstructure.scoreAmp();
       }
     } else if (input.rightJoystickTrigger()) {
       superstructure.intake();
