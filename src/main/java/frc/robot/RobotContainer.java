@@ -4,8 +4,8 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.FieldConstants;
@@ -165,30 +165,37 @@ public class RobotContainer {
   }
 
   // could outsource this to PoseEstimator..?
-  public boolean inZone(FieldConstants.Targets target){
+  public boolean inZone(FieldConstants.Targets target) {
     Pose2d TL;
     Pose2d BR;
-    switch(target){
+    switch (target) {
       case AMP:
         TL = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.AMP_TL);
         BR = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.AMP_BR);
         break;
+      case MID:
+        TL = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.MID_TL);
+        BR = GeomUtil.flipPoseBasedOnAlliance(Constants.ZoneConstants.MID_BR);
+        // System.out.println("curr pose: " + currPose);
+        // System.out.println("TL: " + TL);
+        // System.out.println("BR: " + BR);
+        break;
       default:
-        TL = new Pose2d(0,0,new Rotation2d(0));
-        BR = new Pose2d(0,0,new Rotation2d(0));
+        TL = new Pose2d(0, 0, new Rotation2d(0));
+        BR = new Pose2d(0, 0, new Rotation2d(0));
     }
-    //getting the latest pose once might cause problems if the robot is moving quickly, but it makes the function more efficient
+    // getting the latest pose once might cause problems if the robot is moving quickly, but it
+    // makes the function more efficient
     Pose2d currPose = poseEstimator.getLatestPose();
-    //checking if Y-position is within zone
-    if (!(currPose.getY() > BR.getY() && currPose.getY() < TL.getY() )){
+    // checking if Y-position is within zone
+    if (!(currPose.getY() > BR.getY() && currPose.getY() < TL.getY())) {
       return false;
     }
-    if (DriverStation.getAlliance().get() == Alliance.Blue){
-      //checking if X-position is within zone
-      return BR.getX() > currPose.getX()  && TL.getX() < currPose.getX();
-    }
-    else{
-      return BR.getX() < currPose.getX()  && TL.getX() > currPose.getX();
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      // checking if X-position is within zone
+      return BR.getX() > currPose.getX() && TL.getX() < currPose.getX();
+    } else {
+      return BR.getX() < currPose.getX() && TL.getX() > currPose.getX();
     }
   }
 
@@ -232,10 +239,13 @@ public class RobotContainer {
     }
 
     if (input.leftJoystickTrigger()) {
-      if(inZone(Targets.AMP)){
+      if (inZone(Targets.AMP)) {
+        System.out.println("IN AMP");
         superstructure.scoreAmp();
-      }
-      else{
+      } else if (inZone(Targets.MID)) {
+        System.out.println("IN MID");
+        superstructure.fling();
+      } else {
         CommandScheduler.getInstance()
             .schedule(
                 DriveCommands.SnapToTarget(

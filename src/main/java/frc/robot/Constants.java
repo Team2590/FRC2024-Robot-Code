@@ -59,6 +59,7 @@ public final class Constants {
       AMP,
       STAGE,
       FLING,
+      MID,
       SOURCE
     }
   }
@@ -185,15 +186,18 @@ public final class Constants {
     public static final double[] FLING_SHOOTER_SETPOINT = {1500, 1500, 1750, 1750, 2000, 2000};
   }
 
-/**
- * The zones are defined by two points...one on the top left (denoted by TL) and another on the bottom right (BR) of the desired rectangular zone.
- * These zones should be defined using the blue alliance (or whichever alliance is the reference point).
- * In order to find these points, creating an empty path in path planner may be helpful to visualize where these points are. 
- * amp, speaker stage
- */
-  public final class ZoneConstants{
+  /**
+   * The zones are defined by two points...one on the top left (denoted by TL) and another on the
+   * bottom right (BR) of the desired rectangular zone. These zones should be defined using the blue
+   * alliance (or whichever alliance is the reference point). In order to find these points,
+   * creating an empty path in path planner may be helpful to visualize where these points are. amp,
+   * speaker stage
+   */
+  public final class ZoneConstants {
     public static final Pose2d AMP_TL = new Pose2d(0.56, 8.15, new Rotation2d(0));
     public static final Pose2d AMP_BR = new Pose2d(2.63, 7.46, new Rotation2d(0));
+    public static final Pose2d MID_TL = new Pose2d(6.27, 7.80, new Rotation2d(0));
+    public static final Pose2d MID_BR = new Pose2d(10.22, 0.38, new Rotation2d(0));
   }
 
   public static enum Mode {
