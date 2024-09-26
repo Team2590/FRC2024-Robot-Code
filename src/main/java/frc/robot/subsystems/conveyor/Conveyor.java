@@ -128,6 +128,10 @@ public class Conveyor extends SubsystemBase {
   public boolean hasNote() {
     return inputs.hasNote;
   }
+
+  public void setCoastMode(){
+    io.setCoastMode();
+  }
 }
 
 /**
