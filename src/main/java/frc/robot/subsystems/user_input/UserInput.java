@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.util.BandedJoystick;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.Smoother;
 
 /**
@@ -30,6 +31,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
   private final Smoother.Wrapper leftYInput;
   private final Smoother.Wrapper rightXInput;
   private final XboxController operatorController;
+  private LoggedTunableNumber rightSensitivity;
 
   private UserInput() {
     leftJoystick = new BandedJoystick(LEFT_JOYSTICK, 0.1, 0.1);
@@ -38,6 +40,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
     leftYInput = Smoother.wrap(2, leftJoystick::getYBanded);
     rightXInput = Smoother.wrap(1, rightJoystick::getXBanded);
     operatorController = new XboxController(2);
+    rightSensitivity = new LoggedTunableNumber("Right Stick Sensitivity", .85);
   }
 
   public void update() {

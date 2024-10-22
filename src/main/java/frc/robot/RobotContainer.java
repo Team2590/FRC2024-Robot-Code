@@ -277,6 +277,7 @@ public class RobotContainer {
                       poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
                   .until(() -> input.rightJoystickPOV() == 180));
     } else if (input.rightJoystickPOV() == 90) {
+      // System.out.println("POV 90 PRESSED");
       superstructure.outtake();
     } else if (input.rightJoystickButton(3)) {
       // highkey does not work rn
