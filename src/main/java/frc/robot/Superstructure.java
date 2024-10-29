@@ -94,7 +94,7 @@ public class Superstructure extends SubsystemBase {
   private final LoggedTunableNumber ampFlywheel =
       new LoggedTunableNumber("Flywheel/AmpFlywheel", 1500);
   private final LoggedTunableNumber flywheelSpeed =
-      new LoggedTunableNumber("Flywheeel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
+      new LoggedTunableNumber("Flywheel/Flywheel speed", Constants.ShooterConstants.SETPOINT);
   private final LookupTable armInterpolation;
   private final LookupTable armFlingInterpolation;
   private final LookupTable shooterflingInterpolation;
@@ -460,6 +460,7 @@ public class Superstructure extends SubsystemBase {
         climbed = true;
         idleState = IDLE_STATES.CLIMB;
         break;
+
       case FLING:
         if (DriverStation.getAlliance().isPresent()) {
           var flingPose =

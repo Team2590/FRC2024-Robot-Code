@@ -32,6 +32,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
   private final Smoother.Wrapper rightXInput;
   private final XboxController operatorController;
   private LoggedTunableNumber rightSensitivity;
+  private LoggedTunableNumber leftSensitivity;
 
   private UserInput() {
     leftJoystick = new BandedJoystick(LEFT_JOYSTICK, 0.1, 0.1);
@@ -40,7 +41,8 @@ public class UserInput extends SubsystemBase implements RobotMap {
     leftYInput = Smoother.wrap(2, leftJoystick::getYBanded);
     rightXInput = Smoother.wrap(1, rightJoystick::getXBanded);
     operatorController = new XboxController(2);
-    rightSensitivity = new LoggedTunableNumber("Right Stick Sensitivity", .85);
+    rightSensitivity = new LoggedTunableNumber("Sensitivity/Right Stick Sensitivity", .85);
+    leftSensitivity = new LoggedTunableNumber("Sensitivity/Left Stick Sensitivity", .7);
   }
 
   public void update() {
@@ -52,11 +54,11 @@ public class UserInput extends SubsystemBase implements RobotMap {
   // LEFT JOYSTICK
 
   public double leftJoystickX() {
-    return leftXInput.get();
+    return leftXInput.get(); // * leftSensitivity.get();
   }
 
   public double leftJoystickY() {
-    return leftYInput.get();
+    return leftYInput.get(); // * leftSensitivity.get();
   }
 
   public boolean leftJoystickButton(int button) {
@@ -94,7 +96,7 @@ public class UserInput extends SubsystemBase implements RobotMap {
   // RIGHT JOYSTICK
 
   public double rightJoystickX() {
-    return rightXInput.get();
+    return rightXInput.get(); //* rightSensitivity.get();
   }
 
   public boolean rightJoystickButton(int button) {
