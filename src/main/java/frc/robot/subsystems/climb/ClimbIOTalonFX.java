@@ -39,6 +39,8 @@ public class ClimbIOTalonFX implements ClimbIO {
 
   @Override
   public void setVoltage(double voltage) {
+    leader.setNeutralMode(NeutralModeValue.Brake);
+    follower.setNeutralMode(NeutralModeValue.Brake);
     if (Math.abs(getRotationCount(leader)) - Math.abs(getRotationCount(follower))
         > ClimbConstants.TOLERANCE) {
       follower.setControl(new VoltageOut(-voltage));
@@ -57,7 +59,10 @@ public class ClimbIOTalonFX implements ClimbIO {
     leader.stopMotor();
     follower.stopMotor();
   }
-
+  public void setCoast(){
+     leader.setNeutralMode(NeutralModeValue.Coast);
+     follower.setNeutralMode(NeutralModeValue.Coast);
+  }
   public double getLeaderRotationCount() {
     return leader.getPosition().getValueAsDouble();
   }

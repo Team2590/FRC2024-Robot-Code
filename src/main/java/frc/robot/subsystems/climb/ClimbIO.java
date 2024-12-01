@@ -21,6 +21,8 @@ public interface ClimbIO {
 
   public void resetRotationCount();
 
+  public void setCoast();
+
   public void stopLeader();
 
   public void stopFollower();
