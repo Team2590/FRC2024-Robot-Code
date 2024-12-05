@@ -318,6 +318,18 @@ public class AutoRoutines {
             "n6_return_under",
             SNAP_SHOOT));
 
+    autoChooser.addOption(
+        "shashank-auto",
+        ezAuto.apply(
+            "startA",
+            SNAP_SHOOT,
+            "New test path 1 - shashank",
+            SNAP_SHOOT,
+            "New test path 2 - shashank",
+            SNAP_SHOOT,
+            "New test path 3 - shashank",
+            SNAP_SHOOT));
+
     // autoChooser.addOption(
     //     "4_startA_n1",
     //     ezAuto.apply(
