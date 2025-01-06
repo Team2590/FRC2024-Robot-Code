@@ -13,8 +13,16 @@ package frc.robot;
 import static frc.robot.Constants.FieldConstants.SNAP_ERROR_TOLERANCE;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.FieldConstants.Targets;
@@ -28,6 +36,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.Flywheel.ShooterStates;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.nemesisLED.NemesisLED;
+import frc.robot.util.FlyPathBuilder;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.LookupTable;
 import org.littletonrobotics.junction.Logger;
@@ -62,7 +71,8 @@ public class Superstructure extends SubsystemBase {
     FLIPPING,
     SCORE_TRAP,
     ARM_CLIMB,
-    FLING
+    FLING,
+    DRIVE_TO_POSE
   }
 
   private static enum IDLE_STATES {
@@ -391,6 +401,18 @@ public class Superstructure extends SubsystemBase {
           }
         }
         break;
+      case DRIVE_TO_POSE: 
+        Translation2d flyPathTranslation = new Translation2d(8.04, 0.62);
+        Rotation2d flyPathRotation = new Rotation2d();
+        PathPlannerPath flyPath = new FlyPathBuilder()
+        .addPose(RobotContainer.poseEstimator.getLatestPose())
+        .addPose(new Pose2d(flyPathTranslation, flyPathRotation))
+        .addConstraints(new PathConstraints(5, 4.5, 540, 720))
+        .addGoalEndState(new GoalEndState(0, null))
+        .build();
+        Command followCommand = AutoBuilder.followPath(flyPath);
+        followCommand.execute();
+        break;
     }
     Logger.recordOutput("Superstructure/State", systemState);
     Logger.recordOutput("Superstructure/ArmState", arm.getState());
@@ -528,11 +550,14 @@ public class Superstructure extends SubsystemBase {
 
   public void runConveyor() {
     conveyor.setManual(.25);
-    ;
   }
 
   public void stopConveyor() {
     conveyor.setStopped();
+  }
+
+  public void driveToPose() {
+    systemState = SuperstructureStates.DRIVE_TO_POSE;
   }
 
   public Arm getArm() {
