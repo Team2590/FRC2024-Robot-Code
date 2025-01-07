@@ -1,12 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.FieldConstants.Targets;
-import frc.robot.Superstructure.SuperstructureStates;
 import frc.robot.autos.AutoRoutines;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -166,169 +162,107 @@ public class RobotContainer {
     /*
      * Driver input w/ superstructure
      */
-    // Logger.recordOutput(
-    //     "Climb/GetStageAprilTag", poseEstimator.getPhotonRunnable().getStageAprilTag());
 
-    // Logger.recordOutput(
-    //     "Climb/HorizontalOffset",
-    // poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage());
-
-    // if (input.leftJoystickButton(4)) {
-    //   // CommandScheduler.getInstance()
-    //   //     .schedule(
-    //   //         DriveCommands.alignClimb(
-    //   //                 drive,
-    //   //                 () -> -input.leftJoystickY(),
-    //   //                 poseEstimator.getPhotonRunnable().getStageAprilTag(),
-    //   //                 poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-    //   //             .until(() -> input.leftJoystickButton(4)));
-    //   superstructure.climb();
-    //   // superstructure.primeShooter();
+    // if (input.controllerAButton()) {
+    //   superstructure.primeShooter();
+    // } else if (input.controllerBButton()) {
+    //   superstructure.stopShooter();
     // }
 
-    if (input.controllerAButton()) {
-      superstructure.primeShooter();
-    } else if (input.controllerBButton()) {
-      superstructure.stopShooter();
-    }
-
-    if (input.controllerXButton()) {
-      superstructure.runConveyor();
-    } else if (input.controllerYButton()) {
-      superstructure.stopConveyor();
-    }
-
-    if (input.leftJoystickTrigger()) {
-      if (teleopSpeaker) {
-        CommandScheduler.getInstance()
-            .schedule(
-                DriveCommands.SnapToTarget(
-                        drive,
-                        () -> -input.leftJoystickY(),
-                        () -> -input.leftJoystickX(),
-                        Targets.SPEAKER)
-                    .until(() -> input.leftJoystickTrigger()));
-        superstructure.shoot();
-      } else {
-        superstructure.scoreAmp();
-      }
-    } else if (input.rightJoystickTrigger()) {
-      superstructure.intake();
-    } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
-      // I just put this button as a place holder
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.turnToNote(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      PhotonNoteRunnable.target::getYaw)
-                  .until(() -> input.rightJoystickButton(2)));
-    } else if (input.rightJoystickButton(11)) {
-      // manual arm w climb DOESNT WORK
-      superstructure.flip();
-      // superstructure.climb();
-    } else if (input.rightJoystickButton(16)) {
-      superstructure.climb();
-    } else if (input.rightJoystickButton(5)) {
-      System.out.println("zeroing gyro");
-      drive.zeroGyro();
-    } else if (input.leftJoystickPOV() == 180) {
-      superstructure.subwooferShot();
-    } else if (input.rightJoystickPOV() == 180) {
-      // spit
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.alignClimb(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      poseEstimator.getPhotonRunnable().getStageAprilTag(),
-                      poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
-                  .until(() -> input.rightJoystickPOV() == 180));
-    } else if (input.rightJoystickPOV() == 90) {
-      superstructure.outtake();
-    } else if (input.rightJoystickButton(3)) {
-      // highkey does not work rn
-      teleopSpeaker = false;
-      input.setOperatorRumble(0);
-      superstructure.primeAmp();
-    } else if (input.rightJoystickButton(4)) {
-      superstructure.flip();
-    } else if (input.leftJoystickButton(4)) {
-      superstructure.climb();
-    }
-    // else if (input.leftJoystickButton(4)) {
-    //   superstructure.climb();
-    // }
-    else if (input.controllerButton(7)) {
-      superstructure.resetRobot();
-      teleopSpeaker = false;
-    } else if (input.leftJoystickPOV() == 0) {
-      CommandScheduler.getInstance()
-          .schedule(
-              DriveCommands.SnapToTarget(
-                      drive,
-                      () -> -input.leftJoystickY(),
-                      () -> -input.leftJoystickX(),
-                      Targets.FLING)
-                  .until(() -> input.leftJoystickPOV() == 0));
-      superstructure.fling();
-
-    } else {
-
-      if (superstructure.getState() == SuperstructureStates.PRIMING_AMP
-          || superstructure.getState() == SuperstructureStates.IDLE_AMP) {
-        teleopSpeaker = false;
-      } else {
-        teleopSpeaker = true;
-      }
-
-      superstructure.idle();
-    }
-
-    // Logger.recordOutput("shoot speaker?", teleopSpeaker);
     // if (input.controllerXButton()) {
-    //   superstructure.armClimb();
+    //   superstructure.runConveyor();
+    // } else if (input.controllerYButton()) {
+    //   superstructure.stopConveyor();
     // }
-    // TBD OPERATOR BUTTONS
 
     // if (input.leftJoystickTrigger()) {
-    //   superstructure.intake();
+    //   if (teleopSpeaker) {
+    //     CommandScheduler.getInstance()
+    //         .schedule(
+    //             DriveCommands.SnapToTarget(
+    //                     drive,
+    //                     () -> -input.leftJoystickY(),
+    //                     () -> -input.leftJoystickX(),
+    //                     Targets.SPEAKER)
+    //                 .until(() -> input.leftJoystickTrigger()));
+    //     superstructure.shoot();
+    //   } else {
+    //     superstructure.scoreAmp();
+    //   }
     // } else if (input.rightJoystickTrigger()) {
+    //   superstructure.intake();
+    // } else if (PhotonNoteRunnable.target != null && input.rightJoystickButton(2)) {
+    //   // I just put this button as a place holder
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           DriveCommands.turnToNote(
+    //                   drive,
+    //                   () -> -input.leftJoystickY(),
+    //                   () -> -input.leftJoystickX(),
+    //                   PhotonNoteRunnable.target::getYaw)
+    //               .until(() -> input.rightJoystickButton(2)));
+    // } else if (input.rightJoystickButton(11)) {
+    //   // manual arm w climb DOESNT WORK
+    //   superstructure.flip();
+    //   // superstructure.climb();
+    // } else if (input.rightJoystickButton(16)) {
+    //   superstructure.climb();
+    // } else if (input.rightJoystickButton(5)) {
+    //   System.out.println("zeroing gyro");
+    //   drive.zeroGyro();
+    // } else if (input.leftJoystickPOV() == 180) {
+    //   superstructure.subwooferShot();
+    // } else if (input.rightJoystickPOV() == 180) {
+    //   // spit
+    //   CommandScheduler.getInstance()
+    //       .schedule(
+    //           DriveCommands.alignClimb(
+    //                   drive,
+    //                   () -> -input.leftJoystickY(),
+    //                   poseEstimator.getPhotonRunnable().getStageAprilTag(),
+    //                   poseEstimator.getPhotonRunnable().getHorizontalOffsetToStage())
+    //               .until(() -> input.rightJoystickPOV() == 180));
+    // } else if (input.rightJoystickPOV() == 90) {
     //   superstructure.outtake();
-    // } else if (input.rightJoystickButton(2)) {
+    // } else if (input.rightJoystickButton(3)) {
+    //   // highkey does not work rn
+    //   teleopSpeaker = false;
+    //   input.setOperatorRumble(0);
+    //   superstructure.primeAmp();
+    // } else if (input.rightJoystickButton(4)) {
+    //   superstructure.flip();
+    // } else if (input.leftJoystickButton(4)) {
+    //   superstructure.climb();
+    // }
+    // // else if (input.leftJoystickButton(4)) {
+    // //   superstructure.climb();
+    // // }
+    // else if (input.controllerButton(7)) {
+    //   superstructure.resetRobot();
+    //   teleopSpeaker = false;
+    // } else if (input.leftJoystickPOV() == 0) {
     //   CommandScheduler.getInstance()
     //       .schedule(
     //           DriveCommands.SnapToTarget(
     //                   drive,
     //                   () -> -input.leftJoystickY(),
     //                   () -> -input.leftJoystickX(),
-    //                   Targets.SPEAKER)
-    //               .until(() -> input.rightJoystickButton(2)));
-    //   // Example Use below
-    //   // CommandScheduler.getInstance()
-    //   //     .schedule(
-    //   //         DriveCommands.turnToNote(
-    //   //                 drive,
-    //   //                 () -> -input.leftJoystickY(),
-    //   //                 () -> -input.leftJoystickX(),
-    //   //                 PhotonNoteRunnable.target::getYaw)
-    //   //             .until(() -> input.rightJoystickButton(2)));
-    //   superstructure.shoot();
-    // } else if (input.rightJoystickButton(3)) {
-    //   superstructure.scoreAmp();
-    // } else if (input.rightJoystickButton(5)) {
-    //   drive.zeroGyro();
-    //   System.out.println("Gyro is reset");
-    // } else if (input.leftJoystickButton(2)) {
-    //   superstructure.armUp();
-    // } else if (input.leftJoystickButton(3)) {
-    //   superstructure.armDown();
-    // } else if (input.rightJoystickButton(6)) {
-    //   superstructure.climb();
+    //                   Targets.FLING)
+    //               .until(() -> input.leftJoystickPOV() == 0));
+    //   superstructure.fling();
+
     // } else {
+
+    //   if (superstructure.getState() == SuperstructureStates.PRIMING_AMP
+    //       || superstructure.getState() == SuperstructureStates.IDLE_AMP) {
+    //     teleopSpeaker = false;
+    //   } else {
+    //     teleopSpeaker = true;
+    //   }
+
     //   superstructure.idle();
     // }
+
   }
 
   // --------AUTO CHOOSER FUNCTIONS------------

@@ -13,6 +13,11 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -157,12 +162,25 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    // Translation2d flyPathTranslation = new Translation2d(8.61, 7.33);
+    // Rotation2d flyPathRotation = new Rotation2d(0);
+    // AutoBuilder.pathfindToPose(
+    //         new Pose2d(flyPathTranslation, flyPathRotation), new PathConstraints(5, 4.5, 540,
+    // 720))
+    //     .schedule();
+
+    PathConstraints constraints =
+    new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+    Command command = AutoBuilder.pathfindToPose(new Pose2d(8.61, 7.33, new Rotation2d(90)), constraints);
+    command.schedule();
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    robotContainer.updateUserInput();
+    // robotContainer.updateUserInput();
+    command.schedule();
   }
 
   /** This function is called once when test mode is enabled. */
