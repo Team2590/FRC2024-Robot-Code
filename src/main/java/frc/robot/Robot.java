@@ -180,7 +180,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     // robotContainer.updateUserInput();
-    command.schedule();
   }
 
   /** This function is called once when test mode is enabled. */
