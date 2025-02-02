@@ -23,6 +23,8 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevatorarm.Arm;
 import frc.robot.subsystems.elevatorarm.ArmIOTalonFX;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
@@ -49,6 +51,7 @@ public class RobotContainer {
   private final Conveyor conveyor;
   private final Arm arm;
   private final Intake intake;
+  private final EndEffector endEffector = new EndEffector(new EndEffectorIOTalonFX());
   private final Climb climb;
   private final NemesisLED led = new NemesisLED(9, 100);
   private final Superstructure superstructure;
@@ -191,6 +194,12 @@ public class RobotContainer {
       superstructure.stopShooter();
     }
 
+    // added
+    else if (input.controllerRightBumper()) {
+      endEffector.runIntake();
+    } else if (!input.controllerRightBumper()) {
+      endEffector.stopIntake();
+    }
     if (input.controllerXButton()) {
       superstructure.runConveyor();
     } else if (input.controllerYButton()) {
